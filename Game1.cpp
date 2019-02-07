@@ -7,19 +7,26 @@
 #include <gl\gl.h>			// Header file for the OpenGL32 Library
 #include <gl\glu.h>			// Header file for the GLu32 Library
 
+const double degToRad = 3.14159265359 / 180.0;
+
 int	mouse_x=0, mouse_y=0;
 bool LeftPressed = false;
 int screenWidth=480, screenHeight=480;
 bool keys[256];
-float spin=0;
-float speed=0;
+
+float playerSpeed = 0.0;
+float playerX = 0.0;
+float playerY = 0.0;
+float playerDirection = 0.0;
 
 //OPENGL FUNCTION PROTOTYPES
 void display();				//called in winmain to draw everything to the screen
 void reshape(int width, int height);				//called when the window is resized
-void init();				//called in winmain when the program starts.
-void processKeys();         //called in winmain to process keyboard input
+void init();				//called in winmain when the program starts. 
 void update();				//called in winmain to update variables
+void updatePlayer();
+
+void displayPlayer();
 
 /*************    START OF OPENGL FUNCTIONS   ****************/
 void display()									
@@ -39,15 +46,7 @@ void display()
 	glEnd();
 	glPointSize(1.0f);
 
-	glTranslatef(100,100,0);
-	glRotatef(spin, 0,0,1);
-	glTranslatef(-100,-100,0);
-	glBegin(GL_POLYGON);
-		glVertex2f(150,150);
-		glVertex2f(50,150);
-		glVertex2f(50,50);
-		glVertex2f(150,50);
-	glEnd();	
+	displayPlayer();
 
 	glFlush();
 }
@@ -68,30 +67,49 @@ void reshape(int width, int height)		// Resize the OpenGL window
 }
 void init()
 {
-	glClearColor(1.0,1.0,0.0,0.0);						//sets the clear colour to yellow
-														//glClear(GL_COLOR_BUFFER_BIT) in the display function
-														//will clear the buffer to this colour.
-}
-void processKeys()
-{
-	if(keys[VK_UP])
-	{
-		speed += 0.0001f;
-		std::cout << "up: " << speed << std::endl;
-	}
-	if(keys[VK_DOWN])
-	{
-		speed -= 0.0001f;
-		std::cout << "down: " << speed << std::endl;
-	}
+	glClearColor(0.0, 0.0, 0.0, 0.0);						//sets the clear colour to yellow
 }
 void update()
 {
-	spin += speed;
-	if(spin > 360)
-		spin = 0;
+	updatePlayer();
+}
+void updatePlayer()
+{
+	if (keys[VK_UP])
+	{
+		playerSpeed += 0.0001f;
+	}
+	if (keys[VK_DOWN])
+	{
+		playerSpeed -= 0.0001f;
+	}
+	if (keys[VK_LEFT])
+	{
+		playerDirection += 0.1f;
+	}
+	if (keys[VK_RIGHT])
+	{
+		playerDirection -= 0.1f;
+	}
+
+	playerX += (playerSpeed*cos((playerDirection+90)*degToRad));
+	playerY += (playerSpeed*sin((playerDirection+90)*degToRad));
 }
 /**************** END OPENGL FUNCTIONS *************************/
+
+void displayPlayer()
+{
+	glColor3f(1.0, 0.0, 0.0);
+	glPushMatrix();
+		glTranslatef(playerX, playerY, 0.0);
+		glRotatef(playerDirection, 0, 0, 1);
+		glBegin(GL_TRIANGLES);
+			glVertex2f(0, 150);
+			glVertex2f(70, -70);
+			glVertex2f(-70, -70);
+		glEnd();
+	glPopMatrix();
+}
 
 //WIN32 functions
 LRESULT	CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);	// Declaration For WndProc
@@ -144,8 +162,6 @@ int WINAPI WinMain(	HINSTANCE	hInstance,			// Instance
 		{
 			if(keys[VK_ESCAPE])
 				done = true;
-
-			processKeys();			//process keyboard
 			
 			display();					// Draw The Scene
 			update();					// update variables
