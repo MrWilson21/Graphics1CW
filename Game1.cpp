@@ -14,6 +14,7 @@ bool keys[256];
 float spin=0;
 float speed=0;
 int a = 0;
+int b = 0;
 
 //OPENGL FUNCTION PROTOTYPES
 void display();				//called in winmain to draw everything to the screen
