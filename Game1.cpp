@@ -3,6 +3,7 @@
 //and draws a spinning rectangle
 
 #include <windows.h>		// Header file for Windows
+#include "Image_Loading/nvImage.h"
 #include <iostream>
 #include <gl\gl.h>			// Header file for the OpenGL32 Library
 #include <gl\glu.h>			// Header file for the GLu32 Library
@@ -15,9 +16,12 @@ int screenWidth=480, screenHeight=480;
 bool keys[256];
 
 float playerSpeed = 0.0;
-float playerX = 0.0;
-float playerY = 0.0;
+float playerX = 240.0;
+float playerY = 240.0;
 float playerDirection = 0.0;
+float playerAcceleration = 0.0015;
+float playerRotateSpeed = 0.25;
+GLuint playerTexture = 0;
 
 //OPENGL FUNCTION PROTOTYPES
 void display();				//called in winmain to draw everything to the screen
@@ -50,6 +54,33 @@ void display()
 
 	glFlush();
 }
+
+GLuint loadPNG(char* name)
+{
+	// Texture loading object
+	nv::Image img;
+
+	GLuint myTextureID;
+
+	// Return true on success
+	if (img.loadImageFromFile(name))
+	{
+		glGenTextures(1, &myTextureID);
+		glBindTexture(GL_TEXTURE_2D, myTextureID);
+		glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
+		glTexImage2D(GL_TEXTURE_2D, 0, img.getInternalFormat(), img.getWidth(), img.getHeight(), 0, img.getFormat(), img.getType(), img.getLevel(0));
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, 16.0f);
+	}
+
+	else
+		MessageBox(NULL, "Failed to load texture", "End of the world", MB_OK | MB_ICONINFORMATION);
+
+	return myTextureID;
+}
 void reshape(int width, int height)		// Resize the OpenGL window
 {
 	screenWidth=width; screenHeight = height;           // to ensure the mouse coordinates match 
@@ -68,6 +99,7 @@ void reshape(int width, int height)		// Resize the OpenGL window
 void init()
 {
 	glClearColor(0.0, 0.0, 0.0, 0.0);						//sets the clear colour to yellow
+	playerTexture = loadPNG("Picture1.png");
 }
 void update()
 {
@@ -77,38 +109,42 @@ void updatePlayer()
 {
 	if (keys[VK_UP])
 	{
-		playerSpeed += 0.0001f;
+		playerSpeed += playerAcceleration;
 	}
 	if (keys[VK_DOWN])
 	{
-		playerSpeed -= 0.0001f;
+		playerSpeed -= playerAcceleration;
 	}
 	if (keys[VK_LEFT])
 	{
-		playerDirection += 0.1f;
+		playerDirection += playerRotateSpeed;
 	}
 	if (keys[VK_RIGHT])
 	{
-		playerDirection -= 0.1f;
+		playerDirection -= playerRotateSpeed;
 	}
 
-	playerX += (playerSpeed*cos((playerDirection+90)*degToRad));
-	playerY += (playerSpeed*sin((playerDirection+90)*degToRad));
+	playerX += (playerSpeed*cos((playerDirection)*degToRad));
+	playerY += (playerSpeed*sin((playerDirection)*degToRad));
 }
 /**************** END OPENGL FUNCTIONS *************************/
 
 void displayPlayer()
 {
-	glColor3f(1.0, 0.0, 0.0);
-	glPushMatrix();
-		glTranslatef(playerX, playerY, 0.0);
-		glRotatef(playerDirection, 0, 0, 1);
-		glBegin(GL_TRIANGLES);
-			glVertex2f(0, 150);
-			glVertex2f(70, -70);
-			glVertex2f(-70, -70);
-		glEnd();
-	glPopMatrix();
+	glEnable(GL_TEXTURE_2D);
+		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+		glBindTexture(GL_TEXTURE_2D, playerTexture);
+		glPushMatrix();
+			glTranslatef(playerX, playerY, 0.0);
+			glRotatef(playerDirection, 0, 0, 1);
+			glBegin(GL_POLYGON);
+				glTexCoord2f(0, 1); glVertex2f(-100, 100);
+				glTexCoord2f(1, 1); glVertex2f(100, 100);
+				glTexCoord2f(1, 0); glVertex2f(100, -100);
+				glTexCoord2f(0, 0); glVertex2f(-100, -100);
+			glEnd();
+		glPopMatrix();
+	glDisable(GL_TEXTURE_2D);
 }
 
 //WIN32 functions

@@ -14,8 +14,10 @@
     <ClCompile Include="Game1.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Controller.h" />
-    <ClInclude Include="Player.h" />
+    <ClInclude Include="Image_Loading\nvImage.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Picture1.png" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{797EB91C-0B55-4A4C-A841-E660F49877DD}</ProjectGuid>
