@@ -55,6 +55,8 @@ void reshape(int width, int height)		// Resize the OpenGL window
 }
 void init()
 {
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glClearColor(0.0, 0.0, 0.0, 0.0);						//sets the clear colour to yellow
 	player.loadSprites();
 }

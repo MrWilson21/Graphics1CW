@@ -14,15 +14,42 @@ class Player
 		void loadSprites();
 
 	private:
+		void changeToWalkingState();
+		void changeToRunningState();
+		void changeToIdleState();
+		void changeToJumpingState();
+		void resetStates();
+
+		void displayWalking();
+		void displayIdle();
+		void incrementSpriteCounter();
+
 		float maxSpeed;
 		float walkingAcceleration;
+		float deccelerationFactor;
+		
+		int xReflectFactor;
 		bool facingLeft;
-		bool isMoving;
+
+		bool isIdle;
+		bool isRunning;
+		bool isWalking;
+		bool isJumping;
 
 		int currentSprite;
+		int maxSprites;
 		GLuint walkingTextures[12];
-		GLuint playerTexture;
+		GLuint idleTextures[18];
 
 		float timeSinceFrameChange;
-		float timeBetweenFrameChanges;
+		float timeSinceIdleAnimation;
+		float timeToWaitUntilIdleAnimation;
+		float timeToWaitForNextIdleFrame;
+		float timeToWaitForNextWalkingFrame;
+
+		float scaleFactor;
+		float walkingHeight;
+		float walkingWidth;
+		float idleHeight;
+		float idleWidth;
 };

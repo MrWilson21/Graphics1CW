@@ -14,7 +14,13 @@
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
     </Filter>
     <Filter Include="Resource Files\shaggy">
-      <UniqueIdentifier>{ae9e1686-91ca-4dff-8dd0-4470eb64f31a}</UniqueIdentifier>
+      <UniqueIdentifier>{32d453b3-a495-48a0-aef8-45453974e791}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\shaggy\walking">
+      <UniqueIdentifier>{82517746-e22c-473c-b88e-d515b45f774b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\shaggy\idle">
+      <UniqueIdentifier>{ece7c5f3-807e-4db4-8da1-f16fecea88b6}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -43,41 +49,95 @@
     <Image Include="Picture1.png">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="Shaggy\Layer 1.png">
-      <Filter>Resource Files\shaggy</Filter>
+    <Image Include="shaggy\walking\0.png">
+      <Filter>Resource Files\shaggy\walking</Filter>
     </Image>
-    <Image Include="Shaggy\Layer 2.png">
-      <Filter>Resource Files\shaggy</Filter>
+    <Image Include="shaggy\walking\1.png">
+      <Filter>Resource Files\shaggy\walking</Filter>
     </Image>
-    <Image Include="Shaggy\Layer 3.png">
-      <Filter>Resource Files\shaggy</Filter>
+    <Image Include="shaggy\walking\2.png">
+      <Filter>Resource Files\shaggy\walking</Filter>
     </Image>
-    <Image Include="Shaggy\Layer 4.png">
-      <Filter>Resource Files\shaggy</Filter>
+    <Image Include="shaggy\walking\3.png">
+      <Filter>Resource Files\shaggy\walking</Filter>
     </Image>
-    <Image Include="Shaggy\Layer 5.png">
-      <Filter>Resource Files\shaggy</Filter>
+    <Image Include="shaggy\walking\4.png">
+      <Filter>Resource Files\shaggy\walking</Filter>
     </Image>
-    <Image Include="Shaggy\Layer 6.png">
-      <Filter>Resource Files\shaggy</Filter>
+    <Image Include="shaggy\walking\5.png">
+      <Filter>Resource Files\shaggy\walking</Filter>
     </Image>
-    <Image Include="Shaggy\Layer 7.png">
-      <Filter>Resource Files\shaggy</Filter>
+    <Image Include="shaggy\walking\6.png">
+      <Filter>Resource Files\shaggy\walking</Filter>
     </Image>
-    <Image Include="Shaggy\Layer 8.png">
-      <Filter>Resource Files\shaggy</Filter>
+    <Image Include="shaggy\walking\7.png">
+      <Filter>Resource Files\shaggy\walking</Filter>
     </Image>
-    <Image Include="Shaggy\Layer 9.png">
-      <Filter>Resource Files\shaggy</Filter>
+    <Image Include="shaggy\walking\8.png">
+      <Filter>Resource Files\shaggy\walking</Filter>
     </Image>
-    <Image Include="Shaggy\Layer 10.png">
-      <Filter>Resource Files\shaggy</Filter>
+    <Image Include="shaggy\walking\9.png">
+      <Filter>Resource Files\shaggy\walking</Filter>
     </Image>
-    <Image Include="Shaggy\Layer 11.png">
-      <Filter>Resource Files\shaggy</Filter>
+    <Image Include="shaggy\walking\10.png">
+      <Filter>Resource Files\shaggy\walking</Filter>
     </Image>
-    <Image Include="Shaggy\Layer 12.png">
-      <Filter>Resource Files\shaggy</Filter>
+    <Image Include="shaggy\walking\11.png">
+      <Filter>Resource Files\shaggy\walking</Filter>
+    </Image>
+    <Image Include="shaggy\idle\17.png">
+      <Filter>Resource Files\shaggy\idle</Filter>
+    </Image>
+    <Image Include="shaggy\idle\0.png">
+      <Filter>Resource Files\shaggy\idle</Filter>
+    </Image>
+    <Image Include="shaggy\idle\1.png">
+      <Filter>Resource Files\shaggy\idle</Filter>
+    </Image>
+    <Image Include="shaggy\idle\2.png">
+      <Filter>Resource Files\shaggy\idle</Filter>
+    </Image>
+    <Image Include="shaggy\idle\3.png">
+      <Filter>Resource Files\shaggy\idle</Filter>
+    </Image>
+    <Image Include="shaggy\idle\4.png">
+      <Filter>Resource Files\shaggy\idle</Filter>
+    </Image>
+    <Image Include="shaggy\idle\5.png">
+      <Filter>Resource Files\shaggy\idle</Filter>
+    </Image>
+    <Image Include="shaggy\idle\6.png">
+      <Filter>Resource Files\shaggy\idle</Filter>
+    </Image>
+    <Image Include="shaggy\idle\7.png">
+      <Filter>Resource Files\shaggy\idle</Filter>
+    </Image>
+    <Image Include="shaggy\idle\8.png">
+      <Filter>Resource Files\shaggy\idle</Filter>
+    </Image>
+    <Image Include="shaggy\idle\9.png">
+      <Filter>Resource Files\shaggy\idle</Filter>
+    </Image>
+    <Image Include="shaggy\idle\10.png">
+      <Filter>Resource Files\shaggy\idle</Filter>
+    </Image>
+    <Image Include="shaggy\idle\11.png">
+      <Filter>Resource Files\shaggy\idle</Filter>
+    </Image>
+    <Image Include="shaggy\idle\12.png">
+      <Filter>Resource Files\shaggy\idle</Filter>
+    </Image>
+    <Image Include="shaggy\idle\13.png">
+      <Filter>Resource Files\shaggy\idle</Filter>
+    </Image>
+    <Image Include="shaggy\idle\14.png">
+      <Filter>Resource Files\shaggy\idle</Filter>
+    </Image>
+    <Image Include="shaggy\idle\15.png">
+      <Filter>Resource Files\shaggy\idle</Filter>
+    </Image>
+    <Image Include="shaggy\idle\16.png">
+      <Filter>Resource Files\shaggy\idle</Filter>
     </Image>
   </ItemGroup>
 </Project>

@@ -22,18 +22,36 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="Picture1.png" />
-    <Image Include="Shaggy\Layer 1.png" />
-    <Image Include="Shaggy\Layer 10.png" />
-    <Image Include="Shaggy\Layer 11.png" />
-    <Image Include="Shaggy\Layer 12.png" />
-    <Image Include="Shaggy\Layer 2.png" />
-    <Image Include="Shaggy\Layer 3.png" />
-    <Image Include="Shaggy\Layer 4.png" />
-    <Image Include="Shaggy\Layer 5.png" />
-    <Image Include="Shaggy\Layer 6.png" />
-    <Image Include="Shaggy\Layer 7.png" />
-    <Image Include="Shaggy\Layer 8.png" />
-    <Image Include="Shaggy\Layer 9.png" />
+    <Image Include="shaggy\idle\0.png" />
+    <Image Include="shaggy\idle\1.png" />
+    <Image Include="shaggy\idle\10.png" />
+    <Image Include="shaggy\idle\11.png" />
+    <Image Include="shaggy\idle\12.png" />
+    <Image Include="shaggy\idle\13.png" />
+    <Image Include="shaggy\idle\14.png" />
+    <Image Include="shaggy\idle\15.png" />
+    <Image Include="shaggy\idle\16.png" />
+    <Image Include="shaggy\idle\17.png" />
+    <Image Include="shaggy\idle\2.png" />
+    <Image Include="shaggy\idle\3.png" />
+    <Image Include="shaggy\idle\4.png" />
+    <Image Include="shaggy\idle\5.png" />
+    <Image Include="shaggy\idle\6.png" />
+    <Image Include="shaggy\idle\7.png" />
+    <Image Include="shaggy\idle\8.png" />
+    <Image Include="shaggy\idle\9.png" />
+    <Image Include="shaggy\walking\0.png" />
+    <Image Include="shaggy\walking\1.png" />
+    <Image Include="shaggy\walking\10.png" />
+    <Image Include="shaggy\walking\11.png" />
+    <Image Include="shaggy\walking\2.png" />
+    <Image Include="shaggy\walking\3.png" />
+    <Image Include="shaggy\walking\4.png" />
+    <Image Include="shaggy\walking\5.png" />
+    <Image Include="shaggy\walking\6.png" />
+    <Image Include="shaggy\walking\7.png" />
+    <Image Include="shaggy\walking\8.png" />
+    <Image Include="shaggy\walking\9.png" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{797EB91C-0B55-4A4C-A841-E660F49877DD}</ProjectGuid>
