@@ -1,36 +1,19 @@
-
-//includes areas for keyboard control, mouse control, resizing the window
-//and draws a spinning rectangle
-
-#include <windows.h>		// Header file for Windows
-#include "Image_Loading/nvImage.h"
-#include <iostream>
-#include <gl\gl.h>			// Header file for the OpenGL32 Library
-#include <gl\glu.h>			// Header file for the GLu32 Library
-
-const double degToRad = 3.14159265359 / 180.0;
+#include "app.h"
+#include "Player.h"
 
 int	mouse_x=0, mouse_y=0;
 bool LeftPressed = false;
 int screenWidth=480, screenHeight=480;
-bool keys[256];
 
-float playerSpeed = 0.0;
-float playerX = 240.0;
-float playerY = 240.0;
-float playerDirection = 0.0;
-float playerAcceleration = 0.0015;
-float playerRotateSpeed = 0.25;
-GLuint playerTexture = 0;
+clock_t startTime;
+
+Player player;
 
 //OPENGL FUNCTION PROTOTYPES
 void display();				//called in winmain to draw everything to the screen
 void reshape(int width, int height);				//called when the window is resized
 void init();				//called in winmain when the program starts. 
 void update();				//called in winmain to update variables
-void updatePlayer();
-
-void displayPlayer();
 
 /*************    START OF OPENGL FUNCTIONS   ****************/
 void display()									
@@ -50,37 +33,11 @@ void display()
 	glEnd();
 	glPointSize(1.0f);
 
-	displayPlayer();
+	player.displayPlayer();
 
 	glFlush();
 }
 
-GLuint loadPNG(char* name)
-{
-	// Texture loading object
-	nv::Image img;
-
-	GLuint myTextureID;
-
-	// Return true on success
-	if (img.loadImageFromFile(name))
-	{
-		glGenTextures(1, &myTextureID);
-		glBindTexture(GL_TEXTURE_2D, myTextureID);
-		glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
-		glTexImage2D(GL_TEXTURE_2D, 0, img.getInternalFormat(), img.getWidth(), img.getHeight(), 0, img.getFormat(), img.getType(), img.getLevel(0));
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, 16.0f);
-	}
-
-	else
-		MessageBox(NULL, "Failed to load texture", "End of the world", MB_OK | MB_ICONINFORMATION);
-
-	return myTextureID;
-}
 void reshape(int width, int height)		// Resize the OpenGL window
 {
 	screenWidth=width; screenHeight = height;           // to ensure the mouse coordinates match 
@@ -99,53 +56,13 @@ void reshape(int width, int height)		// Resize the OpenGL window
 void init()
 {
 	glClearColor(0.0, 0.0, 0.0, 0.0);						//sets the clear colour to yellow
-	playerTexture = loadPNG("Picture1.png");
+	player.loadSprites();
 }
 void update()
 {
-	updatePlayer();
-}
-void updatePlayer()
-{
-	if (keys[VK_UP])
-	{
-		playerSpeed += playerAcceleration;
-	}
-	if (keys[VK_DOWN])
-	{
-		playerSpeed -= playerAcceleration;
-	}
-	if (keys[VK_LEFT])
-	{
-		playerDirection += playerRotateSpeed;
-	}
-	if (keys[VK_RIGHT])
-	{
-		playerDirection -= playerRotateSpeed;
-	}
-
-	playerX += (playerSpeed*cos((playerDirection)*degToRad));
-	playerY += (playerSpeed*sin((playerDirection)*degToRad));
+	player.updatePlayer();
 }
 /**************** END OPENGL FUNCTIONS *************************/
-
-void displayPlayer()
-{
-	glEnable(GL_TEXTURE_2D);
-		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-		glBindTexture(GL_TEXTURE_2D, playerTexture);
-		glPushMatrix();
-			glTranslatef(playerX, playerY, 0.0);
-			glRotatef(playerDirection, 0, 0, 1);
-			glBegin(GL_POLYGON);
-				glTexCoord2f(0, 1); glVertex2f(-100, 100);
-				glTexCoord2f(1, 1); glVertex2f(100, 100);
-				glTexCoord2f(1, 0); glVertex2f(100, -100);
-				glTexCoord2f(0, 0); glVertex2f(-100, -100);
-			glEnd();
-		glPopMatrix();
-	glDisable(GL_TEXTURE_2D);
-}
 
 //WIN32 functions
 LRESULT	CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);	// Declaration For WndProc
@@ -182,6 +99,7 @@ int WINAPI WinMain(	HINSTANCE	hInstance,			// Instance
 
 	while(!done)									// Loop That Runs While done=FALSE
 	{
+		startTime = clock();
 		if (PeekMessage(&msg,NULL,0,0,PM_REMOVE))	// Is There A Message Waiting?
 		{
 			if (msg.message==WM_QUIT)				// Have We Received A Quit Message?
@@ -196,13 +114,14 @@ int WINAPI WinMain(	HINSTANCE	hInstance,			// Instance
 		}
 		else										// If There Are No Messages
 		{
-			if(keys[VK_ESCAPE])
+			if(App::keys[VK_ESCAPE])
 				done = true;
 			
 			display();					// Draw The Scene
 			update();					// update variables
 			SwapBuffers(hDC);				// Swap Buffers (Double Buffering)
 		}
+		App::deltaTime = float(clock() - startTime) / CLOCKS_PER_SEC;
 	}
 
 	// Shutdown
@@ -254,13 +173,13 @@ LRESULT CALLBACK WndProc(	HWND	hWnd,			// Handle For This Window
 		break;
 		case WM_KEYDOWN:							// Is A Key Being Held Down?
 		{
-			keys[wParam] = true;					// If So, Mark It As TRUE
+			App::keys[wParam] = true;					// If So, Mark It As TRUE
 			return 0;								// Jump Back
 		}
 		break;
 		case WM_KEYUP:								// Has A Key Been Released?
 		{
-			keys[wParam] = false;					// If So, Mark It As FALSE
+			App::keys[wParam] = false;					// If So, Mark It As FALSE
 			return 0;								// Jump Back
 		}
 		break;

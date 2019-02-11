@@ -11,13 +11,29 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="App.cpp" />
     <ClCompile Include="Game1.cpp" />
+    <ClCompile Include="Player.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="app.h" />
     <ClInclude Include="Image_Loading\nvImage.h" />
+    <ClInclude Include="Player.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Picture1.png" />
+    <Image Include="Shaggy\Layer 1.png" />
+    <Image Include="Shaggy\Layer 10.png" />
+    <Image Include="Shaggy\Layer 11.png" />
+    <Image Include="Shaggy\Layer 12.png" />
+    <Image Include="Shaggy\Layer 2.png" />
+    <Image Include="Shaggy\Layer 3.png" />
+    <Image Include="Shaggy\Layer 4.png" />
+    <Image Include="Shaggy\Layer 5.png" />
+    <Image Include="Shaggy\Layer 6.png" />
+    <Image Include="Shaggy\Layer 7.png" />
+    <Image Include="Shaggy\Layer 8.png" />
+    <Image Include="Shaggy\Layer 9.png" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{797EB91C-0B55-4A4C-A841-E660F49877DD}</ProjectGuid>

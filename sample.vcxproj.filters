@@ -13,9 +13,18 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
     </Filter>
+    <Filter Include="Resource Files\shaggy">
+      <UniqueIdentifier>{ae9e1686-91ca-4dff-8dd0-4470eb64f31a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Game1.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="App.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -23,10 +32,52 @@
     <ClInclude Include="Image_Loading\nvImage.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="app.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Picture1.png">
       <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Shaggy\Layer 1.png">
+      <Filter>Resource Files\shaggy</Filter>
+    </Image>
+    <Image Include="Shaggy\Layer 2.png">
+      <Filter>Resource Files\shaggy</Filter>
+    </Image>
+    <Image Include="Shaggy\Layer 3.png">
+      <Filter>Resource Files\shaggy</Filter>
+    </Image>
+    <Image Include="Shaggy\Layer 4.png">
+      <Filter>Resource Files\shaggy</Filter>
+    </Image>
+    <Image Include="Shaggy\Layer 5.png">
+      <Filter>Resource Files\shaggy</Filter>
+    </Image>
+    <Image Include="Shaggy\Layer 6.png">
+      <Filter>Resource Files\shaggy</Filter>
+    </Image>
+    <Image Include="Shaggy\Layer 7.png">
+      <Filter>Resource Files\shaggy</Filter>
+    </Image>
+    <Image Include="Shaggy\Layer 8.png">
+      <Filter>Resource Files\shaggy</Filter>
+    </Image>
+    <Image Include="Shaggy\Layer 9.png">
+      <Filter>Resource Files\shaggy</Filter>
+    </Image>
+    <Image Include="Shaggy\Layer 10.png">
+      <Filter>Resource Files\shaggy</Filter>
+    </Image>
+    <Image Include="Shaggy\Layer 11.png">
+      <Filter>Resource Files\shaggy</Filter>
+    </Image>
+    <Image Include="Shaggy\Layer 12.png">
+      <Filter>Resource Files\shaggy</Filter>
     </Image>
   </ItemGroup>
 </Project>
