@@ -12,6 +12,9 @@ Player::Player(float startX, float startY, float scale)
 	walkingAcceleration = 1500.0;
 	deccelerationFactor = 1000.0;
 	gravity = 500.0;
+	airAcceleration = 400.0;
+	airDeccelerationFactor = 300.0;
+	maxAirVelocityX = 100.0;
 	
 	xReflectFactor = 0;
 	facingLeft = false;
@@ -25,11 +28,11 @@ Player::Player(float startX, float startY, float scale)
 	walkingTextures[12];
 	idleTextures[18];
 
-	timeSinceFrameChange = 0.0;
 	timeToWaitForNextWalkingFrame = 10.0;
-	timeSinceIdleAnimation = 0.0;
 	timeToWaitUntilIdleAnimation = 3.0;
 	timeToWaitForNextIdleFrame = 0.03;
+	timeToWaitForNextJumpingFrame = 0.1;
+	timeUntilChangeToJump = 0.1;
 
 	//Scale player size up or down
 	scaleFactor = scale;
@@ -39,6 +42,9 @@ Player::Player(float startX, float startY, float scale)
 	walkingWidth = 44.0 * scaleFactor;
 	idleHeight = 75.0 * scaleFactor;
 	idleWidth = 36.0 * scaleFactor;
+	jumpingHeight = 68 * scaleFactor;
+	jumpingWidth = 34 * scaleFactor;
+	
 
 	calculateColliderBox();
 }
@@ -99,7 +105,26 @@ void Player::incrementSpriteCounter()
 			currentSprite = (currentSprite + 1) % maxSprites;
 			timeSinceFrameChange = 0.0;
 		}
+		//Multiply velocity with time so frame changes are based on player speed as well as time elapsed
 		timeSinceFrameChange += abs(velocityX) * App::deltaTime;
+	}
+	else if (isJumping)
+	{
+		if (timeSinceFrameChange > timeToWaitForNextJumpingFrame)
+		{
+			//Jump animation is held at frame 4 until jump lands where jump animation is finished and state can change to idle
+			if (currentSprite == 8)
+			{
+				changeToIdleState();
+				return;
+			}
+			if (currentSprite < 3 || jumpLanding)
+			{
+				currentSprite = (currentSprite + 1) % maxSprites;
+				timeSinceFrameChange = 0.0;
+			}
+		}
+		timeSinceFrameChange += App::deltaTime;
 	}
 }
 
@@ -118,6 +143,13 @@ void Player::loadSprites()
 		char *cstr = &imgSrc[0u];
 		idleTextures[i] = App::loadPNG(cstr);
 	}
+
+	for (int i = 0; i < 9; i++)
+	{
+		string imgSrc = "shaggy/jump/" + to_string(i) + ".png";
+		char *cstr = &imgSrc[0u];
+		jumpingTextures[i] = App::loadPNG(cstr);
+	}
 }
 
 void Player::updatePlayer(std::vector<StaticBlock> staticBlocks)
@@ -134,7 +166,7 @@ void Player::updatePlayer(std::vector<StaticBlock> staticBlocks)
 	//Check if player is not moving and change to idle
 	//Final check done in case player is walking into wall
 	//give shaggy an idle state so it doesnt look like he is running on the spot into a wall
-	if (velocityX == 0 && velocityY == 0)
+	if (velocityX == 0 && velocityY == 0 && !isJumping)
 	{
 		changeToIdleState();
 	}
@@ -143,10 +175,100 @@ void Player::updatePlayer(std::vector<StaticBlock> staticBlocks)
 //Get player input and move shaggy based on current state and inputs given
 void Player::getMovementUpdates()
 {
+	if (isJumping)
+	{
+		airMovementUpdate();
+	}
+	else
+	{
+		groundMovementUpdate();
+	}
+}
+
+void Player::groundMovementUpdate()
+{
+	groundMove();
+
+	if (App::keys[VK_SPACE])
+	{
+		velocityY = 500;
+		changeToJumpingState();
+	}
+	else if (abs(velocityX) > 0)
+	{
+		changeToWalkingState();
+	}
+
+	velocityY -= gravity * App::deltaTime;
+	if (velocityY < -maxVeloctyY)
+	{
+		velocityY = -maxVeloctyY;
+	}
+
+	//Check direction that player is moving and face shaggy in the correct position
+	if (velocityX < 0)
+	{
+		facingLeft = true;
+		xReflectFactor = 1;
+	}
+	else if (velocityX > 0)
+	{
+		facingLeft = false;
+		xReflectFactor = 0;
+	}
+
+	xMoveThisFrame = velocityX * App::deltaTime;
+	yMoveThisFrame = velocityY * App::deltaTime;
+
+	x += xMoveThisFrame;
+	y += yMoveThisFrame;
+
+	incrementSpriteCounter(); 
+}
+
+void Player::airMovementUpdate()
+{
+	if (jumpLanding)
+	{
+		groundMove();
+	}
+	else
+	{
+		airMove();
+	}
+
+	velocityY -= gravity * App::deltaTime;
+	if (velocityY < -maxVeloctyY)
+	{
+		velocityY = -maxVeloctyY;
+	}
+
+	//Check direction that player is moving and face shaggy in the correct position
+	if (velocityX < 0)
+	{
+		facingLeft = true;
+		xReflectFactor = 1;
+	}
+	else if (velocityX > 0)
+	{
+		facingLeft = false;
+		xReflectFactor = 0;
+	}
+
+	xMoveThisFrame = velocityX * App::deltaTime;
+	yMoveThisFrame = velocityY * App::deltaTime;
+
+	x += xMoveThisFrame;
+	y += yMoveThisFrame;
+
+	incrementSpriteCounter();
+}
+
+void Player::groundMove()
+{
 	if (App::keys[VK_LEFT])
 	{
 		velocityX -= walkingAcceleration * App::deltaTime;
-		changeToWalkingState();
 		if (velocityX < -maxVelocityX)
 		{
 			velocityX = -maxVelocityX;
@@ -155,18 +277,9 @@ void Player::getMovementUpdates()
 	else if (App::keys[VK_RIGHT])
 	{
 		velocityX += walkingAcceleration * App::deltaTime;
-		changeToWalkingState();
 		if (velocityX > maxVelocityX)
 		{
 			velocityX = maxVelocityX;
-		}
-	}
-
-	if (App::keys[VK_SPACE])
-	{
-		if (isIdle || isWalking)
-		{
-			changeToJumpingState();
 		}
 	}
 	//If movement keys are not pressed then begin to deccelerate
@@ -183,35 +296,72 @@ void Player::getMovementUpdates()
 		}
 		else
 		{
-			changeToIdleState();
+			velocityX = 0;
 		}
 	}
+}
 
-	velocityY -= gravity * App::deltaTime;
-
-	//Check direction that player is moving and face shaggy in the correct position
-	if (velocityX < 0)
+void Player::airMove()
+{
+	if (velocityX > maxAirVelocityX)
 	{
-		facingLeft = true;
-		xReflectFactor = 1;
+		if (velocityX > airDeccelerationFactor  * App::deltaTime)
+		{
+			velocityX -= airDeccelerationFactor * App::deltaTime;
+		}
+		else if (velocityX < -airDeccelerationFactor * App::deltaTime)
+		{
+			velocityX += airDeccelerationFactor * App::deltaTime;
+		}
+		else
+		{
+			velocityX = 0;
+		}
 	}
-	else if (velocityX > 0)
+	else
 	{
-		facingLeft = false;
-		xReflectFactor = 0;
+		if (App::keys[VK_LEFT])
+		{
+			velocityX -= airAcceleration * App::deltaTime;
+			if (velocityX < -maxAirVelocityX)
+			{
+				velocityX = -maxAirVelocityX;
+			}
+		}
+		else if (App::keys[VK_RIGHT])
+		{
+			velocityX += airAcceleration * App::deltaTime;
+			if (velocityX > maxAirVelocityX)
+			{
+				velocityX = maxAirVelocityX;
+			}
+		}
+		//If movement keys are not pressed then begin to deccelerate
+		//If speed is less than total acceleration for a frame then set speed to 0
+		else
+		{
+			if (velocityX > airDeccelerationFactor  * App::deltaTime)
+			{
+				velocityX -= airDeccelerationFactor * App::deltaTime;
+			}
+			else if (velocityX < -airDeccelerationFactor * App::deltaTime)
+			{
+				velocityX += airDeccelerationFactor * App::deltaTime;
+			}
+			else
+			{
+				velocityX = 0;
+			}
+		}
 	}
-
-	xMoveThisFrame = velocityX * App::deltaTime;
-	yMoveThisFrame = velocityY * App::deltaTime;
-	
-	x += xMoveThisFrame;
-	y += yMoveThisFrame;
-
-	incrementSpriteCounter();
 }
 
 void Player::getCollisionUpdates(std::vector<StaticBlock> staticBlocks)
 {
+	//Assume player is not touching ground until a ground collision is made
+	//Set player state to jumping if no ground is collided with
+	bool isTouchingGround = false;
+
 	for (StaticBlock block : staticBlocks)
 	{
 		if (x + colliderX < block.width + block.x &&
@@ -248,7 +398,6 @@ void Player::getCollisionUpdates(std::vector<StaticBlock> staticBlocks)
 				distToLeft < distToTop &&
 				distToLeft < distToBottom)
 			{
-				cout << "left  " << distToLeft << "  " << distToTop << "\n";
 				x = block.x - colliderWidth - colliderX;
 				if (velocityX > 0.0)
 				{
@@ -273,8 +422,24 @@ void Player::getCollisionUpdates(std::vector<StaticBlock> staticBlocks)
 				{
 					velocityY = 0.0;
 				}
+				isTouchingGround = true;
 			}
 		}
+	}
+	if (!isTouchingGround && !isJumping)
+	{
+		//Short delay needed as some very short frames may not detect any collisions even if player is on a platform
+		//Delay also smoothes out animation slightly
+		timeSinceNotTouchingGround += App::deltaTime;
+		if (timeSinceNotTouchingGround > timeUntilChangeToJump)
+		{
+			changeToJumpingState();
+			timeSinceNotTouchingGround = 0.0;
+		}
+	}
+	if (isJumping && isTouchingGround)
+	{
+		jumpLanding = true;
 	}
 }
 
@@ -307,14 +472,15 @@ void Player::changeToJumpingState()
 	if (!isJumping)
 	{
 		resetStates();
-		maxSprites = 18;
-		velocityY = 500;
+		maxSprites = 9;
+		jumpLanding = false;
 		isJumping = true;
 	}
 }
 void Player::resetStates()
 {
 	currentSprite = 0;
+	timeSinceFrameChange = 0.0;
 	isJumping = false;
 	isRunning = false;
 	isWalking = false;
@@ -332,6 +498,24 @@ void Player::displayWalking()
 	glTexCoord2f(0 + xReflectFactor, 1); glVertex2f(0, walkingHeight);
 	glTexCoord2f(1 - xReflectFactor, 1); glVertex2f(walkingWidth, walkingHeight);
 	glTexCoord2f(1 - xReflectFactor, 0); glVertex2f(walkingWidth, 0);
+	glTexCoord2f(0 + xReflectFactor, 0); glVertex2f(0, 0);
+	glEnd();
+	glDisable(GL_TEXTURE_2D);
+	App::displayBoundingBox(colliderX, colliderY, colliderX + colliderWidth, colliderY + colliderHeight);
+	glPopMatrix();
+}
+
+void Player::displayJumping()
+{
+	glEnable(GL_TEXTURE_2D);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+	glBindTexture(GL_TEXTURE_2D, jumpingTextures[currentSprite]);
+	glPushMatrix();
+	glTranslatef(x, y, 0.0);
+	glBegin(GL_POLYGON);
+	glTexCoord2f(0 + xReflectFactor, 1); glVertex2f(0, jumpingHeight);
+	glTexCoord2f(1 - xReflectFactor, 1); glVertex2f(jumpingWidth, jumpingHeight);
+	glTexCoord2f(1 - xReflectFactor, 0); glVertex2f(jumpingWidth, 0);
 	glTexCoord2f(0 + xReflectFactor, 0); glVertex2f(0, 0);
 	glEnd();
 	glDisable(GL_TEXTURE_2D);
@@ -363,6 +547,10 @@ void Player::displayPlayer()
 	{
 		displayWalking();
 		return;
+	}
+	else if(isJumping)
+	{
+		displayJumping();
 	}
 	else
 	{

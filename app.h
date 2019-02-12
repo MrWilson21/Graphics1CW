@@ -8,7 +8,11 @@
 #include <time.h>
 #include <string>
 #include <vector>
+#include <thread> 
+#include <chrono>
+
 using namespace std;
+using namespace std::chrono;
 
 class App
 {

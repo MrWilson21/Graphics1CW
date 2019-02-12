@@ -22,17 +22,22 @@ class Player
 
 	private:
 		void getMovementUpdates();
+		void groundMovementUpdate();
+		void airMovementUpdate();
+		void groundMove();
+		void airMove();
 		void getCollisionUpdates(std::vector<StaticBlock> staticBlocks);
 
 		void calculateColliderBox();
 
-		void changeToWalkingState();
+		void changeToWalkingState( );
 		void changeToRunningState();
 		void changeToIdleState();
 		void changeToJumpingState();
 		void resetStates();
 
 		void displayWalking();
+		void displayJumping();
 		void displayIdle();
 		void incrementSpriteCounter();
 
@@ -41,6 +46,9 @@ class Player
 		float walkingAcceleration;
 		float deccelerationFactor;
 		float gravity;
+		float airAcceleration;
+		float airDeccelerationFactor;
+		float maxAirVelocityX;
 
 		float xMoveThisFrame;
 		float yMoveThisFrame;
@@ -57,16 +65,24 @@ class Player
 		int maxSprites;
 		GLuint walkingTextures[12];
 		GLuint idleTextures[18];
+		GLuint jumpingTextures[9];
 
 		float timeSinceFrameChange;
 		float timeSinceIdleAnimation;
 		float timeToWaitUntilIdleAnimation;
 		float timeToWaitForNextIdleFrame;
 		float timeToWaitForNextWalkingFrame;
+		float timeToWaitForNextJumpingFrame;
+
+		float timeSinceNotTouchingGround;
+		float timeUntilChangeToJump;
+		bool jumpLanding;
 
 		float scaleFactor;
 		float walkingHeight;
 		float walkingWidth;
 		float idleHeight;
 		float idleWidth;
+		float jumpingWidth;
+		float jumpingHeight;
 };

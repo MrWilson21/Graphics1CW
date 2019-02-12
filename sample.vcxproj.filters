@@ -28,11 +28,11 @@
     <Filter Include="Resource Files\blocks">
       <UniqueIdentifier>{9e405aff-ad7b-402c-ad1c-9799c951805e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\shaggy\jump">
+      <UniqueIdentifier>{17448644-2e49-49db-804b-ff786d811e8e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Game1.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Player.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -40,6 +40,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="StaticBlock.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -150,6 +153,33 @@
     </Image>
     <Image Include="blocks\0.png">
       <Filter>Resource Files\blocks</Filter>
+    </Image>
+    <Image Include="shaggy\jump\0.png">
+      <Filter>Resource Files\shaggy\jump</Filter>
+    </Image>
+    <Image Include="shaggy\jump\1.png">
+      <Filter>Resource Files\shaggy\jump</Filter>
+    </Image>
+    <Image Include="shaggy\jump\2.png">
+      <Filter>Resource Files\shaggy\jump</Filter>
+    </Image>
+    <Image Include="shaggy\jump\3.png">
+      <Filter>Resource Files\shaggy\jump</Filter>
+    </Image>
+    <Image Include="shaggy\jump\4.png">
+      <Filter>Resource Files\shaggy\jump</Filter>
+    </Image>
+    <Image Include="shaggy\jump\5.png">
+      <Filter>Resource Files\shaggy\jump</Filter>
+    </Image>
+    <Image Include="shaggy\jump\6.png">
+      <Filter>Resource Files\shaggy\jump</Filter>
+    </Image>
+    <Image Include="shaggy\jump\7.png">
+      <Filter>Resource Files\shaggy\jump</Filter>
+    </Image>
+    <Image Include="shaggy\jump\8.png">
+      <Filter>Resource Files\shaggy\jump</Filter>
     </Image>
   </ItemGroup>
   <ItemGroup>

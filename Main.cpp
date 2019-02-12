@@ -6,7 +6,7 @@ int	mouse_x=0, mouse_y=0;
 bool LeftPressed = false;
 int screenWidth=480, screenHeight=480;
 
-clock_t startTime;
+steady_clock::time_point totalFrameTime = steady_clock::now();
 
 Player player = Player(300, 300, 3);
 std::vector<StaticBlock> staticBlocks;
@@ -114,7 +114,7 @@ int WINAPI WinMain(	HINSTANCE	hInstance,			// Instance
 
 	while(!done)									// Loop That Runs While done=FALSE
 	{
-		startTime = clock();
+		totalFrameTime = steady_clock::now();
 		if (PeekMessage(&msg,NULL,0,0,PM_REMOVE))	// Is There A Message Waiting?
 		{
 			if (msg.message==WM_QUIT)				// Have We Received A Quit Message?
@@ -136,7 +136,7 @@ int WINAPI WinMain(	HINSTANCE	hInstance,			// Instance
 			update();					// update variables
 			SwapBuffers(hDC);				// Swap Buffers (Double Buffering)
 		}
-		App::deltaTime = float(clock() - startTime) / CLOCKS_PER_SEC;
+		App::deltaTime = double(duration_cast<duration<double>>(steady_clock::now() - totalFrameTime).count());
 	}
 
 	// Shutdown
