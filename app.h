@@ -15,10 +15,12 @@ class App
 	public:
 		static bool keys[256];
 		static const double degToRad;
+		static bool shouldDrawBoundingBoxes;
 
 		static double deltaTime;
 
 		static GLuint loadPNG(char* name);
+		static void displayBoundingBox(float x1, float y1, float x2, float y2);
 };
 
 

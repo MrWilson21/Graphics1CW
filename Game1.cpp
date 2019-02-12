@@ -8,7 +8,7 @@ int screenWidth=480, screenHeight=480;
 
 clock_t startTime;
 
-Player player = Player(300, 100, 3);
+Player player = Player(300, 300, 3);
 std::vector<StaticBlock> staticBlocks;
 
 //OPENGL FUNCTION PROTOTYPES
@@ -66,7 +66,12 @@ void init()
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glClearColor(0.0, 0.0, 0.0, 0.0);						
 	player.loadSprites();
-	staticBlocks.push_back(StaticBlock(100, 100, 200, 200, "blocks/0.png"));
+	staticBlocks.push_back(StaticBlock(0, 0, 200, 200, "blocks/0.png"));
+	staticBlocks.push_back(StaticBlock(200, 0, 200, 400, "blocks/0.png"));
+	staticBlocks.push_back(StaticBlock(400, 0, 200, 200, "blocks/0.png"));
+	staticBlocks.push_back(StaticBlock(600, 600, 200, 200, "blocks/0.png"));
+	staticBlocks.push_back(StaticBlock(800, 0, 200, 200, "blocks/0.png"));
+	staticBlocks.push_back(StaticBlock(1000, 0, 200, 400, "blocks/0.png"));
 }
 void update()
 {

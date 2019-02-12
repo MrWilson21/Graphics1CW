@@ -3,6 +3,7 @@
 bool App::keys[256];
 const double App::degToRad = 3.14159265359 / 180.0;
 double App::deltaTime = 0.0;
+bool App::shouldDrawBoundingBoxes = true;
 
 GLuint App::loadPNG(char* name)
 {
@@ -29,4 +30,18 @@ GLuint App::loadPNG(char* name)
 		MessageBox(NULL, "Failed to load texture", "End of the world", MB_OK | MB_ICONINFORMATION);
 
 	return myTextureID;
+}
+
+void App::displayBoundingBox(float x1, float y1, float x2, float y2)
+{
+	if (App::shouldDrawBoundingBoxes)
+	{
+		glBegin(GL_LINE_STRIP);
+		glVertex2f(x1, y2);
+		glVertex2f(x2, y2);
+		glVertex2f(x2, y1);
+		glVertex2f(x1, y1);
+		glVertex2f(x1, y2);
+		glEnd();
+	}
 }

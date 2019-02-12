@@ -9,8 +9,11 @@ class Player
 		float velocityY;
 		float x;
 		float y;
-		float width;
-		float height;
+
+		float colliderX;
+		float colliderY;
+		float colliderWidth;
+		float colliderHeight;
 
 		Player(float startX, float startY, float scale);
 		void updatePlayer(std::vector<StaticBlock> staticBlocks);
@@ -20,7 +23,8 @@ class Player
 	private:
 		void getMovementUpdates();
 		void getCollisionUpdates(std::vector<StaticBlock> staticBlocks);
-		void sideWaysBlockCollisions(std::vector<StaticBlock> staticBlocks);
+
+		void calculateColliderBox();
 
 		void changeToWalkingState();
 		void changeToRunningState();
@@ -32,9 +36,14 @@ class Player
 		void displayIdle();
 		void incrementSpriteCounter();
 
-		float maxSpeed;
+		float maxVelocityX;
+		float maxVeloctyY;
 		float walkingAcceleration;
 		float deccelerationFactor;
+		float gravity;
+
+		float xMoveThisFrame;
+		float yMoveThisFrame;
 		
 		int xReflectFactor;
 		bool facingLeft;

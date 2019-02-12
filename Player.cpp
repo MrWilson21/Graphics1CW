@@ -7,9 +7,11 @@ Player::Player(float startX, float startY, float scale)
 	x = startX;
 	y = startY;
 
-	maxSpeed = 200.0;
+	maxVelocityX = 200.0;
+	maxVeloctyY = 500.0;
 	walkingAcceleration = 1500.0;
 	deccelerationFactor = 1000.0;
+	gravity = 500.0;
 	
 	xReflectFactor = 0;
 	facingLeft = false;
@@ -29,13 +31,41 @@ Player::Player(float startX, float startY, float scale)
 	timeToWaitUntilIdleAnimation = 3.0;
 	timeToWaitForNextIdleFrame = 0.03;
 
+	//Scale player size up or down
 	scaleFactor = scale;
+
+	//Display sizes for different player models
 	walkingHeight = 68.0 * scaleFactor;
 	walkingWidth = 44.0 * scaleFactor;
 	idleHeight = 75.0 * scaleFactor;
 	idleWidth = 36.0 * scaleFactor;
-	height = idleHeight;
-	width = idleWidth;
+
+	calculateColliderBox();
+}
+
+//Sizes for player collider box
+//Collider sizes can be different to display size and can also be position offset
+//x and y change position of bottom left corner of box
+//Height and width change size of box
+void Player::calculateColliderBox()
+{
+	if (isWalking || isIdle)
+	{
+		if (facingLeft)
+		{
+			colliderX = 6 * scaleFactor;
+			colliderY = 0;
+			colliderHeight = 65 * scaleFactor;
+			colliderWidth = 30 * scaleFactor;
+		}
+		else
+		{
+			colliderX = 0;
+			colliderY = 0;
+			colliderHeight = 65 * scaleFactor;
+			colliderWidth = 30 * scaleFactor;
+		}
+	}
 }
 
 void Player::incrementSpriteCounter()
@@ -94,6 +124,10 @@ void Player::updatePlayer(std::vector<StaticBlock> staticBlocks)
 {
 	//Get player input and change shaggys position and orientation
 	getMovementUpdates();
+
+	//GetShape of collider box for this frame
+	calculateColliderBox();
+
 	//After shaggy is moved calculate collisions and make adjustments before rendering frame
 	getCollisionUpdates(staticBlocks);
 
@@ -113,18 +147,26 @@ void Player::getMovementUpdates()
 	{
 		velocityX -= walkingAcceleration * App::deltaTime;
 		changeToWalkingState();
-		if (velocityX < -maxSpeed)
+		if (velocityX < -maxVelocityX)
 		{
-			velocityX = -maxSpeed;
+			velocityX = -maxVelocityX;
 		}
 	}
 	else if (App::keys[VK_RIGHT])
 	{
 		velocityX += walkingAcceleration * App::deltaTime;
 		changeToWalkingState();
-		if (velocityX > maxSpeed)
+		if (velocityX > maxVelocityX)
 		{
-			velocityX = maxSpeed;
+			velocityX = maxVelocityX;
+		}
+	}
+
+	if (App::keys[VK_SPACE])
+	{
+		if (isIdle || isWalking)
+		{
+			changeToJumpingState();
 		}
 	}
 	//If movement keys are not pressed then begin to deccelerate
@@ -145,6 +187,8 @@ void Player::getMovementUpdates()
 		}
 	}
 
+	velocityY -= gravity * App::deltaTime;
+
 	//Check direction that player is moving and face shaggy in the correct position
 	if (velocityX < 0)
 	{
@@ -157,38 +201,77 @@ void Player::getMovementUpdates()
 		xReflectFactor = 0;
 	}
 
-	x += velocityX * App::deltaTime;
+	xMoveThisFrame = velocityX * App::deltaTime;
+	yMoveThisFrame = velocityY * App::deltaTime;
+	
+	x += xMoveThisFrame;
+	y += yMoveThisFrame;
+
 	incrementSpriteCounter();
 }
 
 void Player::getCollisionUpdates(std::vector<StaticBlock> staticBlocks)
 {
-	sideWaysBlockCollisions(staticBlocks);
-}
-
-void Player::sideWaysBlockCollisions(std::vector<StaticBlock> staticBlocks)
-{
 	for (StaticBlock block : staticBlocks)
 	{
-		if (x < block.x2 &&
-			x+width > block.x1 &&
-			y < block.y2 &&
-			y + height > block.y1)
+		if (x + colliderX < block.width + block.x &&
+			x + colliderX + colliderWidth > block.x &&
+			y + colliderY < block.height + block.y &&
+			y + colliderY + colliderHeight > block.y)
 		{
-			if (velocityX > 0.0)
+			//Find closest edge and place player outside that edge
+			//Set velocity of y to 0 if horizontal edge found and x to 0 if vertical edge found
+			float playerRightSide = x + colliderX + colliderWidth;
+			float playerLeftSide = x + colliderX;
+			float playerTopSide = y + colliderY + colliderHeight;
+			float playerBottomSide = y + colliderY;
+			
+			//Get distance away from each side
+			//Biggest distance would have the shortest travel to end the collision
+			float distToRight = block.x + block.width - playerLeftSide + xMoveThisFrame;
+			float distToLeft = playerRightSide - block.x - xMoveThisFrame;
+			float distToTop = block.y + block.height - playerBottomSide + yMoveThisFrame;
+			float distToBottom = playerTopSide - block.y - yMoveThisFrame;
+			
+			//Choose the shortest travel and move player outside of collider
+			if (distToRight < distToLeft &&
+				distToRight < distToTop &&
+				distToRight < distToBottom )
 			{
-				if (x + width - velocityX < block.x1)
+				x = block.x + block.width - colliderX;
+				if (velocityX < 0.0)
 				{
 					velocityX = 0.0;
-					x = block.x1 - width;
 				}
 			}
-			else if (velocityX < 0.0)
+			else if (distToLeft < distToRight &&
+				distToLeft < distToTop &&
+				distToLeft < distToBottom)
 			{
-				if (x + velocityX > block.x2)
+				cout << "left  " << distToLeft << "  " << distToTop << "\n";
+				x = block.x - colliderWidth - colliderX;
+				if (velocityX > 0.0)
 				{
 					velocityX = 0.0;
-					x = block.x2;
+				}
+			}
+			else if (distToBottom < distToLeft &&
+				distToBottom < distToTop &&
+				distToBottom < distToRight)
+			{
+				y = block.y - colliderHeight - colliderY;
+				if (velocityY > 0.0)
+				{
+					velocityY = 0.0;
+				}
+			}
+			//If player is shortest to top or perfectly in the middle of object then push out to the top
+			else
+			{
+				y = block.y + block.height - colliderY;
+				if (velocityY < 0.0)
+				{
+					velocityY = 0.0;
 				}
 			}
 		}
@@ -202,8 +285,6 @@ void Player::changeToWalkingState()
 		resetStates();
 		maxSprites = 12;
 		isWalking = true;
-		height = walkingHeight;
-		width = walkingWidth;
 	}
 }
 void Player::changeToRunningState()
@@ -219,13 +300,17 @@ void Player::changeToIdleState()
 		velocityX = 0;
 		timeSinceIdleAnimation = 0.0;
 		isIdle = true;
-		height = idleHeight;
-		width = idleWidth;
 	}
 }
 void Player::changeToJumpingState()
 {
-
+	if (!isJumping)
+	{
+		resetStates();
+		maxSprites = 18;
+		velocityY = 500;
+		isJumping = true;
+	}
 }
 void Player::resetStates()
 {
@@ -249,8 +334,9 @@ void Player::displayWalking()
 	glTexCoord2f(1 - xReflectFactor, 0); glVertex2f(walkingWidth, 0);
 	glTexCoord2f(0 + xReflectFactor, 0); glVertex2f(0, 0);
 	glEnd();
-	glPopMatrix();
 	glDisable(GL_TEXTURE_2D);
+	App::displayBoundingBox(colliderX, colliderY, colliderX + colliderWidth, colliderY + colliderHeight);
+	glPopMatrix();
 }
 
 void Player::displayIdle()
@@ -266,8 +352,9 @@ void Player::displayIdle()
 	glTexCoord2f(1 - xReflectFactor, 0); glVertex2f(idleWidth, 0);
 	glTexCoord2f(0 + xReflectFactor, 0); glVertex2f(0, 0);
 	glEnd();
-	glPopMatrix();
 	glDisable(GL_TEXTURE_2D);
+	App::displayBoundingBox(colliderX, colliderY, colliderX + colliderWidth, colliderY + colliderHeight);
+	glPopMatrix();
 }
 
 void Player::displayPlayer()
