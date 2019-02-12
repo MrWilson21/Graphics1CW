@@ -1,5 +1,6 @@
 #include "app.h"
-#include "Player.h"
+#include "player.h"
+#include "staticBlock.h"
 
 int	mouse_x=0, mouse_y=0;
 bool LeftPressed = false;
@@ -7,7 +8,8 @@ int screenWidth=480, screenHeight=480;
 
 clock_t startTime;
 
-Player player;
+Player player = Player(300, 100, 3);
+std::vector<StaticBlock> staticBlocks;
 
 //OPENGL FUNCTION PROTOTYPES
 void display();				//called in winmain to draw everything to the screen
@@ -33,6 +35,11 @@ void display()
 	glEnd();
 	glPointSize(1.0f);
 
+	for (StaticBlock block : staticBlocks)
+	{
+		block.display();
+	}
+
 	player.displayPlayer();
 
 	glFlush();
@@ -57,12 +64,13 @@ void init()
 {
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glClearColor(0.0, 0.0, 0.0, 0.0);						//sets the clear colour to yellow
+	glClearColor(0.0, 0.0, 0.0, 0.0);						
 	player.loadSprites();
+	staticBlocks.push_back(StaticBlock(100, 100, 200, 200, "blocks/0.png"));
 }
 void update()
 {
-	player.updatePlayer();
+	player.updatePlayer(staticBlocks);
 }
 /**************** END OPENGL FUNCTIONS *************************/
 

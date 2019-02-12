@@ -1,19 +1,26 @@
 #pragma once
 #include "app.h"
+#include "staticBlock.h"
 
 class Player
 {
 	public:
-		float speed;
+		float velocityX;
 		float x;
 		float y;
+		float width;
+		float height;
 
-		Player();
-		void updatePlayer();
+		Player(float startX, float startY, float scale);
+		void updatePlayer(std::vector<StaticBlock> staticBlocks);
 		void displayPlayer();
 		void loadSprites();
 
 	private:
+		void getMovementUpdates();
+		void getCollisionUpdates(std::vector<StaticBlock> staticBlocks);
+		void sideWaysBlockCollisions(std::vector<StaticBlock> staticBlocks);
+
 		void changeToWalkingState();
 		void changeToRunningState();
 		void changeToIdleState();

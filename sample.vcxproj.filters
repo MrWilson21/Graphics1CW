@@ -22,6 +22,12 @@
     <Filter Include="Resource Files\shaggy\idle">
       <UniqueIdentifier>{ece7c5f3-807e-4db4-8da1-f16fecea88b6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\dllFiles">
+      <UniqueIdentifier>{a34f305b-cf82-47eb-8d7f-97894a3ccde3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\blocks">
+      <UniqueIdentifier>{9e405aff-ad7b-402c-ad1c-9799c951805e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Game1.cpp">
@@ -33,6 +39,9 @@
     <ClCompile Include="App.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="StaticBlock.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Image_Loading\nvImage.h">
@@ -41,14 +50,14 @@
     <ClInclude Include="app.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Player.h">
+    <ClInclude Include="staticBlock.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="player.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="Picture1.png">
-      <Filter>Resource Files</Filter>
-    </Image>
     <Image Include="shaggy\walking\0.png">
       <Filter>Resource Files\shaggy\walking</Filter>
     </Image>
@@ -139,5 +148,23 @@
     <Image Include="shaggy\idle\16.png">
       <Filter>Resource Files\shaggy\idle</Filter>
     </Image>
+    <Image Include="blocks\0.png">
+      <Filter>Resource Files\blocks</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="README.md" />
+    <None Include="nvImage.dll">
+      <Filter>Resource Files\dllFiles</Filter>
+    </None>
+    <None Include="glew32.dll">
+      <Filter>Resource Files\dllFiles</Filter>
+    </None>
+    <None Include="libpng13.dll">
+      <Filter>Resource Files\dllFiles</Filter>
+    </None>
+    <None Include="zlib1.dll">
+      <Filter>Resource Files\dllFiles</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -14,14 +14,16 @@
     <ClCompile Include="App.cpp" />
     <ClCompile Include="Game1.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="StaticBlock.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="app.h" />
     <ClInclude Include="Image_Loading\nvImage.h" />
-    <ClInclude Include="Player.h" />
+    <ClInclude Include="player.h" />
+    <ClInclude Include="staticBlock.h" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="Picture1.png" />
+    <Image Include="blocks\0.png" />
     <Image Include="shaggy\idle\0.png" />
     <Image Include="shaggy\idle\1.png" />
     <Image Include="shaggy\idle\10.png" />
@@ -53,11 +55,18 @@
     <Image Include="shaggy\walking\8.png" />
     <Image Include="shaggy\walking\9.png" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="glew32.dll" />
+    <None Include="libpng13.dll" />
+    <None Include="nvImage.dll" />
+    <None Include="README.md" />
+    <None Include="zlib1.dll" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{797EB91C-0B55-4A4C-A841-E660F49877DD}</ProjectGuid>
     <RootNamespace>sample</RootNamespace>
     <Keyword>Win32Proj</Keyword>
-    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
     <ProjectName>Game1</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />

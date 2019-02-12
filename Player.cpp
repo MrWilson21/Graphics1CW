@@ -1,10 +1,10 @@
-#include "Player.h"
+#include "player.h"
 
-Player::Player()
+Player::Player(float startX, float startY, float scale)
 {
-	speed = 0.0;
-	x = 200.0;
-	y = 200.0;
+	velocityX = 0.0;
+	x = startX;
+	y = startY;
 
 	maxSpeed = 200.0;
 	walkingAcceleration = 1500.0;
@@ -28,11 +28,13 @@ Player::Player()
 	timeToWaitUntilIdleAnimation = 3.0;
 	timeToWaitForNextIdleFrame = 0.03;
 
-	scaleFactor = 3;
+	scaleFactor = scale;
 	walkingHeight = 68.0 * scaleFactor;
 	walkingWidth = 44.0 * scaleFactor;
 	idleHeight = 75.0 * scaleFactor;
 	idleWidth = 36.0 * scaleFactor;
+	height = idleHeight;
+	width = idleWidth;
 }
 
 void Player::incrementSpriteCounter()
@@ -66,7 +68,7 @@ void Player::incrementSpriteCounter()
 			currentSprite = (currentSprite + 1) % maxSprites;
 			timeSinceFrameChange = 0.0;
 		}
-		timeSinceFrameChange += abs(speed) * App::deltaTime;
+		timeSinceFrameChange += abs(velocityX) * App::deltaTime;
 	}
 }
 
@@ -87,37 +89,46 @@ void Player::loadSprites()
 	}
 }
 
-void Player::updatePlayer()
+void Player::updatePlayer(std::vector<StaticBlock> staticBlocks)
+{
+	//Get player input and change shaggys position and orientation
+	getMovementUpdates();
+	//After shaggy is moved calculate collisions and make adjustments before rendering frame
+	getCollisionUpdates(staticBlocks);
+}
+
+//Get player input and move shaggy based on current state and inputs given
+void Player::getMovementUpdates()
 {
 	if (App::keys[VK_LEFT])
 	{
-		speed -= walkingAcceleration * App::deltaTime;
+		velocityX -= walkingAcceleration * App::deltaTime;
 		changeToWalkingState();
-		if (speed < -maxSpeed)
+		if (velocityX < -maxSpeed)
 		{
-			speed = -maxSpeed;
+			velocityX = -maxSpeed;
 		}
 	}
 	else if (App::keys[VK_RIGHT])
 	{
-		speed += walkingAcceleration * App::deltaTime;
+		velocityX += walkingAcceleration * App::deltaTime;
 		changeToWalkingState();
-		if (speed > maxSpeed)
+		if (velocityX > maxSpeed)
 		{
-			speed = maxSpeed;
+			velocityX = maxSpeed;
 		}
 	}
 	//If movement keys are not pressed then begin to deccelerate
 	//If speed is less than total acceleration for a frame then set speed to 0
-	else 
+	else
 	{
-		if (speed > deccelerationFactor  * App::deltaTime)
+		if (velocityX > deccelerationFactor  * App::deltaTime)
 		{
-			speed -= deccelerationFactor * App::deltaTime;
+			velocityX -= deccelerationFactor * App::deltaTime;
 		}
-		else if (speed < -deccelerationFactor * App::deltaTime)
+		else if (velocityX < -deccelerationFactor * App::deltaTime)
 		{
-			speed += deccelerationFactor * App::deltaTime;
+			velocityX += deccelerationFactor * App::deltaTime;
 		}
 		else
 		{
@@ -126,12 +137,12 @@ void Player::updatePlayer()
 	}
 
 	//Check direction that player is moving and face shaggy in the correct position
-	if (speed < 0)
+	if (velocityX < 0)
 	{
 		facingLeft = true;
 		xReflectFactor = 1;
 	}
-	else if (speed > 0)
+	else if (velocityX > 0)
 	{
 		facingLeft = false;
 		xReflectFactor = 0;
@@ -140,21 +151,32 @@ void Player::updatePlayer()
 	//Check if player is not moving and change to idle
 	//Final check done in case player is walking into wall
 	//give shaggy an idle state so it doesnt look like he is running on the spot into a wall
-	if (speed == 0)
+	if (velocityX == 0)
 	{
 		changeToIdleState();
 	}
 
-	//Update sprite frames
-	/*timeSinceFrameChange += App::deltaTime;
-	if (timeSinceFrameChange > timeBetweenFrameChanges)
-	{
-		timeSinceFrameChange = 0.0;
-		currentSprite = (currentSprite + 1) % maxSprites;
-	}
-	cout << App::degToRad << "\n";*/
-	x += speed * App::deltaTime;
+	x += velocityX * App::deltaTime;
 	incrementSpriteCounter();
+}
+
+void Player::getCollisionUpdates(std::vector<StaticBlock> staticBlocks)
+{
+	sideWaysBlockCollisions(staticBlocks);
+}
+
+void Player::sideWaysBlockCollisions(std::vector<StaticBlock> staticBlocks)
+{
+	for (StaticBlock block : staticBlocks)
+	{
+		//if (xMinA < xMaxB &&
+		//	xMaxA > xMinB &&
+		//	yMinA < yMaxB &&
+		//	yMaxA > yMinB)
+		//{
+			//bounding boxes overlap
+		//}
+	}
 }
 
 void Player::changeToWalkingState()
@@ -164,6 +186,8 @@ void Player::changeToWalkingState()
 		resetStates();
 		maxSprites = 12;
 		isWalking = true;
+		height = walkingHeight;
+		width = walkingWidth;
 	}
 }
 void Player::changeToRunningState()
@@ -176,9 +200,11 @@ void Player::changeToIdleState()
 	{
 		resetStates();
 		maxSprites = 18;
-		speed = 0;
+		velocityX = 0;
 		timeSinceIdleAnimation = 0.0;
 		isIdle = true;
+		height = idleHeight;
+		width = idleWidth;
 	}
 }
 void Player::changeToJumpingState()

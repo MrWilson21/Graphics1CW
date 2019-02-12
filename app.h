@@ -7,6 +7,7 @@
 #include <gl\glu.h>			// Header file for the GLu32 Library
 #include <time.h>
 #include <string>
+#include <vector>
 using namespace std;
 
 class App
