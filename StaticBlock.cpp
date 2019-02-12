@@ -24,6 +24,7 @@ void StaticBlock::display()
 	glTexCoord2f(1, 0); glVertex2f(x2, 0);
 	glTexCoord2f(0, 0); glVertex2f(0, 0);
 	glEnd();
+	glDisable(GL_TEXTURE_2D);
 	glPopMatrix();
 	glDisable(GL_TEXTURE_2D);
 }

@@ -6,6 +6,7 @@ class Player
 {
 	public:
 		float velocityX;
+		float velocityY;
 		float x;
 		float y;
 		float width;

@@ -3,6 +3,7 @@
 Player::Player(float startX, float startY, float scale)
 {
 	velocityX = 0.0;
+	velocityY = 0.0;
 	x = startX;
 	y = startY;
 
@@ -95,6 +96,14 @@ void Player::updatePlayer(std::vector<StaticBlock> staticBlocks)
 	getMovementUpdates();
 	//After shaggy is moved calculate collisions and make adjustments before rendering frame
 	getCollisionUpdates(staticBlocks);
+
+	//Check if player is not moving and change to idle
+	//Final check done in case player is walking into wall
+	//give shaggy an idle state so it doesnt look like he is running on the spot into a wall
+	if (velocityX == 0 && velocityY == 0)
+	{
+		changeToIdleState();
+	}
 }
 
 //Get player input and move shaggy based on current state and inputs given
@@ -148,14 +157,6 @@ void Player::getMovementUpdates()
 		xReflectFactor = 0;
 	}
 
-	//Check if player is not moving and change to idle
-	//Final check done in case player is walking into wall
-	//give shaggy an idle state so it doesnt look like he is running on the spot into a wall
-	if (velocityX == 0)
-	{
-		changeToIdleState();
-	}
-
 	x += velocityX * App::deltaTime;
 	incrementSpriteCounter();
 }
@@ -169,13 +170,28 @@ void Player::sideWaysBlockCollisions(std::vector<StaticBlock> staticBlocks)
 {
 	for (StaticBlock block : staticBlocks)
 	{
-		//if (xMinA < xMaxB &&
-		//	xMaxA > xMinB &&
-		//	yMinA < yMaxB &&
-		//	yMaxA > yMinB)
-		//{
-			//bounding boxes overlap
-		//}
+		if (x < block.x2 &&
+			x+width > block.x1 &&
+			y < block.y2 &&
+			y + height > block.y1)
+		{
+			if (velocityX > 0.0)
+			{
+				if (x + width - velocityX < block.x1)
+				{
+					velocityX = 0.0;
+					x = block.x1 - width;
+				}
+			}
+			else if (velocityX < 0.0)
+			{
+				if (x + velocityX > block.x2)
+				{
+					velocityX = 0.0;
+					x = block.x2;
+				}
+			}
+		}
 	}
 }
 
