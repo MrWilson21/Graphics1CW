@@ -11,6 +11,6 @@ public:
 
 	GLuint texture;
 
-	StaticBlock(float x1, float y1, float x2, float y2, string sprite);
+	StaticBlock(float x1, float y1, float width, float height, string sprite);
 	void display();
 };

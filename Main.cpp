@@ -1,6 +1,7 @@
 #include "app.h"
 #include "player.h"
 #include "staticBlock.h"
+#include "world.h"
 
 int	mouse_x=0, mouse_y=0;
 bool LeftPressed = false;
@@ -12,6 +13,8 @@ steady_clock::time_point totalFrameTime = steady_clock::now();
 
 Player player = Player(50, 50, 0.2);
 std::vector<StaticBlock> staticBlocks;
+
+World world = World();
 
 //OPENGL FUNCTION PROTOTYPES
 void display();				//called in winmain to draw everything to the screen
@@ -27,12 +30,6 @@ void display()
 	glClear(GL_COLOR_BUFFER_BIT);
 	
 	glLoadIdentity();
-	glColor3f(1.0, 0.0, 0.0);
-	glPointSize(10.0f);
-	glBegin(GL_POINTS);
-	glVertex2f(screenWidth / 2, screenHeight / 2);
-	glEnd();
-	glTranslatef(-player.x - player.colliderWidth / 2 + screenWidth / 2, -player.y - player.colliderHeight / 2 + screenHeight / 2, 0);
 	
 	if(LeftPressed)
 		glColor3f(1.0,0.0,0.0);
@@ -45,13 +42,9 @@ void display()
 	glEnd();
 	glPointSize(1.0f);
 
-	for (StaticBlock block : staticBlocks)
-	{
-		block.display();
-	}
-
-	player.displayPlayer();
-
+	world.moveCamera(screenWidth, screenHeight);
+	world.display();
+	
 	glFlush();
 }
 
@@ -87,20 +80,12 @@ void reshape(int width, int height)		// Resize the OpenGL window
 }
 void init()
 {
+	world.init();
 	glClearColor(0.0, 0.0, 0.0, 0.0);						
-	player.loadSprites();
-	staticBlocks.push_back(StaticBlock(0, 0, 10, 20, "blocks/0.png"));
-	staticBlocks.push_back(StaticBlock(10, 0, 30, 10, "blocks/0.png"));
-	staticBlocks.push_back(StaticBlock(40, 0, 10, 10, "blocks/0.png"));
-	staticBlocks.push_back(StaticBlock(50, 0, 10, 10, "blocks/0.png"));
-	staticBlocks.push_back(StaticBlock(60, 0, 10, 10, "blocks/0.png"));
-	staticBlocks.push_back(StaticBlock(70, 0, 10, 20, "blocks/0.png"));
-	staticBlocks.push_back(StaticBlock(40, 30, 10, 10, "blocks/0.png"));
-	staticBlocks.push_back(StaticBlock(60, 30, 10, 10, "blocks/0.png"));
 }
 void update()
 {
-	player.updatePlayer(staticBlocks);
+	world.update();
 }
 /**************** END OPENGL FUNCTIONS *************************/
 

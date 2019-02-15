@@ -23,7 +23,7 @@ Player::Player(float startX, float startY, float scale)
 	timeToWaitUntilIdleAnimation = 3.0;
 	timeToWaitForNextIdleFrame = 0.03;
 	timeToWaitForNextJumpingFrame = 0.07;
-	timeUntilChangeToJump = 0.03;
+	timeUntilChangeToJump = 0.01;
 
 	//Scale player size up or down
 	scaleFactor = scale;
@@ -415,13 +415,13 @@ void Player::getCollisionUpdates(std::vector<StaticBlock> staticBlocks)
 					velocityY = 0.0;
 				}
 				isTouchingGround = true;
+				timeSinceNotTouchingGround = 0.0;
 			}
 		}
 	}
 	if (!isTouchingGround && !isJumping)
 	{
 		//Short delay needed as some very short frames may not detect any collisions even if player is on a platform
-		//Delay also smoothes out animation slightly
 		timeSinceNotTouchingGround += App::deltaTime;
 		if (timeSinceNotTouchingGround > timeUntilChangeToJump)
 		{

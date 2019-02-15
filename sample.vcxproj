@@ -15,12 +15,14 @@
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="StaticBlock.cpp" />
+    <ClCompile Include="World.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="app.h" />
     <ClInclude Include="Image_Loading\nvImage.h" />
     <ClInclude Include="player.h" />
     <ClInclude Include="staticBlock.h" />
+    <ClInclude Include="world.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="blocks\0.png" />
