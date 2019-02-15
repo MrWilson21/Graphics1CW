@@ -2,42 +2,33 @@
 
 Player::Player(float startX, float startY, float scale)
 {
-	velocityX = 0.0;
-	velocityY = 0.0;
 	x = startX;
 	y = startY;
 
-	maxVelocityX = 200.0;
-	maxVeloctyY = 500.0;
-	walkingAcceleration = 1500.0;
-	deccelerationFactor = 1000.0;
-	gravity = 500.0;
-	airAcceleration = 400.0;
-	airDeccelerationFactor = 300.0;
-	maxAirVelocityX = 100.0;
+	maxVelocityX = 40.0;
+	maxVeloctyY = 150.0;
+	walkingAcceleration = 230.0;
+	deccelerationFactor = 170.0;
+	jumpSpeed = 70;
+	gravity = 160.0;
+	airAcceleration = 60.0;
+	airDeccelerationFactor = 40.0;
+	maxAirVelocityX = 30.0;
 	
-	xReflectFactor = 0;
-	facingLeft = false;
-
-	isJumping = false;
-	isRunning = false;
-	isWalking = false;
-	isIdle = false;
-
-	currentSprite = 0;
+	isIdle = true;
 	walkingTextures[12];
 	idleTextures[18];
 
 	timeToWaitForNextWalkingFrame = 10.0;
 	timeToWaitUntilIdleAnimation = 3.0;
 	timeToWaitForNextIdleFrame = 0.03;
-	timeToWaitForNextJumpingFrame = 0.1;
-	timeUntilChangeToJump = 0.1;
+	timeToWaitForNextJumpingFrame = 0.07;
+	timeUntilChangeToJump = 0.03;
 
 	//Scale player size up or down
 	scaleFactor = scale;
 
-	//Display sizes for different player models
+	//Display sizes for different player models, sizes based off of sprite image size
 	walkingHeight = 68.0 * scaleFactor;
 	walkingWidth = 44.0 * scaleFactor;
 	idleHeight = 75.0 * scaleFactor;
@@ -191,7 +182,8 @@ void Player::groundMovementUpdate()
 
 	if (App::keys[VK_SPACE])
 	{
-		velocityY = 500;
+		velocityY = jumpSpeed;
+		cout << velocityY << "\n";
 		changeToJumpingState();
 	}
 	else if (abs(velocityX) > 0)
@@ -303,7 +295,7 @@ void Player::groundMove()
 
 void Player::airMove()
 {
-	if (velocityX > maxAirVelocityX)
+	if (abs(velocityX) > maxAirVelocityX)
 	{
 		if (velocityX > airDeccelerationFactor  * App::deltaTime)
 		{
@@ -378,8 +370,8 @@ void Player::getCollisionUpdates(std::vector<StaticBlock> staticBlocks)
 			
 			//Get distance away from each side
 			//Biggest distance would have the shortest travel to end the collision
-			float distToRight = block.x + block.width - playerLeftSide + xMoveThisFrame;
-			float distToLeft = playerRightSide - block.x - xMoveThisFrame;
+			float distToRight = block.x + block.width - playerLeftSide;
+			float distToLeft = playerRightSide - block.x;
 			float distToTop = block.y + block.height - playerBottomSide + yMoveThisFrame;
 			float distToBottom = playerTopSide - block.y - yMoveThisFrame;
 			
@@ -462,7 +454,6 @@ void Player::changeToIdleState()
 	{
 		resetStates();
 		maxSprites = 18;
-		velocityX = 0;
 		timeSinceIdleAnimation = 0.0;
 		isIdle = true;
 	}

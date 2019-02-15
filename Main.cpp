@@ -4,11 +4,13 @@
 
 int	mouse_x=0, mouse_y=0;
 bool LeftPressed = false;
-int screenWidth=480, screenHeight=480;
+int screenWidthPixels=480, screenHeightPixels=480; //Window size in pixels
+float screenWidth = 100.0, screenHeight = 100.0; //Game uses these coordinates, on a square window coordinates will go from 0 to 100 on each axis
+double maxFrameTime = 0.05;	//Unusual object movement can occur if a frame takes too long to render so a max should be set
 
 steady_clock::time_point totalFrameTime = steady_clock::now();
 
-Player player = Player(300, 300, 3);
+Player player = Player(50, 50, 0.2);
 std::vector<StaticBlock> staticBlocks;
 
 //OPENGL FUNCTION PROTOTYPES
@@ -20,9 +22,17 @@ void update();				//called in winmain to update variables
 /*************    START OF OPENGL FUNCTIONS   ****************/
 void display()									
 {
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glClear(GL_COLOR_BUFFER_BIT);
 	
 	glLoadIdentity();
+	glColor3f(1.0, 0.0, 0.0);
+	glPointSize(10.0f);
+	glBegin(GL_POINTS);
+	glVertex2f(screenWidth / 2, screenHeight / 2);
+	glEnd();
+	glTranslatef(-player.x - player.colliderWidth / 2 + screenWidth / 2, -player.y - player.colliderHeight / 2 + screenHeight / 2, 0);
 	
 	if(LeftPressed)
 		glColor3f(1.0,0.0,0.0);
@@ -47,10 +57,25 @@ void display()
 
 void reshape(int width, int height)		// Resize the OpenGL window
 {
-	screenWidth=width; screenHeight = height;           // to ensure the mouse coordinates match 
-														// we will use these values to set the coordinate system
-
-	glViewport(0,0,width,height);						// Reset the current viewport
+	screenWidthPixels=width; screenHeightPixels = height;           // to ensure the mouse coordinates match 
+																	// we will use these values to set the coordinate system
+	if ((float)width / (float)height > 1.0)
+	{
+		screenHeight = 100.0;
+		screenWidth = 100.0 * (float)width / (float)height;
+	}
+	else if ((float)height / (float)width > 1)
+	{
+		screenWidth = 100.0;
+		screenHeight = 100.0 * (float)height / (float)width;
+	}
+	else
+	{
+		screenHeight = 100.0;
+		screenWidth = 100.0;
+	}
+	
+	glViewport(0,0,width, height);						// Reset the current viewport
 
 	glMatrixMode(GL_PROJECTION);						// select the projection matrix stack
 	glLoadIdentity();									// reset the top of the projection matrix to an identity matrix
@@ -62,16 +87,16 @@ void reshape(int width, int height)		// Resize the OpenGL window
 }
 void init()
 {
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glClearColor(0.0, 0.0, 0.0, 0.0);						
 	player.loadSprites();
-	staticBlocks.push_back(StaticBlock(0, 0, 200, 200, "blocks/0.png"));
-	staticBlocks.push_back(StaticBlock(200, 0, 200, 400, "blocks/0.png"));
-	staticBlocks.push_back(StaticBlock(400, 0, 200, 200, "blocks/0.png"));
-	staticBlocks.push_back(StaticBlock(600, 600, 200, 200, "blocks/0.png"));
-	staticBlocks.push_back(StaticBlock(800, 0, 200, 200, "blocks/0.png"));
-	staticBlocks.push_back(StaticBlock(1000, 0, 200, 400, "blocks/0.png"));
+	staticBlocks.push_back(StaticBlock(0, 0, 10, 20, "blocks/0.png"));
+	staticBlocks.push_back(StaticBlock(10, 0, 30, 10, "blocks/0.png"));
+	staticBlocks.push_back(StaticBlock(40, 0, 10, 10, "blocks/0.png"));
+	staticBlocks.push_back(StaticBlock(50, 0, 10, 10, "blocks/0.png"));
+	staticBlocks.push_back(StaticBlock(60, 0, 10, 10, "blocks/0.png"));
+	staticBlocks.push_back(StaticBlock(70, 0, 10, 20, "blocks/0.png"));
+	staticBlocks.push_back(StaticBlock(40, 30, 10, 10, "blocks/0.png"));
+	staticBlocks.push_back(StaticBlock(60, 30, 10, 10, "blocks/0.png"));
 }
 void update()
 {
@@ -107,7 +132,7 @@ int WINAPI WinMain(	HINSTANCE	hInstance,			// Instance
 	freopen_s(&stream, "CONOUT$", "w", stdout);
 	
 	// Create Our OpenGL Window
-	if (!CreateGLWindow("OpenGL Win32 Example",screenWidth,screenHeight))
+	if (!CreateGLWindow("OpenGL Win32 Example",screenWidthPixels,screenHeightPixels))
 	{
 		return 0;									// Quit If Window Was Not Created
 	}
@@ -137,6 +162,12 @@ int WINAPI WinMain(	HINSTANCE	hInstance,			// Instance
 			SwapBuffers(hDC);				// Swap Buffers (Double Buffering)
 		}
 		App::deltaTime = double(duration_cast<duration<double>>(steady_clock::now() - totalFrameTime).count());
+		
+		//Force delta time to be less than
+		if (App::deltaTime > maxFrameTime)
+		{
+			App::deltaTime = maxFrameTime;
+		}
 	}
 
 	// Shutdown
@@ -169,7 +200,7 @@ LRESULT CALLBACK WndProc(	HWND	hWnd,			// Handle For This Window
 		case WM_LBUTTONDOWN:
 			{
 	            mouse_x = LOWORD(lParam);          
-				mouse_y = screenHeight - HIWORD(lParam);
+				mouse_y = screenHeightPixels - HIWORD(lParam);
 				LeftPressed = true;
 			}
 		break;
@@ -183,7 +214,7 @@ LRESULT CALLBACK WndProc(	HWND	hWnd,			// Handle For This Window
 		case WM_MOUSEMOVE:
 			{
 	            mouse_x = LOWORD(lParam);          
-				mouse_y = screenHeight  - HIWORD(lParam);
+				mouse_y = screenHeightPixels  - HIWORD(lParam);
 			}
 		break;
 		case WM_KEYDOWN:							// Is A Key Being Held Down?

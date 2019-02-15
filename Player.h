@@ -45,6 +45,7 @@ class Player
 		float maxVeloctyY;
 		float walkingAcceleration;
 		float deccelerationFactor;
+		float jumpSpeed;
 		float gravity;
 		float airAcceleration;
 		float airDeccelerationFactor;
