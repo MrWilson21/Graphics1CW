@@ -65,10 +65,17 @@
     <Image Include="shaggy\walking\7.png" />
     <Image Include="shaggy\walking\8.png" />
     <Image Include="shaggy\walking\9.png" />
-    <Image Include="worldBackGround\front" />
-    <Image Include="worldBackGround\middle" />
-    <Image Include="worldBackGround\back" />
-    <Image Include="worldBackGround\static" />
+    <Image Include="worldBackGround\bushes.png" />
+    <Image Include="worldBackGround\clouds.png" />
+    <Image Include="worldBackGround\distantClouds.png" />
+    <Image Include="worldBackGround\distantClouds1.png" />
+    <Image Include="worldBackGround\distantTrees.png" />
+    <Image Include="worldBackGround\ground.png" />
+    <Image Include="worldBackGround\hill1.png" />
+    <Image Include="worldBackGround\hill2.png" />
+    <Image Include="worldBackGround\HugeClouds.png" />
+    <Image Include="worldBackGround\static.png" />
+    <Image Include="worldBackGround\treesAndBushes.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="glew32.dll" />

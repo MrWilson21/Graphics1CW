@@ -18,6 +18,7 @@ public:
 	std::vector<StaticBlock> staticBlocks;
 
 private:
+	void initBackGround();
 
 	float worldStartX = 0.0;
 	float worldStartY = 0.0;
@@ -29,29 +30,17 @@ private:
 	float playerCameraBoxRadiusX = 30;
 	float playerCameraBoxRadiusY = 40;
 
-	//Textures for parallax background
-	GLuint staticBackground;
-	GLuint backGroundFront;
-	GLuint backGroundMiddle;
-	GLuint backGroundBack;
+	struct BackGround {
+		bool isStatic;
+		GLuint texture;
+		//Speed the background scolls with the camera
+		float scrollSpeedX;
+		float scrollSpeedY;
+		float scale;
+		float aspectRatio;
+		//speed that the background scolls on its own (e.g. passing clouds)
+		float moveSpeedX;
+	};
 
-	//Scrollng speed of each background piece
-	float backGroundFrontSpeedX = 0.001;
-	float backGroundMiddleSpeedX;
-	float backGroundBackSpeedX;
-
-	float backGroundFrontSpeedY = 0.0005;
-	float backGroundMiddleSpeedY;
-	float backGroundBackSpeedY;
-
-	//Aspect ratio of each background
-	float backGroundStaticWidth = 272.0 / 104.0;
-	float backGroundFrontWidth;
-	float backGroundMiddleWidth;
-	float backGroundBackWidth;
-
-	//Scale of each backGround;
-	float backGroundFrontScale = 0.5;
-	float backGroundMiddleScale;
-	float backGroundBackScale;
+	BackGround paralaxBackGround[10];
 };
