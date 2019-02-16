@@ -25,17 +25,13 @@ void update();				//called in winmain to update variables
 /*************    START OF OPENGL FUNCTIONS   ****************/
 void display()									
 {
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glClear(GL_COLOR_BUFFER_BIT);
-	
 	glLoadIdentity();
 	
 	if(LeftPressed)
 		glColor3f(1.0,0.0,0.0);
 	else
 		glColor3f(1.0,1.0,1.0);
-
 	glPointSize(10.0f);
 	glBegin(GL_POINTS);
 	glVertex2i(mouse_x, mouse_y);
@@ -43,7 +39,13 @@ void display()
 	glPointSize(1.0f);
 
 	world.moveCamera(screenWidth, screenHeight);
+	world.displayBackground(screenWidth, screenHeight);
 	world.display();
+
+	if (App::displayBoundingBox)
+	{
+		world.displayPlayerCameraBox(screenWidth, screenHeight);
+	}
 	
 	glFlush();
 }
@@ -80,6 +82,8 @@ void reshape(int width, int height)		// Resize the OpenGL window
 }
 void init()
 {
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	world.init();
 	glClearColor(0.0, 0.0, 0.0, 0.0);						
 }

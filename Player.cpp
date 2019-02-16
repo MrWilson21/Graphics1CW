@@ -369,11 +369,10 @@ void Player::getCollisionUpdates(std::vector<StaticBlock> staticBlocks)
 			float playerBottomSide = y + colliderY;
 			
 			//Get distance away from each side
-			//Biggest distance would have the shortest travel to end the collision
 			float distToRight = block.x + block.width - playerLeftSide;
 			float distToLeft = playerRightSide - block.x;
-			float distToTop = block.y + block.height - playerBottomSide + yMoveThisFrame;
-			float distToBottom = playerTopSide - block.y - yMoveThisFrame;
+			float distToTop = block.y + block.height - playerBottomSide;
+			float distToBottom = playerTopSide - block.y;
 			
 			//Choose the shortest travel and move player outside of collider
 			if (distToRight < distToLeft &&

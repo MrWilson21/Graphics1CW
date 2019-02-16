@@ -12,8 +12,23 @@ void World::init()
 	cameraX = player.x + player.colliderWidth / 2;
 	cameraY = player.y + player.colliderHeight / 2;
 
+	staticBackground = App::loadPNG("worldBackGround/static.png");
+	backGroundFront = App::loadPNG("worldBackGround/front.png");
+	backGroundMiddle = App::loadPNG("worldBackGround/middle.png");
+	backGroundBack = App::loadPNG("worldBackGround/back.png");
+
 	staticBlocks.push_back(StaticBlock(100, 200, 110,10, "blocks/0.png"));
 	staticBlocks.push_back(StaticBlock(210, 200, 40, 10, "blocks/0.png"));
+
+	staticBlocks.push_back(StaticBlock(210, 210, 10, 10, "blocks/0.png"));
+	staticBlocks.push_back(StaticBlock(200, 220, 10, 10, "blocks/0.png"));
+	staticBlocks.push_back(StaticBlock(190, 230, 10, 10, "blocks/0.png"));
+	staticBlocks.push_back(StaticBlock(180, 240, 10, 10, "blocks/0.png"));
+	staticBlocks.push_back(StaticBlock(170, 250, 10, 10, "blocks/0.png"));
+	staticBlocks.push_back(StaticBlock(160, 260, 10, 10, "blocks/0.png"));
+	staticBlocks.push_back(StaticBlock(150, 270, 10, 10, "blocks/0.png"));
+	staticBlocks.push_back(StaticBlock(140, 280, 10, 10, "blocks/0.png"));
+	
 	staticBlocks.push_back(StaticBlock(250, 200, 40, 10, "blocks/0.png"));
 	staticBlocks.push_back(StaticBlock(290, 200, 310, 10, "blocks/0.png"));
 }
@@ -63,7 +78,6 @@ void World::moveCamera(float screenWidth, float screenHeight)
 	//Check if camera is outside world bouding box and move back in
 	if (rightOfCameraBox > worldStartX + worldSizeX)
 	{
-		cout << "a\t";
 		cameraX = worldStartX + worldSizeX - screenWidth / 2;
 	}
 	else if (leftOfCameraBox < worldStartX)
@@ -82,17 +96,47 @@ void World::moveCamera(float screenWidth, float screenHeight)
 	//Do final translation to display actual camera movement
 	glTranslatef(-cameraX + screenWidth / 2, -cameraY + screenHeight / 2, 0);
 
-	cout << playerCentreX << "\t" << rightOfPlayerBox << "\t" << cameraX << "\t" << rightOfCameraBox << "\n";
-
 	if (App::shouldDrawBoundingBoxes)
 	{
 		App::displayBoundingBox(leftOfPlayerBox, bottomOfPlayerBox, rightOfPlayerBox, topOfPlayerBox);
 	}
 }
 
+void World::displayBackground(float screenWidth, float screenHeight)
+{
+	float offsetX = cameraX * backGroundStaticWidth * backGroundFrontSpeedX;
+	float offsetY = cameraY * backGroundFrontSpeedY;
+
+	glEnable(GL_TEXTURE_2D);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+	glBindTexture(GL_TEXTURE_2D, backGroundFront);
+	glPushMatrix();
+	glTranslatef(cameraX, cameraY, 0.0);
+	glBegin(GL_POLYGON);
+	glTexCoord2f(offsetX,								offsetY + 1.0/backGroundFrontScale);	glVertex2f(-screenWidth/2, screenHeight/2);
+	glTexCoord2f(offsetX + 1.0/backGroundFrontScale,	offsetY + 1.0/backGroundFrontScale);	glVertex2f(screenWidth/2, screenHeight/2);
+	glTexCoord2f(offsetX + 1.0/backGroundFrontScale,	offsetY);								glVertex2f(screenWidth/2, -screenHeight/2);
+	glTexCoord2f(offsetX,								offsetY);								glVertex2f(-screenWidth/2, -screenHeight/2);
+	glEnd();
+	glDisable(GL_TEXTURE_2D);
+	glPopMatrix();
+}
+
 void World::update()
 {
 	player.updatePlayer(staticBlocks);
+}
+
+void World::displayPlayerCameraBox(float screenWidth, float screenHeight)
+{
+	float playerCentreX = player.x + player.colliderWidth / 2;
+	float playerCentreY = player.y + player.colliderHeight / 2;
+	float topOfPlayerBox = playerCentreY + playerCameraBoxRadiusY * (screenHeight / 100);
+	float bottomOfPlayerBox = playerCentreY - playerCameraBoxRadiusY * (screenHeight / 100);
+	float rightOfPlayerBox = playerCentreX + playerCameraBoxRadiusX * (screenWidth / 100);
+	float leftOfPlayerBox = playerCentreX - playerCameraBoxRadiusX * (screenWidth / 100);
+
+	App::displayBoundingBox(leftOfPlayerBox, bottomOfPlayerBox, rightOfPlayerBox, topOfPlayerBox);
 }
 
 void World::display()

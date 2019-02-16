@@ -65,6 +65,10 @@
     <Image Include="shaggy\walking\7.png" />
     <Image Include="shaggy\walking\8.png" />
     <Image Include="shaggy\walking\9.png" />
+    <Image Include="worldBackGround\front" />
+    <Image Include="worldBackGround\middle" />
+    <Image Include="worldBackGround\back" />
+    <Image Include="worldBackGround\static" />
   </ItemGroup>
   <ItemGroup>
     <None Include="glew32.dll" />
