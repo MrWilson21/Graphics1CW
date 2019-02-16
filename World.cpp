@@ -7,25 +7,26 @@ World::World()
 void World::init()
 {
 	player.loadSprites();
+	initBackGround();
 	
 	//Initial position of camera
 	cameraX = player.x + player.colliderWidth / 2;
 	cameraY = player.y + player.colliderHeight / 2;
 
-	staticBlocks.push_back(StaticBlock(100, 200, 110,10, "blocks/0.png"));
-	staticBlocks.push_back(StaticBlock(210, 200, 40, 10, "blocks/0.png"));
+	staticBlocks.push_back(StaticBlock(100, 20, 110,10, "blocks/0.png"));
+	staticBlocks.push_back(StaticBlock(210, 20, 40, 10, "blocks/0.png"));
 
-	staticBlocks.push_back(StaticBlock(210, 210, 10, 10, "blocks/0.png"));
-	staticBlocks.push_back(StaticBlock(200, 220, 10, 10, "blocks/0.png"));
-	staticBlocks.push_back(StaticBlock(190, 230, 10, 10, "blocks/0.png"));
-	staticBlocks.push_back(StaticBlock(180, 240, 10, 10, "blocks/0.png"));
-	staticBlocks.push_back(StaticBlock(170, 250, 10, 10, "blocks/0.png"));
-	staticBlocks.push_back(StaticBlock(160, 260, 10, 10, "blocks/0.png"));
-	staticBlocks.push_back(StaticBlock(150, 270, 10, 10, "blocks/0.png"));
-	staticBlocks.push_back(StaticBlock(140, 280, 10, 10, "blocks/0.png"));
+	staticBlocks.push_back(StaticBlock(210, 20, 10, 10, "blocks/0.png"));
+	staticBlocks.push_back(StaticBlock(200, 20, 10, 10, "blocks/0.png"));
+	staticBlocks.push_back(StaticBlock(190, 30, 10, 10, "blocks/0.png"));
+	staticBlocks.push_back(StaticBlock(180, 40, 10, 10, "blocks/0.png"));
+	staticBlocks.push_back(StaticBlock(170, 50, 10, 10, "blocks/0.png"));
+	staticBlocks.push_back(StaticBlock(160, 60, 10, 10, "blocks/0.png"));
+	staticBlocks.push_back(StaticBlock(150, 70, 10, 10, "blocks/0.png"));
+	staticBlocks.push_back(StaticBlock(140, 80, 10, 10, "blocks/0.png"));
 	
-	staticBlocks.push_back(StaticBlock(250, 200, 40, 10, "blocks/0.png"));
-	staticBlocks.push_back(StaticBlock(290, 200, 310, 10, "blocks/0.png"));
+	staticBlocks.push_back(StaticBlock(250, 20, 40, 10, "blocks/0.png"));
+	staticBlocks.push_back(StaticBlock(290, 20, 310, 10, "blocks/0.png"));
 }
 
 
@@ -41,7 +42,7 @@ void World::initBackGround()
 	paralaxBackGround[0].scale = 0;
 
 	paralaxBackGround[1].isStatic = false;
-	paralaxBackGround[1].texture = App::loadPNG("worldBackGround/static.png");
+	paralaxBackGround[1].texture = App::loadPNG("worldBackGround/ground.png");
 	paralaxBackGround[1].scrollSpeedX = 1;
 	paralaxBackGround[1].scrollSpeedY = 1;
 	paralaxBackGround[1].aspectRatio = 2048.0/1546.0;
@@ -192,7 +193,9 @@ void World::moveCamera(float screenWidth, float screenHeight)
 
 void World::displayBackground(float screenWidth, float screenHeight)
 {
-	for (int i = 0; i < 9; i++)
+	float screenAspectRatio = screenWidth / screenHeight;
+
+	for (int i = 0; i < 2; i++)
 	{
 		if (paralaxBackGround[i].isStatic)
 		{
@@ -200,8 +203,13 @@ void World::displayBackground(float screenWidth, float screenHeight)
 		}
 		else
 		{
-			float offsetX = cameraX * paralaxBackGround[i].aspectRatio * paralaxBackGround[i].scrollSpeedX;
-			float offsetY = cameraY * paralaxBackGround[i].scrollSpeedY;
+			float textureWidth = paralaxBackGround[i].scale * screenWidth * screenAspectRatio;
+			float offsetX = ((cameraX - (screenWidth/2)) / textureWidth) * paralaxBackGround[i].scrollSpeedX;
+
+			float textureHeight = paralaxBackGround[i].scale * screenHeight / screenAspectRatio;
+			float offsetY = ((cameraY - (screenHeight/2)) / textureHeight) * paralaxBackGround[i].scrollSpeedY;
+
+			cout << cameraX << "\t" << offsetX << "\n";
 
 			glEnable(GL_TEXTURE_2D);
 			glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
@@ -210,8 +218,8 @@ void World::displayBackground(float screenWidth, float screenHeight)
 			glTranslatef(cameraX, cameraY, 0.0);
 			glBegin(GL_POLYGON);
 			glTexCoord2f(offsetX,									offsetY + 1.0/paralaxBackGround[i].scale);	glVertex2f(-screenWidth/2, screenHeight/2);
-			glTexCoord2f(offsetX + 1.0/paralaxBackGround[i].scale,	offsetY + 1.0/ paralaxBackGround[i].scale);	glVertex2f(screenWidth/2, screenHeight/2);
-			glTexCoord2f(offsetX + 1.0/ paralaxBackGround[i].scale,	offsetY);									glVertex2f(screenWidth/2, -screenHeight/2);
+			glTexCoord2f(offsetX + screenAspectRatio/paralaxBackGround[i].scale,	offsetY + 1.0/paralaxBackGround[i].scale);	glVertex2f(screenWidth/2, screenHeight/2);
+			glTexCoord2f(offsetX + screenAspectRatio/paralaxBackGround[i].scale,	offsetY);									glVertex2f(screenWidth/2, -screenHeight/2);
 			glTexCoord2f(offsetX,									offsetY);									glVertex2f(-screenWidth/2, -screenHeight/2);
 			glEnd();
 			glDisable(GL_TEXTURE_2D);

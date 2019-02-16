@@ -30,7 +30,7 @@ private:
 	float playerCameraBoxRadiusX = 30;
 	float playerCameraBoxRadiusY = 40;
 
-	struct BackGround {
+	typedef struct BackGround {
 		bool isStatic;
 		GLuint texture;
 		//Speed the background scolls with the camera
