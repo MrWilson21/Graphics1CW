@@ -47,7 +47,7 @@ void World::initBackGround()
 	paralaxBackGround[1].scrollSpeedY = 1;
 	paralaxBackGround[1].aspectRatio = 2048.0/1546.0;
 	paralaxBackGround[1].moveSpeedX = 0;
-	paralaxBackGround[1].scale = 1;
+	paralaxBackGround[1].scale = 100;
 
 	/*paralaxBackGround[2].isStatic = true;
 	paralaxBackGround[2].texture = App::loadPNG("worldBackGround/static.png");
@@ -199,17 +199,27 @@ void World::displayBackground(float screenWidth, float screenHeight)
 	{
 		if (paralaxBackGround[i].isStatic)
 		{
-
+			glEnable(GL_TEXTURE_2D);
+			glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+			glBindTexture(GL_TEXTURE_2D, paralaxBackGround[i].texture);
+			glPushMatrix();
+			glTranslatef(cameraX, cameraY, 0.0);
+			glBegin(GL_POLYGON);
+			glTexCoord2f(0, 1);	glVertex2f(-screenWidth / 2, screenHeight / 2);
+			glTexCoord2f(1, 1);	glVertex2f(screenWidth / 2, screenHeight / 2);
+			glTexCoord2f(1, 0);	glVertex2f(screenWidth / 2, -screenHeight / 2);
+			glTexCoord2f(0, 0);	glVertex2f(-screenWidth / 2, -screenHeight / 2);
+			glEnd();
+			glDisable(GL_TEXTURE_2D);
+			glPopMatrix();
 		}
 		else
 		{
-			float textureWidth = paralaxBackGround[i].scale * screenWidth * screenAspectRatio;
-			float offsetX = ((cameraX - (screenWidth/2)) / textureWidth) * paralaxBackGround[i].scrollSpeedX;
+			float textureWidth = 1/((paralaxBackGround[i].scale * paralaxBackGround[i].aspectRatio) / screenWidth);
+			float offsetX = paralaxBackGround[i].scrollSpeedX * ((cameraX - (screenWidth / 2)) / (paralaxBackGround[i].scale * paralaxBackGround[i].aspectRatio));
 
-			float textureHeight = paralaxBackGround[i].scale * screenHeight / screenAspectRatio;
-			float offsetY = ((cameraY - (screenHeight/2)) / textureHeight) * paralaxBackGround[i].scrollSpeedY;
-
-			cout << cameraX << "\t" << offsetX << "\n";
+			float textureHeight = 1/(paralaxBackGround[i].scale / screenHeight);
+			float offsetY = paralaxBackGround[i].scrollSpeedY * (((cameraY - (screenHeight / 2)) / paralaxBackGround[i].scale));
 
 			glEnable(GL_TEXTURE_2D);
 			glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
@@ -217,10 +227,10 @@ void World::displayBackground(float screenWidth, float screenHeight)
 			glPushMatrix();
 			glTranslatef(cameraX, cameraY, 0.0);
 			glBegin(GL_POLYGON);
-			glTexCoord2f(offsetX,									offsetY + 1.0/paralaxBackGround[i].scale);	glVertex2f(-screenWidth/2, screenHeight/2);
-			glTexCoord2f(offsetX + screenAspectRatio/paralaxBackGround[i].scale,	offsetY + 1.0/paralaxBackGround[i].scale);	glVertex2f(screenWidth/2, screenHeight/2);
-			glTexCoord2f(offsetX + screenAspectRatio/paralaxBackGround[i].scale,	offsetY);									glVertex2f(screenWidth/2, -screenHeight/2);
-			glTexCoord2f(offsetX,									offsetY);									glVertex2f(-screenWidth/2, -screenHeight/2);
+			glTexCoord2f(offsetX,				 offsetY + textureHeight);	glVertex2f(-screenWidth/2, screenHeight/2);
+			glTexCoord2f(offsetX + textureWidth, offsetY + textureHeight);	glVertex2f(screenWidth/2, screenHeight/2);
+			glTexCoord2f(offsetX + textureWidth, offsetY);					glVertex2f(screenWidth/2, -screenHeight/2);
+			glTexCoord2f(offsetX,				 offsetY);					glVertex2f(-screenWidth/2, -screenHeight/2);
 			glEnd();
 			glDisable(GL_TEXTURE_2D);
 			glPopMatrix();
