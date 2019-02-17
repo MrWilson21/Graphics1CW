@@ -10,6 +10,7 @@
 #include <vector>
 #include <thread> 
 #include <chrono>
+#include <stdlib.h>
 
 using namespace std;
 using namespace std::chrono;

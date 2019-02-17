@@ -8,6 +8,7 @@ bool LeftPressed = false;
 int screenWidthPixels=480, screenHeightPixels=480; //Window size in pixels
 float screenWidth = 100.0, screenHeight = 100.0; //Game uses these coordinates, on a square window coordinates will go from 0 to 100 on each axis
 double maxFrameTime = 0.05;	//Unusual object movement can occur if a frame takes too long to render so a max should be set
+int maxFps = 200;
 
 steady_clock::time_point totalFrameTime = steady_clock::now();
 
@@ -151,12 +152,28 @@ int WINAPI WinMain(	HINSTANCE	hInstance,			// Instance
 			SwapBuffers(hDC);				// Swap Buffers (Double Buffering)
 		}
 		App::deltaTime = double(duration_cast<duration<double>>(steady_clock::now() - totalFrameTime).count());
-		
-		//Force delta time to be less than
+		//Force delta time to be less than max frame time
 		if (App::deltaTime > maxFrameTime)
 		{
 			App::deltaTime = maxFrameTime;
 		}
+		
+		if (1.0 / App::deltaTime > maxFps)
+		{
+			double timeToWait = (1.0 / maxFps) - App::deltaTime;
+			double averageWaitTime = 0.0015;
+			while (timeToWait > averageWaitTime)
+			{
+				steady_clock::time_point timeBeforeSleep = steady_clock::now();
+				std::this_thread::sleep_for(std::chrono::microseconds{1000});
+				double timeWaited = double(duration_cast<duration<double>>(steady_clock::now() - timeBeforeSleep).count());
+				averageWaitTime = (averageWaitTime + timeWaited) / 2.0;
+				App::deltaTime += timeWaited;
+				timeToWait -= timeWaited;
+				cout << averageWaitTime << "\n";
+			}
+		}
+		//cout << 1.0 / App::deltaTime << "\n";
 	}
 
 	// Shutdown
