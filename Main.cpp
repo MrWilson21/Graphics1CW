@@ -7,9 +7,10 @@ int	mouse_x=0, mouse_y=0;
 bool LeftPressed = false;
 int screenWidthPixels=480, screenHeightPixels=480; //Window size in pixels
 float screenWidth = 100.0, screenHeight = 100.0; //Game uses these coordinates, on a square window coordinates will go from 0 to 100 on each axis
+float scale = 2.5;
+
 double maxFrameTime = 0.05;	//Unusual object movement can occur if a frame takes too long to render so a max should be set
 int maxFps = 200;
-
 steady_clock::time_point totalFrameTime = steady_clock::now();
 
 Player player = Player(50, 50, 0.2);
@@ -57,18 +58,18 @@ void reshape(int width, int height)		// Resize the OpenGL window
 																	// we will use these values to set the coordinate system
 	if ((float)width / (float)height > 1.0)
 	{
-		screenHeight = 100.0;
-		screenWidth = 100.0 * (float)width / (float)height;
+		screenHeight = 100.0 * scale;
+		screenWidth = 100.0 * (float)width * scale / (float)height;
 	}
 	else if ((float)height / (float)width > 1)
 	{
-		screenWidth = 100.0;
-		screenHeight = 100.0 * (float)height / (float)width;
+		screenWidth = 100.0 * scale;
+		screenHeight = 100.0 * scale * (float)height / (float)width;
 	}
 	else
 	{
-		screenHeight = 100.0;
-		screenWidth = 100.0;
+		screenHeight = 100.0 * scale;
+		screenWidth = 100.0 * scale;
 	}
 	
 	glViewport(0,0,width, height);						// Reset the current viewport
@@ -129,7 +130,6 @@ int WINAPI WinMain(	HINSTANCE	hInstance,			// Instance
 
 	while(!done)									// Loop That Runs While done=FALSE
 	{
-		totalFrameTime = steady_clock::now();
 		if (PeekMessage(&msg,NULL,0,0,PM_REMOVE))	// Is There A Message Waiting?
 		{
 			if (msg.message==WM_QUIT)				// Have We Received A Quit Message?
@@ -152,28 +152,40 @@ int WINAPI WinMain(	HINSTANCE	hInstance,			// Instance
 			SwapBuffers(hDC);				// Swap Buffers (Double Buffering)
 		}
 		App::deltaTime = double(duration_cast<duration<double>>(steady_clock::now() - totalFrameTime).count());
+		
+		if (1.0 / App::deltaTime > maxFps)
+		{
+			double timeToWait = (1.0 / maxFps) - App::deltaTime;
+			while (timeToWait > 0.0)
+			{
+				std::this_thread::sleep_for(std::chrono::nanoseconds{500});
+				App::deltaTime = double(duration_cast<duration<double>>(steady_clock::now() - totalFrameTime).count());
+				timeToWait = (1.0 / maxFps) - App::deltaTime;
+			}
+		}
+
+		if (App::keys[VK_NUMPAD1])
+		{
+			scale -= 0.001;
+			reshape(screenWidthPixels, screenHeightPixels);
+			cout << scale << "\n";
+		}
+
+		if (App::keys[VK_NUMPAD2])
+		{
+			scale += 0.001;
+			reshape(screenWidthPixels, screenHeightPixels);
+			cout << scale << "\n";
+		}
+
+		App::deltaTime = double(duration_cast<duration<double>>(steady_clock::now() - totalFrameTime).count());
+		totalFrameTime = steady_clock::now();
+
 		//Force delta time to be less than max frame time
 		if (App::deltaTime > maxFrameTime)
 		{
 			App::deltaTime = maxFrameTime;
 		}
-		
-		if (1.0 / App::deltaTime > maxFps)
-		{
-			double timeToWait = (1.0 / maxFps) - App::deltaTime;
-			double averageWaitTime = 0.0015;
-			while (timeToWait > averageWaitTime)
-			{
-				steady_clock::time_point timeBeforeSleep = steady_clock::now();
-				std::this_thread::sleep_for(std::chrono::microseconds{1000});
-				double timeWaited = double(duration_cast<duration<double>>(steady_clock::now() - timeBeforeSleep).count());
-				averageWaitTime = (averageWaitTime + timeWaited) / 2.0;
-				App::deltaTime += timeWaited;
-				timeToWait -= timeWaited;
-				cout << averageWaitTime << "\n";
-			}
-		}
-		//cout << 1.0 / App::deltaTime << "\n";
 	}
 
 	// Shutdown

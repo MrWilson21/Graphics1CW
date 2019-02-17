@@ -183,7 +183,6 @@ void Player::groundMovementUpdate()
 	if (App::keys[VK_SPACE])
 	{
 		velocityY = jumpSpeed;
-		cout << velocityY << "\n";
 		changeToJumpingState();
 	}
 	else if (abs(velocityX) > 0)
