@@ -1,8 +1,9 @@
 #pragma once
 #include "app.h"
 #include "staticBlock.h"
-#include "world.h"
 
+//Pre define class and include world.h in player.cpp to fix circular definition problem 
+class World;
 class Player
 {
 	public:
@@ -16,7 +17,7 @@ class Player
 		float colliderWidth;
 		float colliderHeight;
 
-		Player(float startX, float startY, World *p);
+		Player(float startX, float startY, World* p);
 		void updatePlayer(std::vector<StaticBlock> staticBlocks);
 		void displayPlayer();
 		void loadSprites();
@@ -32,7 +33,7 @@ class Player
 
 		void calculateColliderBox();
 
-		void changeToWalkingState( );
+		void changeToWalkingState();
 		void changeToRunningState();
 		void changeToIdleState();
 		void changeToJumpingState();
@@ -73,22 +74,23 @@ class Player
 
 		float timeSinceFrameChange;
 		float timeSinceIdleAnimation;
+		float timeToWaitForNextWalkingFrame;
 		float timeToWaitUntilIdleAnimation;
 		float timeToWaitForNextIdleFrame;
-		float timeToWaitForNextWalkingFrame;
 		float timeToWaitForNextJumpingFrame;
 
 		float timeSinceNotTouchingGround;
 		float timeUntilChangeToJump;
 		bool jumpLanding;
 
-		float scaleFactor = 0.25;
+		//Display sizes for different player models, sizes based off of sprite image size
+		float scaleFactor;
 		float walkingHeight;
 		float walkingWidth;
 		float idleHeight;
 		float idleWidth;
-		float jumpingWidth;
 		float jumpingHeight;
+		float jumpingWidth;
 
 		World* parent;
 };

@@ -191,37 +191,37 @@
       <Filter>Resource Files\shaggy\jump</Filter>
     </Image>
     <Image Include="worldBackGround\bushes.png">
-      <Filter>Resource Files</Filter>
+      <Filter>Resource Files\worldBackGround</Filter>
     </Image>
     <Image Include="worldBackGround\clouds.png">
-      <Filter>Resource Files</Filter>
+      <Filter>Resource Files\worldBackGround</Filter>
     </Image>
     <Image Include="worldBackGround\distantClouds.png">
-      <Filter>Resource Files</Filter>
+      <Filter>Resource Files\worldBackGround</Filter>
     </Image>
     <Image Include="worldBackGround\distantClouds1.png">
-      <Filter>Resource Files</Filter>
+      <Filter>Resource Files\worldBackGround</Filter>
     </Image>
     <Image Include="worldBackGround\distantTrees.png">
-      <Filter>Resource Files</Filter>
+      <Filter>Resource Files\worldBackGround</Filter>
     </Image>
     <Image Include="worldBackGround\ground.png">
-      <Filter>Resource Files</Filter>
+      <Filter>Resource Files\worldBackGround</Filter>
     </Image>
     <Image Include="worldBackGround\hill1.png">
-      <Filter>Resource Files</Filter>
+      <Filter>Resource Files\worldBackGround</Filter>
     </Image>
     <Image Include="worldBackGround\hill2.png">
-      <Filter>Resource Files</Filter>
+      <Filter>Resource Files\worldBackGround</Filter>
     </Image>
     <Image Include="worldBackGround\HugeClouds.png">
-      <Filter>Resource Files</Filter>
+      <Filter>Resource Files\worldBackGround</Filter>
     </Image>
     <Image Include="worldBackGround\static.png">
-      <Filter>Resource Files</Filter>
+      <Filter>Resource Files\worldBackGround</Filter>
     </Image>
     <Image Include="worldBackGround\treesAndBushes.png">
-      <Filter>Resource Files</Filter>
+      <Filter>Resource Files\worldBackGround</Filter>
     </Image>
   </ItemGroup>
   <ItemGroup>

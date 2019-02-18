@@ -1,31 +1,48 @@
 #include "player.h"
+#include "world.h"
 
-Player::Player(float startX, float startY, World *p)
+Player::Player(float startX, float startY, World* p)
 {
+	velocityX = 0.0;
+	velocityY = 0.0;
 	x = startX;
 	y = startY;
 
-	maxVelocityX = 40.0;
-	maxVeloctyY = 150.0;
-	walkingAcceleration = 230.0;
-	deccelerationFactor = 170.0;
-	jumpSpeed = 70;
-	gravity = 160.0;
-	airAcceleration = 60.0;
-	airDeccelerationFactor = 40.0;
-	maxAirVelocityX = 30.0;
-	
-	isIdle = true;
+	maxVelocityX = 75.0;
+	maxVeloctyY = 180.0;
+	walkingAcceleration = 300.0;
+	deccelerationFactor = 200.0;
+	jumpSpeed = 160;
+	gravity = 300;
+	airAcceleration = 110.0;
+	airDeccelerationFactor = 50.0;
+	maxAirVelocityX = 45.0;
+
+	xMoveThisFrame = 0.0;
+	yMoveThisFrame = 0.0;
+
+	xReflectFactor = 0;
+	facingLeft = false;
+
+	currentSprite = 0;
+	maxSprites = 0;
 	walkingTextures[12];
 	idleTextures[18];
+	jumpingTextures[9];
 
-	timeToWaitForNextWalkingFrame = 10.0;
+	timeSinceFrameChange = 0.0;
+	timeSinceIdleAnimation = 0.0;
+	timeToWaitForNextWalkingFrame = 3.0;
 	timeToWaitUntilIdleAnimation = 3.0;
-	timeToWaitForNextIdleFrame = 0.03;
-	timeToWaitForNextJumpingFrame = 0.07;
+	timeToWaitForNextIdleFrame = 0.06;
+	timeToWaitForNextJumpingFrame = 0.04;
+
+	timeSinceNotTouchingGround = false;
 	timeUntilChangeToJump = 0.01;
+	jumpLanding = false;
 
 	//Display sizes for different player models, sizes based off of sprite image size
+	scaleFactor = 0.25;
 	walkingHeight = 68.0 * scaleFactor;
 	walkingWidth = 44.0 * scaleFactor;
 	idleHeight = 75.0 * scaleFactor;
@@ -35,6 +52,8 @@ Player::Player(float startX, float startY, World *p)
 	
 	parent = p;
 
+	resetStates();
+	changeToIdleState();
 	calculateColliderBox();
 }
 
@@ -44,22 +63,19 @@ Player::Player(float startX, float startY, World *p)
 //Height and width change size of box
 void Player::calculateColliderBox()
 {
-	if (isWalking || isIdle)
+	if (facingLeft)
 	{
-		if (facingLeft)
-		{
-			colliderX = 6 * scaleFactor;
-			colliderY = 0;
-			colliderHeight = 65 * scaleFactor;
-			colliderWidth = 30 * scaleFactor;
-		}
-		else
-		{
-			colliderX = 0;
-			colliderY = 0;
-			colliderHeight = 65 * scaleFactor;
-			colliderWidth = 30 * scaleFactor;
-		}
+		colliderX = 6 * scaleFactor;
+		colliderY = 0;
+		colliderHeight = 65 * scaleFactor;
+		colliderWidth = 30 * scaleFactor;
+	}
+	else
+	{
+		colliderX = 0;
+		colliderY = 0;
+		colliderHeight = 65 * scaleFactor;
+		colliderWidth = 30 * scaleFactor;
 	}
 }
 
@@ -143,25 +159,25 @@ void Player::loadSprites()
 
 void Player::updatePlayer(std::vector<StaticBlock> staticBlocks)
 {
-	//Get player input and change shaggys position and orientation
+	//Get player input and change players position and orientation
 	getMovementUpdates();
 
 	//GetShape of collider box for this frame
 	calculateColliderBox();
 
-	//After shaggy is moved calculate collisions and make adjustments before rendering frame
+	//After player is moved calculate collisions and make adjustments before rendering frame
 	getCollisionUpdates(staticBlocks);
 
 	//Check if player is not moving and change to idle
 	//Final check done in case player is walking into wall
-	//give shaggy an idle state so it doesnt look like he is running on the spot into a wall
+	//give player an idle state so it doesnt look like he is running on the spot into a wall
 	if (velocityX == 0 && velocityY == 0 && !isJumping)
 	{
 		changeToIdleState();
 	}
 }
 
-//Get player input and move shaggy based on current state and inputs given
+//Get player input and move player based on current state and inputs given
 void Player::getMovementUpdates()
 {
 	if (isJumping)
@@ -194,7 +210,7 @@ void Player::groundMovementUpdate()
 		velocityY = -maxVeloctyY;
 	}
 
-	//Check direction that player is moving and face shaggy in the correct position
+	//Check direction that player is moving and face in the correct position
 	if (velocityX < 0)
 	{
 		facingLeft = true;
@@ -232,7 +248,7 @@ void Player::airMovementUpdate()
 		velocityY = -maxVeloctyY;
 	}
 
-	//Check direction that player is moving and face shaggy in the correct position
+	//Check direction that player is moving and face in the correct position
 	if (velocityX < 0)
 	{
 		facingLeft = true;
@@ -420,6 +436,11 @@ void Player::getCollisionUpdates(std::vector<StaticBlock> staticBlocks)
 	{
 		calculateCollider(block.x, block.y, block.width, block.height);
 	}
+
+	calculateCollider(parent->rightEdge, 0, 100, parent->worldSizeY);
+	calculateCollider(-100 + parent->leftEdge, 0, 100, parent->worldSizeY);
+	calculateCollider(0, parent->topEdge, parent->worldSizeX, 100);
+	calculateCollider(0, -100 + parent->bottomEdge, parent->worldSizeX, 100);
 
 	if (!isTouchingGround && !isJumping)
 	{

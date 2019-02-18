@@ -1,9 +1,25 @@
 #include "world.h"
-#include "player.h"
 
 World::World()
 {
-	player = new Player(250, 250, this);
+	worldStartX = 0.0;
+	worldStartY = 0.0;
+	worldSizeX = 500.0;
+	worldSizeY = 500.0;
+
+	leftEdge = 10;
+	rightEdge = worldSizeX - 10;
+	topEdge = worldSizeY - 10;
+	bottomEdge = 20;
+
+	cameraX;
+	cameraY;
+	playerCameraBoxRadiusX = 30;
+	playerCameraBoxRadiusY = 40;
+
+	paralaxBackGround[11];
+
+	player = new Player(50, 50, this);
 }
 
 void World::init()
@@ -15,20 +31,13 @@ void World::init()
 	cameraX = player->x + player->colliderWidth / 2;
 	cameraY = player->y + player->colliderHeight / 2;
 
-	staticBlocks.push_back(StaticBlock(100, 20, 110,10, "blocks/0.png"));
-	staticBlocks.push_back(StaticBlock(210, 20, 40, 10, "blocks/0.png"));
-
-	staticBlocks.push_back(StaticBlock(210, 20, 10, 10, "blocks/0.png"));
-	staticBlocks.push_back(StaticBlock(200, 20, 10, 10, "blocks/0.png"));
-	staticBlocks.push_back(StaticBlock(190, 30, 10, 10, "blocks/0.png"));
-	staticBlocks.push_back(StaticBlock(180, 40, 10, 10, "blocks/0.png"));
-	staticBlocks.push_back(StaticBlock(170, 50, 10, 10, "blocks/0.png"));
-	staticBlocks.push_back(StaticBlock(160, 60, 10, 10, "blocks/0.png"));
-	staticBlocks.push_back(StaticBlock(150, 70, 10, 10, "blocks/0.png"));
-	staticBlocks.push_back(StaticBlock(140, 80, 10, 10, "blocks/0.png"));
-	
-	staticBlocks.push_back(StaticBlock(250, 20, 40, 10, "blocks/0.png"));
-	staticBlocks.push_back(StaticBlock(290, 20, 310, 10, "blocks/0.png"));
+	staticBlocks.push_back(StaticBlock(100, 0, 10, 20, "blocks/0.png"));
+	staticBlocks.push_back(StaticBlock(110, 40, 10, 20, "blocks/0.png"));
+	staticBlocks.push_back(StaticBlock(100, 80, 10, 20, "blocks/0.png"));
+	staticBlocks.push_back(StaticBlock(110, 120, 10, 20, "blocks/0.png"));
+	staticBlocks.push_back(StaticBlock(100, 160, 10, 20, "blocks/0.png"));
+	staticBlocks.push_back(StaticBlock(110, 200, 10, 20, "blocks/0.png"));
+	staticBlocks.push_back(StaticBlock(120, 200, 200, 20, "blocks/0.png"));
 }
 
 
@@ -44,84 +53,84 @@ void World::initBackGround()
 	paralaxBackGround[0].scale = 0;
 
 	paralaxBackGround[1].isStatic = false;
-	paralaxBackGround[1].texture = App::loadPNG("worldBackGround/ground.png");
-	paralaxBackGround[1].scrollSpeedX = 1;
-	paralaxBackGround[1].scrollSpeedY = 1;
-	paralaxBackGround[1].aspectRatio = 2048.0/1546.0;
-	paralaxBackGround[1].moveSpeedX = 0;
+	paralaxBackGround[1].texture = App::loadPNG("worldBackGround/hugeClouds.png");
+	paralaxBackGround[1].scrollSpeedX = 0.05;
+	paralaxBackGround[1].scrollSpeedY = 0.15;
+	paralaxBackGround[1].aspectRatio = 2048.0 / 1546.0;
+	paralaxBackGround[1].moveSpeedX = 0.1;
 	paralaxBackGround[1].scale = 100;
 
-	/*paralaxBackGround[2].isStatic = true;
-	paralaxBackGround[2].texture = App::loadPNG("worldBackGround/static.png");
-	paralaxBackGround[2].scrollSpeedX = 0;
-	paralaxBackGround[2].scrollSpeedY = 0;
-	paralaxBackGround[2].aspectRatio = 0;
+	paralaxBackGround[2].isStatic = false;
+	paralaxBackGround[2].texture = App::loadPNG("worldBackGround/distantClouds.png");
+	paralaxBackGround[2].scrollSpeedX = 0.05;
+	paralaxBackGround[2].scrollSpeedY = 0.15;
+	paralaxBackGround[2].aspectRatio = 2048.0 / 1546.0;
 	paralaxBackGround[2].moveSpeedX = 0;
-	paralaxBackGround[2].scale = 0;
+	paralaxBackGround[2].scale = 100;
 
-	paralaxBackGround[3].isStatic = true;
-	paralaxBackGround[3].texture = App::loadPNG("worldBackGround/static.png");
-	paralaxBackGround[3].scrollSpeedX = 0;
-	paralaxBackGround[3].scrollSpeedY = 0;
-	paralaxBackGround[3].aspectRatio = 0;
+	paralaxBackGround[3].isStatic = false;
+	paralaxBackGround[3].texture = App::loadPNG("worldBackGround/distantClouds1.png");
+	paralaxBackGround[3].scrollSpeedX = 0.1;
+	paralaxBackGround[3].scrollSpeedY = 0.2;
+	paralaxBackGround[3].aspectRatio = 2048.0 / 1546.0;
 	paralaxBackGround[3].moveSpeedX = 0;
-	paralaxBackGround[3].scale = 0;
+	paralaxBackGround[3].scale = 100;
 
-	paralaxBackGround[4].isStatic = true;
-	paralaxBackGround[4].texture = App::loadPNG("worldBackGround/static.png");
-	paralaxBackGround[4].scrollSpeedX = 0;
-	paralaxBackGround[4].scrollSpeedY = 0;
-	paralaxBackGround[4].aspectRatio = 0;
+	paralaxBackGround[4].isStatic = false;
+	paralaxBackGround[4].texture = App::loadPNG("worldBackGround/clouds.png");
+	paralaxBackGround[4].scrollSpeedX = 0.15;
+	paralaxBackGround[4].scrollSpeedY = 0.25;
+	paralaxBackGround[4].aspectRatio = 2048.0 / 1546.0;
 	paralaxBackGround[4].moveSpeedX = 0;
-	paralaxBackGround[4].scale = 0;
+	paralaxBackGround[4].scale = 100;
 
-	paralaxBackGround[5].isStatic = true;
-	paralaxBackGround[5].texture = App::loadPNG("worldBackGround/static.png");
-	paralaxBackGround[5].scrollSpeedX = 0;
-	paralaxBackGround[5].scrollSpeedY = 0;
-	paralaxBackGround[5].aspectRatio = 0;
+	paralaxBackGround[5].isStatic = false;
+	paralaxBackGround[5].texture = App::loadPNG("worldBackGround/hill2.png");
+	paralaxBackGround[5].scrollSpeedX = 0.13;
+	paralaxBackGround[5].scrollSpeedY = 0.27;
+	paralaxBackGround[5].aspectRatio = 2048.0 / 1546.0;
 	paralaxBackGround[5].moveSpeedX = 0;
-	paralaxBackGround[5].scale = 0;
+	paralaxBackGround[5].scale = 100;
 
-	paralaxBackGround[6].isStatic = true;
-	paralaxBackGround[6].texture = App::loadPNG("worldBackGround/static.png");
-	paralaxBackGround[6].scrollSpeedX = 0;
-	paralaxBackGround[6].scrollSpeedY = 0;
-	paralaxBackGround[6].aspectRatio = 0;
+	paralaxBackGround[6].isStatic = false;
+	paralaxBackGround[6].texture = App::loadPNG("worldBackGround/hill1.png");
+	paralaxBackGround[6].scrollSpeedX = 0.2;
+	paralaxBackGround[6].scrollSpeedY = 0.35;
+	paralaxBackGround[6].aspectRatio = 2048.0 / 1546.0;
 	paralaxBackGround[6].moveSpeedX = 0;
-	paralaxBackGround[6].scale = 0;
+	paralaxBackGround[6].scale = 100;
 
-	paralaxBackGround[6].isStatic = true;
-	paralaxBackGround[6].texture = App::loadPNG("worldBackGround/static.png");
-	paralaxBackGround[6].scrollSpeedX = 0;
-	paralaxBackGround[6].scrollSpeedY = 0;
-	paralaxBackGround[6].aspectRatio = 0;
-	paralaxBackGround[6].moveSpeedX = 0;
-	paralaxBackGround[6].scale = 0;
-
-	paralaxBackGround[7].isStatic = true;
-	paralaxBackGround[7].texture = App::loadPNG("worldBackGround/static.png");
-	paralaxBackGround[7].scrollSpeedX = 0;
-	paralaxBackGround[7].scrollSpeedY = 0;
-	paralaxBackGround[7].aspectRatio = 0;
+	paralaxBackGround[7].isStatic = false;
+	paralaxBackGround[7].texture = App::loadPNG("worldBackGround/bushes.png");
+	paralaxBackGround[7].scrollSpeedX = 0.25;
+	paralaxBackGround[7].scrollSpeedY = 0.6;
+	paralaxBackGround[7].aspectRatio = 2048.0 / 1546.0;
 	paralaxBackGround[7].moveSpeedX = 0;
-	paralaxBackGround[7].scale = 0;
+	paralaxBackGround[7].scale = 100;
 
-	paralaxBackGround[8].isStatic = true;
-	paralaxBackGround[8].texture = App::loadPNG("worldBackGround/static.png");
-	paralaxBackGround[8].scrollSpeedX = 0;
-	paralaxBackGround[8].scrollSpeedY = 0;
-	paralaxBackGround[8].aspectRatio = 0;
+	paralaxBackGround[8].isStatic = false;
+	paralaxBackGround[8].texture = App::loadPNG("worldBackGround/distantTrees.png");
+	paralaxBackGround[8].scrollSpeedX = 0.3;
+	paralaxBackGround[8].scrollSpeedY = 0.7;
+	paralaxBackGround[8].aspectRatio = 2048.0 / 1546.0;
 	paralaxBackGround[8].moveSpeedX = 0;
-	paralaxBackGround[8].scale = 0;
+	paralaxBackGround[8].scale = 100;
 
-	paralaxBackGround[9].isStatic = true;
-	paralaxBackGround[9].texture = App::loadPNG("worldBackGround/static.png");
-	paralaxBackGround[9].scrollSpeedX = 0;
-	paralaxBackGround[9].scrollSpeedY = 0;
-	paralaxBackGround[9].aspectRatio = 0;
+	paralaxBackGround[9].isStatic = false;
+	paralaxBackGround[9].texture = App::loadPNG("worldBackGround/treesAndBushes.png");
+	paralaxBackGround[9].scrollSpeedX = 0.8;
+	paralaxBackGround[9].scrollSpeedY = 0.8;
+	paralaxBackGround[9].aspectRatio = 2048.0 / 1546.0;
 	paralaxBackGround[9].moveSpeedX = 0;
-	paralaxBackGround[9].scale = 0;*/
+	paralaxBackGround[9].scale = 100;
+
+	paralaxBackGround[10].isStatic = false;
+	paralaxBackGround[10].texture = App::loadPNG("worldBackGround/ground.png");
+	paralaxBackGround[10].scrollSpeedX = 1;
+	paralaxBackGround[10].scrollSpeedY = 1;
+	paralaxBackGround[10].aspectRatio = 2048.0/1546.0;
+	paralaxBackGround[10].moveSpeedX = 0;
+	paralaxBackGround[10].scale = 100;
 }
 
 void World::moveCamera(float screenWidth, float screenHeight)
@@ -197,7 +206,7 @@ void World::displayBackground(float screenWidth, float screenHeight)
 {
 	float screenAspectRatio = screenWidth / screenHeight;
 
-	for (int i = 0; i < 2; i++)
+	for (int i = 0; i < 11; i++)
 	{
 		if (paralaxBackGround[i].isStatic)
 		{
@@ -255,6 +264,14 @@ void World::displayPlayerCameraBox(float screenWidth, float screenHeight)
 	float leftOfPlayerBox = playerCentreX - playerCameraBoxRadiusX * (screenWidth / 100);
 
 	App::displayBoundingBox(leftOfPlayerBox, bottomOfPlayerBox, rightOfPlayerBox, topOfPlayerBox);
+}
+
+void World::displayWorldBoundaries()
+{
+	App::displayBoundingBox(rightEdge, 0, 100 + rightEdge, worldSizeY);
+	App::displayBoundingBox(leftEdge - 100, 0, leftEdge, worldSizeY);
+	App::displayBoundingBox(0, topEdge, worldSizeX, topEdge + 100);
+	App::displayBoundingBox(0, bottomEdge - 100, worldSizeX, bottomEdge);
 }
 
 void World::display()
