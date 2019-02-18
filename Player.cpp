@@ -1,6 +1,6 @@
 #include "player.h"
 
-Player::Player(float startX, float startY, float scale)
+Player::Player(float startX, float startY, World *p)
 {
 	x = startX;
 	y = startY;
@@ -25,9 +25,6 @@ Player::Player(float startX, float startY, float scale)
 	timeToWaitForNextJumpingFrame = 0.07;
 	timeUntilChangeToJump = 0.01;
 
-	//Scale player size up or down
-	scaleFactor = scale;
-
 	//Display sizes for different player models, sizes based off of sprite image size
 	walkingHeight = 68.0 * scaleFactor;
 	walkingWidth = 44.0 * scaleFactor;
@@ -36,6 +33,7 @@ Player::Player(float startX, float startY, float scale)
 	jumpingHeight = 68 * scaleFactor;
 	jumpingWidth = 34 * scaleFactor;
 	
+	parent = p;
 
 	calculateColliderBox();
 }
@@ -347,76 +345,82 @@ void Player::airMove()
 	}
 }
 
+void Player::calculateCollider(float blockX, float blockY, float blockWidth, float blockHeight)
+{
+	if (x + colliderX < blockWidth + blockX &&
+		x + colliderX + colliderWidth > blockX &&
+		y + colliderY < blockHeight + blockY &&
+		y + colliderY + colliderHeight > blockY)
+	{
+		//Find closest edge and place player outside that edge
+		//Set velocity of y to 0 if horizontal edge found and x to 0 if vertical edge found
+		float playerRightSide = x + colliderX + colliderWidth;
+		float playerLeftSide = x + colliderX;
+		float playerTopSide = y + colliderY + colliderHeight;
+		float playerBottomSide = y + colliderY;
+
+		//Get distance away from each side
+		float distToRight = blockX + blockWidth - playerLeftSide;
+		float distToLeft = playerRightSide - blockX;
+		float distToTop = blockY + blockHeight - playerBottomSide;
+		float distToBottom = playerTopSide - blockY;
+
+		//Choose the shortest travel and move player outside of collider
+		if (distToRight < distToLeft &&
+			distToRight < distToTop &&
+			distToRight < distToBottom)
+		{
+			x = blockX + blockWidth - colliderX;
+			if (velocityX < 0.0)
+			{
+				velocityX = 0.0;
+			}
+		}
+		else if (distToLeft < distToRight &&
+			distToLeft < distToTop &&
+			distToLeft < distToBottom)
+		{
+			x = blockX - colliderWidth - colliderX;
+			if (velocityX > 0.0)
+			{
+				velocityX = 0.0;
+			}
+		}
+		else if (distToBottom < distToLeft &&
+			distToBottom < distToTop &&
+			distToBottom < distToRight)
+		{
+			y = blockY - colliderHeight - colliderY;
+			if (velocityY > 0.0)
+			{
+				velocityY = 0.0;
+			}
+		}
+		//If player is shortest to top or perfectly in the middle of object then push out to the top
+		else
+		{
+			y = blockY + blockHeight - colliderY;
+			if (velocityY < 0.0)
+			{
+				velocityY = 0.0;
+			}
+			isTouchingGround = true;
+			timeSinceNotTouchingGround = 0.0;
+		}
+	}
+}
+
 void Player::getCollisionUpdates(std::vector<StaticBlock> staticBlocks)
 {
 	//Assume player is not touching ground until a ground collision is made
 	//Set player state to jumping if no ground is collided with
-	bool isTouchingGround = false;
+	isTouchingGround = false;
 
 	for (StaticBlock block : staticBlocks)
 	{
-		if (x + colliderX < block.width + block.x &&
-			x + colliderX + colliderWidth > block.x &&
-			y + colliderY < block.height + block.y &&
-			y + colliderY + colliderHeight > block.y)
-		{
-			//Find closest edge and place player outside that edge
-			//Set velocity of y to 0 if horizontal edge found and x to 0 if vertical edge found
-			float playerRightSide = x + colliderX + colliderWidth;
-			float playerLeftSide = x + colliderX;
-			float playerTopSide = y + colliderY + colliderHeight;
-			float playerBottomSide = y + colliderY;
-			
-			//Get distance away from each side
-			float distToRight = block.x + block.width - playerLeftSide;
-			float distToLeft = playerRightSide - block.x;
-			float distToTop = block.y + block.height - playerBottomSide;
-			float distToBottom = playerTopSide - block.y;
-			
-			//Choose the shortest travel and move player outside of collider
-			if (distToRight < distToLeft &&
-				distToRight < distToTop &&
-				distToRight < distToBottom )
-			{
-				x = block.x + block.width - colliderX;
-				if (velocityX < 0.0)
-				{
-					velocityX = 0.0;
-				}
-			}
-			else if (distToLeft < distToRight &&
-				distToLeft < distToTop &&
-				distToLeft < distToBottom)
-			{
-				x = block.x - colliderWidth - colliderX;
-				if (velocityX > 0.0)
-				{
-					velocityX = 0.0;
-				}
-			}
-			else if (distToBottom < distToLeft &&
-				distToBottom < distToTop &&
-				distToBottom < distToRight)
-			{
-				y = block.y - colliderHeight - colliderY;
-				if (velocityY > 0.0)
-				{
-					velocityY = 0.0;
-				}
-			}
-			//If player is shortest to top or perfectly in the middle of object then push out to the top
-			else
-			{
-				y = block.y + block.height - colliderY;
-				if (velocityY < 0.0)
-				{
-					velocityY = 0.0;
-				}
-				isTouchingGround = true;
-				timeSinceNotTouchingGround = 0.0;
-			}
-		}
+		calculateCollider(block.x, block.y, block.width, block.height);
 	}
+
 	if (!isTouchingGround && !isJumping)
 	{
 		//Short delay needed as some very short frames may not detect any collisions even if player is on a platform

@@ -1,17 +1,19 @@
 #include "world.h"
+#include "player.h"
 
 World::World()
 {
+	player = new Player(250, 250, this);
 }
 
 void World::init()
 {
-	player.loadSprites();
+	player->loadSprites();
 	initBackGround();
 	
 	//Initial position of camera
-	cameraX = player.x + player.colliderWidth / 2;
-	cameraY = player.y + player.colliderHeight / 2;
+	cameraX = player->x + player->colliderWidth / 2;
+	cameraY = player->y + player->colliderHeight / 2;
 
 	staticBlocks.push_back(StaticBlock(100, 20, 110,10, "blocks/0.png"));
 	staticBlocks.push_back(StaticBlock(210, 20, 40, 10, "blocks/0.png"));
@@ -125,8 +127,8 @@ void World::initBackGround()
 void World::moveCamera(float screenWidth, float screenHeight)
 {
 	//Calculate player and camera bounding box 
-	float playerCentreX = player.x + player.colliderWidth / 2;
-	float playerCentreY = player.y + player.colliderHeight / 2;
+	float playerCentreX = player->x + player->colliderWidth / 2;
+	float playerCentreY = player->y + player->colliderHeight / 2;
 
 	float topOfCameraBox = cameraY + screenHeight / 2;
 	float bottomOfCameraBox = cameraY - screenHeight / 2;
@@ -240,13 +242,13 @@ void World::displayBackground(float screenWidth, float screenHeight)
 
 void World::update()
 {
-	player.updatePlayer(staticBlocks);
+	player->updatePlayer(staticBlocks);
 }
 
 void World::displayPlayerCameraBox(float screenWidth, float screenHeight)
 {
-	float playerCentreX = player.x + player.colliderWidth / 2;
-	float playerCentreY = player.y + player.colliderHeight / 2;
+	float playerCentreX = player->x + player->colliderWidth / 2;
+	float playerCentreY = player->y + player->colliderHeight / 2;
 	float topOfPlayerBox = playerCentreY + playerCameraBoxRadiusY * (screenHeight / 100);
 	float bottomOfPlayerBox = playerCentreY - playerCameraBoxRadiusY * (screenHeight / 100);
 	float rightOfPlayerBox = playerCentreX + playerCameraBoxRadiusX * (screenWidth / 100);
@@ -262,5 +264,5 @@ void World::display()
 		block.display();
 	}
 
-	player.displayPlayer();
+	player->displayPlayer();
 }

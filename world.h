@@ -14,8 +14,13 @@ public:
 	void displayBackground(float screenWidth, float screenHeight);
 	void displayPlayerCameraBox(float screenWidth, float screenHeight);
 
-	Player player = Player(250, 250, 0.2);
+	Player *player;
 	std::vector<StaticBlock> staticBlocks;
+
+	float leftEdge = 0;
+	float rightEdge = worldSizeX;
+	float topEdge = worldSizeY;
+	float bottomEdge = 20;
 
 private:
 	void initBackGround();

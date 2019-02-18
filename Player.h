@@ -1,6 +1,7 @@
 #pragma once
 #include "app.h"
 #include "staticBlock.h"
+#include "world.h"
 
 class Player
 {
@@ -15,7 +16,7 @@ class Player
 		float colliderWidth;
 		float colliderHeight;
 
-		Player(float startX, float startY, float scale);
+		Player(float startX, float startY, World *p);
 		void updatePlayer(std::vector<StaticBlock> staticBlocks);
 		void displayPlayer();
 		void loadSprites();
@@ -27,6 +28,7 @@ class Player
 		void groundMove();
 		void airMove();
 		void getCollisionUpdates(std::vector<StaticBlock> staticBlocks);
+		void Player::calculateCollider(float blockX, float blockY, float blockWidth, float blockHeight);
 
 		void calculateColliderBox();
 
@@ -61,6 +63,7 @@ class Player
 		bool isRunning;
 		bool isWalking;
 		bool isJumping;
+		bool isTouchingGround;
 
 		int currentSprite;
 		int maxSprites;
@@ -79,11 +82,13 @@ class Player
 		float timeUntilChangeToJump;
 		bool jumpLanding;
 
-		float scaleFactor;
+		float scaleFactor = 0.25;
 		float walkingHeight;
 		float walkingWidth;
 		float idleHeight;
 		float idleWidth;
 		float jumpingWidth;
 		float jumpingHeight;
+
+		World* parent;
 };

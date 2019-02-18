@@ -13,7 +13,6 @@ double maxFrameTime = 0.05;	//Unusual object movement can occur if a frame takes
 int maxFps = 200;
 steady_clock::time_point totalFrameTime = steady_clock::now();
 
-Player player = Player(50, 50, 0.2);
 std::vector<StaticBlock> staticBlocks;
 
 World world = World();
