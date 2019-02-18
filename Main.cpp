@@ -152,12 +152,13 @@ int WINAPI WinMain(	HINSTANCE	hInstance,			// Instance
 		}
 		App::deltaTime = double(duration_cast<duration<double>>(steady_clock::now() - totalFrameTime).count());
 		
+		//Limit fps to prevent cpu being hogged for unneccesarily large fps
 		if (1.0 / App::deltaTime > maxFps)
 		{
 			double timeToWait = (1.0 / maxFps) - App::deltaTime;
 			while (timeToWait > 0.0)
 			{
-				std::this_thread::sleep_for(std::chrono::nanoseconds{500});
+				std::this_thread::sleep_for(std::chrono::nanoseconds{0});
 				App::deltaTime = double(duration_cast<duration<double>>(steady_clock::now() - totalFrameTime).count());
 				timeToWait = (1.0 / maxFps) - App::deltaTime;
 			}

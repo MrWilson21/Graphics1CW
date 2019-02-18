@@ -41,10 +41,10 @@ void World::init()
 
 	std::vector<App::Point> p;
 	p.push_back(App::Point{ 10,10 });
-	p.push_back(App::Point{ 10,30 });
-	p.push_back(App::Point{ 30,30 });
-	p.push_back(App::Point{ 30,10 });
-	movingBlocks.push_back(MovingBlock(p, 25, 10, 10, "blocks/0.png"));
+	p.push_back(App::Point{ 10,100 });
+	p.push_back(App::Point{ 60,30 });
+	p.push_back(App::Point{ 100,100 });
+	movingBlocks.push_back(MovingBlock(p, 25, 30, 30, "blocks/0.png"));
 }
 
 

@@ -42,7 +42,7 @@ Player::Player(float startX, float startY, World* p)
 	jumpLanding = false;
 
 	//Display sizes for different player models, sizes based off of sprite image size
-	scaleFactor = 0.25;
+	scaleFactor = 0.2;
 	walkingHeight = 68.0 * scaleFactor;
 	walkingWidth = 44.0 * scaleFactor;
 	idleHeight = 75.0 * scaleFactor;
