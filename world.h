@@ -1,6 +1,7 @@
 #pragma once
 #include "app.h"
 #include "staticBlock.h"
+#include "movingblock.h"
 #include "player.h"
 
 class World
@@ -17,6 +18,7 @@ public:
 
 	Player* player;
 	std::vector<StaticBlock> staticBlocks;	
+	std::vector<MovingBlock> movingBlocks;
 	
 	float worldStartX;
 	float worldStartY;

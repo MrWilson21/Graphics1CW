@@ -26,6 +26,11 @@ class App
 
 		static GLuint loadPNG(char* name);
 		static void displayBoundingBox(float x1, float y1, float x2, float y2);
+
+		typedef struct Point {
+			float x;
+			float y;
+		};
 };
 
 

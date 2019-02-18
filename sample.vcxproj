@@ -12,14 +12,18 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="App.cpp" />
+    <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="MovingBlock.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="StaticBlock.cpp" />
     <ClCompile Include="World.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="app.h" />
+    <ClInclude Include="enemy.h" />
     <ClInclude Include="Image_Loading\nvImage.h" />
+    <ClInclude Include="movingblock.h" />
     <ClInclude Include="player.h" />
     <ClInclude Include="staticBlock.h" />
     <ClInclude Include="world.h" />

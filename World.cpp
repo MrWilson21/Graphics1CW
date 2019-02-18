@@ -38,6 +38,13 @@ void World::init()
 	staticBlocks.push_back(StaticBlock(100, 160, 10, 20, "blocks/0.png"));
 	staticBlocks.push_back(StaticBlock(110, 200, 10, 20, "blocks/0.png"));
 	staticBlocks.push_back(StaticBlock(120, 200, 200, 20, "blocks/0.png"));
+
+	std::vector<App::Point> p;
+	p.push_back(App::Point{ 10,10 });
+	p.push_back(App::Point{ 10,30 });
+	p.push_back(App::Point{ 30,30 });
+	p.push_back(App::Point{ 30,10 });
+	movingBlocks.push_back(MovingBlock(p, 25, 10, 10, "blocks/0.png"));
 }
 
 
@@ -251,6 +258,10 @@ void World::displayBackground(float screenWidth, float screenHeight)
 
 void World::update()
 {
+	for (int i=0; i < movingBlocks.size(); i++)
+	{
+		movingBlocks[i].move();
+	}
 	player->updatePlayer(staticBlocks);
 }
 
@@ -277,6 +288,11 @@ void World::displayWorldBoundaries()
 void World::display()
 {
 	for (StaticBlock block : staticBlocks)
+	{
+		block.display();
+	}
+
+	for (MovingBlock block : movingBlocks)
 	{
 		block.display();
 	}
