@@ -8,18 +8,15 @@ Player::Player(float startX, float startY, World* p)
 	x = startX;
 	y = startY;
 
-	maxVelocityX = 75.0;
-	maxVeloctyY = 180.0;
+	maxVelocityX = 60.0;
+	maxVeloctyY = 1700.0;
 	walkingAcceleration = 300.0;
 	deccelerationFactor = 200.0;
-	jumpSpeed = 160;
-	gravity = 300;
-	airAcceleration = 110.0;
-	airDeccelerationFactor = 50.0;
+	jumpSpeed = 170;
+	gravity = 430;
+	airAcceleration = 140.0;
+	airDeccelerationFactor = 650.0;
 	maxAirVelocityX = 45.0;
-
-	xMoveThisFrame = 0.0;
-	yMoveThisFrame = 0.0;
 
 	xReflectFactor = 0;
 	facingLeft = false;
@@ -32,7 +29,7 @@ Player::Player(float startX, float startY, World* p)
 
 	timeSinceFrameChange = 0.0;
 	timeSinceIdleAnimation = 0.0;
-	timeToWaitForNextWalkingFrame = 3.0;
+	timeToWaitForNextWalkingFrame = 2.4;
 	timeToWaitUntilIdleAnimation = 3.0;
 	timeToWaitForNextIdleFrame = 0.06;
 	timeToWaitForNextJumpingFrame = 0.04;
