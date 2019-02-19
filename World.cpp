@@ -19,32 +19,35 @@ World::World()
 
 	paralaxBackGround[11];
 
-	player = new Player(310, 40, this);
+	player = new Player(30, 40, this);
 }
 
 void World::init()
 {
 	player->loadSprites();
+
 	initBackGround();
 	
 	//Initial position of camera
 	cameraX = player->x + player->colliderWidth / 2;
 	cameraY = player->y + player->colliderHeight / 2;
 
-	//staticBlocks.push_back(StaticBlock(100, 0, 10, 20, "blocks/0.png"));
-	//staticBlocks.push_back(StaticBlock(110, 40, 10, 20, "blocks/0.png"));
-	//staticBlocks.push_back(StaticBlock(100, 80, 10, 20, "blocks/0.png"));
-	//staticBlocks.push_back(StaticBlock(110, 120, 10, 20, "blocks/0.png"));
-	//staticBlocks.push_back(StaticBlock(100, 160, 10, 20, "blocks/0.png"));
-	//staticBlocks.push_back(StaticBlock(110, 200, 10, 20, "blocks/0.png"));
-	//staticBlocks.push_back(StaticBlock(120, 200, 200, 20, "blocks/0.png"));
+	staticBlocks.push_back(StaticBlock(50, 60, 100, 20, "blocks/0.png"));
+
+	enemies.push_back(Enemy(60, 140, this));
+
+	for (int i = 0; i < enemies.size(); i++)
+	{
+		enemies[i].loadSprites();
+	}
+
 
 	std::vector<App::Point> p;
 	p.push_back(App::Point{ 300,10 });
 	p.push_back(App::Point{ 350,200 });
 	p.push_back(App::Point{ 400,30 });
 	p.push_back(App::Point{ 100,100 });
-	movingBlocks.push_back(MovingBlock(p, 250, 30, 30, "blocks/0.png"));
+	//movingBlocks.push_back(MovingBlock(p, 250, 30, 30, "blocks/0.png"));
 }
 
 
@@ -262,7 +265,13 @@ void World::update()
 	{
 		movingBlocks[i].move();
 	}
-	player->updatePlayer(staticBlocks, movingBlocks);
+	
+	for (int i = 0; i < enemies.size(); i++)
+	{
+		enemies[i].update();
+	}
+
+	player->update();
 }
 
 void World::displayPlayerCameraBox(float screenWidth, float screenHeight)
@@ -287,15 +296,20 @@ void World::displayWorldBoundaries()
 
 void World::display()
 {
-	for (StaticBlock block : staticBlocks)
+	for (int i = 0; i < staticBlocks.size(); i++)
 	{
-		block.display();
+		staticBlocks[i].display();
 	}
 
-	for (MovingBlock block : movingBlocks)
+	for (int i = 0; i < movingBlocks.size(); i++)
 	{
-		block.display();
+		movingBlocks[i].display();
 	}
 
-	player->displayPlayer();
+	for (int i = 0; i < enemies.size(); i++)
+	{
+		enemies[i].display();
+	}
+
+	player->display();
 }

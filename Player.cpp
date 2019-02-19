@@ -34,7 +34,7 @@ Player::Player(float startX, float startY, World* p)
 	timeToWaitForNextIdleFrame = 0.06;
 	timeToWaitForNextJumpingFrame = 0.04;
 
-	timeSinceNotTouchingGround = false;
+	timeSinceNotTouchingGround = 0.0;
 	timeUntilChangeToJump = 0.01;
 	jumpLanding = false;
 
@@ -154,7 +154,7 @@ void Player::loadSprites()
 	}
 }
 
-void Player::updatePlayer(std::vector<StaticBlock> staticBlocks, std::vector<MovingBlock> movingBlocks)
+void Player::update()
 {
 	//Get player input and change players position and orientation
 	getMovementUpdates();
@@ -163,7 +163,7 @@ void Player::updatePlayer(std::vector<StaticBlock> staticBlocks, std::vector<Mov
 	calculateColliderBox();
 
 	//After player is moved calculate collisions and make adjustments before rendering frame
-	getCollisionUpdates(staticBlocks, movingBlocks);
+	getCollisionUpdates();
 
 	//Check if player is not moving and change to idle
 	//Final check done in case player is walking into wall
@@ -430,18 +430,18 @@ void Player::calculateCollider(float blockX, float blockY, float blockWidth, flo
 	}
 }
 
-void Player::getCollisionUpdates(std::vector<StaticBlock> staticBlocks, std::vector<MovingBlock> movingBlocks)
+void Player::getCollisionUpdates()
 {
 	//Assume player is not touching ground until a ground collision is made
 	//Set player state to jumping if no ground is collided with
 	isTouchingGround = false;
 
-	for (StaticBlock block : staticBlocks)
+	for (StaticBlock block : parent->staticBlocks)
 	{
 		calculateCollider(block.x, block.y, block.width, block.height, 0.0, 0.0);
 	}
 
-	for (MovingBlock block : movingBlocks)
+	for (MovingBlock block : parent->movingBlocks)
 	{
 		calculateCollider(block.x, block.y, block.width, block.height, block.xMoveThisFrame, block.yMoveThisFrame);
 	}
@@ -564,7 +564,7 @@ void Player::displayIdle()
 	glPopMatrix();
 }
 
-void Player::displayPlayer()
+void Player::display()
 {
 	if (isWalking)
 	{

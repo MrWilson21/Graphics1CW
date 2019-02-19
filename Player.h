@@ -19,8 +19,8 @@ class Player
 		float colliderHeight;
 
 		Player(float startX, float startY, World* p);
-		void updatePlayer(std::vector<StaticBlock> staticBlocks, std::vector<MovingBlock> movingBlocks);
-		void displayPlayer();
+		void update();
+		void display();
 		void loadSprites();
 
 	private:
@@ -29,8 +29,8 @@ class Player
 		void airMovementUpdate();
 		void groundMove();
 		void airMove();
-		void getCollisionUpdates(std::vector<StaticBlock> staticBlocks, std::vector<MovingBlock> movingBlocks);
-		void Player::calculateCollider(float blockX, float blockY, float blockWidth, float blockHeight, float xMove, float yMove);
+		void getCollisionUpdates();
+		void calculateCollider(float blockX, float blockY, float blockWidth, float blockHeight, float xMove, float yMove);
 
 		void calculateColliderBox();
 

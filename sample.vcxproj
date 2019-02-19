@@ -30,6 +30,20 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="blocks\0.png" />
+    <Image Include="knuckles\idle\0.png" />
+    <Image Include="knuckles\idle\1.png" />
+    <Image Include="knuckles\walking\0.png" />
+    <Image Include="knuckles\walking\1.png" />
+    <Image Include="knuckles\walking\10.png" />
+    <Image Include="knuckles\walking\11.png" />
+    <Image Include="knuckles\walking\2.png" />
+    <Image Include="knuckles\walking\3.png" />
+    <Image Include="knuckles\walking\4.png" />
+    <Image Include="knuckles\walking\5.png" />
+    <Image Include="knuckles\walking\6.png" />
+    <Image Include="knuckles\walking\7.png" />
+    <Image Include="knuckles\walking\8.png" />
+    <Image Include="knuckles\walking\9.png" />
     <Image Include="shaggy\idle\0.png" />
     <Image Include="shaggy\idle\1.png" />
     <Image Include="shaggy\idle\10.png" />

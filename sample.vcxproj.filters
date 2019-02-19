@@ -34,6 +34,15 @@
     <Filter Include="Resource Files\worldBackGround">
       <UniqueIdentifier>{152bfa8b-f1e0-441a-a0ee-dcf905c04cf1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\knuckles">
+      <UniqueIdentifier>{4198f72a-eec1-4988-b34f-6208f2efe0ae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\knuckles\walking">
+      <UniqueIdentifier>{b74873ab-8366-4a35-83fb-919c59eff79d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\knuckles\idle">
+      <UniqueIdentifier>{d43d7b26-7e87-4f8e-9e3b-0773385f58f8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Player.cpp">
@@ -234,6 +243,48 @@
     </Image>
     <Image Include="worldBackGround\treesAndBushes.png">
       <Filter>Resource Files\worldBackGround</Filter>
+    </Image>
+    <Image Include="knuckles\idle\0.png">
+      <Filter>Resource Files\knuckles\idle</Filter>
+    </Image>
+    <Image Include="knuckles\idle\1.png">
+      <Filter>Resource Files\knuckles\idle</Filter>
+    </Image>
+    <Image Include="knuckles\walking\0.png">
+      <Filter>Resource Files\knuckles\walking</Filter>
+    </Image>
+    <Image Include="knuckles\walking\1.png">
+      <Filter>Resource Files\knuckles\walking</Filter>
+    </Image>
+    <Image Include="knuckles\walking\2.png">
+      <Filter>Resource Files\knuckles\walking</Filter>
+    </Image>
+    <Image Include="knuckles\walking\3.png">
+      <Filter>Resource Files\knuckles\walking</Filter>
+    </Image>
+    <Image Include="knuckles\walking\4.png">
+      <Filter>Resource Files\knuckles\walking</Filter>
+    </Image>
+    <Image Include="knuckles\walking\5.png">
+      <Filter>Resource Files\knuckles\walking</Filter>
+    </Image>
+    <Image Include="knuckles\walking\6.png">
+      <Filter>Resource Files\knuckles\walking</Filter>
+    </Image>
+    <Image Include="knuckles\walking\7.png">
+      <Filter>Resource Files\knuckles\walking</Filter>
+    </Image>
+    <Image Include="knuckles\walking\8.png">
+      <Filter>Resource Files\knuckles\walking</Filter>
+    </Image>
+    <Image Include="knuckles\walking\9.png">
+      <Filter>Resource Files\knuckles\walking</Filter>
+    </Image>
+    <Image Include="knuckles\walking\10.png">
+      <Filter>Resource Files\knuckles\walking</Filter>
+    </Image>
+    <Image Include="knuckles\walking\11.png">
+      <Filter>Resource Files\knuckles\walking</Filter>
     </Image>
   </ItemGroup>
   <ItemGroup>

@@ -3,6 +3,7 @@
 #include "staticBlock.h"
 #include "movingblock.h"
 #include "player.h"
+#include "enemy.h"
 
 class World
 {
@@ -19,6 +20,7 @@ public:
 	Player* player;
 	std::vector<StaticBlock> staticBlocks;	
 	std::vector<MovingBlock> movingBlocks;
+	std::vector<Enemy> enemies;
 	
 	float worldStartX;
 	float worldStartY;
