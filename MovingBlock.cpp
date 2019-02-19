@@ -16,6 +16,9 @@ MovingBlock::MovingBlock(std::vector<App::Point> points, float speed, float widt
 	currentPoint = 1;
 	pointSize = points.size();
 
+	xMoveThisFrame = 0.0;
+	yMoveThisFrame = 0.0;
+
 	moveSpeed = speed;
 }
 
@@ -40,15 +43,20 @@ void MovingBlock::move()
 	
 	if (abs(distanceX) - abs(distanceToMoveX) <= 0.0 && abs(distanceY) - abs(distanceToMoveY) <= 0.0)
 	{
+		xMoveThisFrame = distanceX;
+		yMoveThisFrame = distanceY;
 		x = points.at(currentPoint).x;
 		y = points.at(currentPoint).y;
 		currentPoint = (currentPoint + 1) % pointSize;
 	}
 	else
 	{
+		xMoveThisFrame = distanceToMoveX;
+		yMoveThisFrame = distanceToMoveY;
 		x += distanceToMoveX;
 		y += distanceToMoveY;
 	}
+	cout << xMoveThisFrame << "\t" << yMoveThisFrame << "\n";
 }
 
 void MovingBlock::display()

@@ -19,7 +19,7 @@ World::World()
 
 	paralaxBackGround[11];
 
-	player = new Player(50, 50, this);
+	player = new Player(310, 40, this);
 }
 
 void World::init()
@@ -31,20 +31,20 @@ void World::init()
 	cameraX = player->x + player->colliderWidth / 2;
 	cameraY = player->y + player->colliderHeight / 2;
 
-	staticBlocks.push_back(StaticBlock(100, 0, 10, 20, "blocks/0.png"));
-	staticBlocks.push_back(StaticBlock(110, 40, 10, 20, "blocks/0.png"));
-	staticBlocks.push_back(StaticBlock(100, 80, 10, 20, "blocks/0.png"));
-	staticBlocks.push_back(StaticBlock(110, 120, 10, 20, "blocks/0.png"));
-	staticBlocks.push_back(StaticBlock(100, 160, 10, 20, "blocks/0.png"));
-	staticBlocks.push_back(StaticBlock(110, 200, 10, 20, "blocks/0.png"));
-	staticBlocks.push_back(StaticBlock(120, 200, 200, 20, "blocks/0.png"));
+	//staticBlocks.push_back(StaticBlock(100, 0, 10, 20, "blocks/0.png"));
+	//staticBlocks.push_back(StaticBlock(110, 40, 10, 20, "blocks/0.png"));
+	//staticBlocks.push_back(StaticBlock(100, 80, 10, 20, "blocks/0.png"));
+	//staticBlocks.push_back(StaticBlock(110, 120, 10, 20, "blocks/0.png"));
+	//staticBlocks.push_back(StaticBlock(100, 160, 10, 20, "blocks/0.png"));
+	//staticBlocks.push_back(StaticBlock(110, 200, 10, 20, "blocks/0.png"));
+	//staticBlocks.push_back(StaticBlock(120, 200, 200, 20, "blocks/0.png"));
 
 	std::vector<App::Point> p;
-	p.push_back(App::Point{ 10,10 });
-	p.push_back(App::Point{ 10,100 });
-	p.push_back(App::Point{ 60,30 });
+	p.push_back(App::Point{ 300,10 });
+	p.push_back(App::Point{ 350,200 });
+	p.push_back(App::Point{ 400,30 });
 	p.push_back(App::Point{ 100,100 });
-	movingBlocks.push_back(MovingBlock(p, 25, 30, 30, "blocks/0.png"));
+	movingBlocks.push_back(MovingBlock(p, 250, 30, 30, "blocks/0.png"));
 }
 
 
@@ -262,7 +262,7 @@ void World::update()
 	{
 		movingBlocks[i].move();
 	}
-	player->updatePlayer(staticBlocks);
+	player->updatePlayer(staticBlocks, movingBlocks);
 }
 
 void World::displayPlayerCameraBox(float screenWidth, float screenHeight)

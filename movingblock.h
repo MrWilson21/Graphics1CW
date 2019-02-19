@@ -9,6 +9,9 @@ public:
 	float width;
 	float height;
 
+	float xMoveThisFrame;
+	float yMoveThisFrame;
+
 	GLuint texture;
 
 	MovingBlock(std::vector<App::Point> points, float speed, float width, float height, string sprite);

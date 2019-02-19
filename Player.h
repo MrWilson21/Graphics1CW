@@ -1,6 +1,7 @@
 #pragma once
 #include "app.h"
 #include "staticBlock.h"
+#include "movingblock.h"
 
 //Pre define class and include world.h in player.cpp to fix circular definition problem 
 class World;
@@ -18,7 +19,7 @@ class Player
 		float colliderHeight;
 
 		Player(float startX, float startY, World* p);
-		void updatePlayer(std::vector<StaticBlock> staticBlocks);
+		void updatePlayer(std::vector<StaticBlock> staticBlocks, std::vector<MovingBlock> movingBlocks);
 		void displayPlayer();
 		void loadSprites();
 
@@ -28,8 +29,8 @@ class Player
 		void airMovementUpdate();
 		void groundMove();
 		void airMove();
-		void getCollisionUpdates(std::vector<StaticBlock> staticBlocks);
-		void Player::calculateCollider(float blockX, float blockY, float blockWidth, float blockHeight);
+		void getCollisionUpdates(std::vector<StaticBlock> staticBlocks, std::vector<MovingBlock> movingBlocks);
+		void Player::calculateCollider(float blockX, float blockY, float blockWidth, float blockHeight, float xMove, float yMove);
 
 		void calculateColliderBox();
 

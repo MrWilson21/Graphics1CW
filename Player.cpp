@@ -12,8 +12,8 @@ Player::Player(float startX, float startY, World* p)
 	maxVeloctyY = 1700.0;
 	walkingAcceleration = 300.0;
 	deccelerationFactor = 200.0;
-	jumpSpeed = 170;
-	gravity = 430;
+	jumpSpeed = 270;
+	gravity = 350;
 	airAcceleration = 140.0;
 	airDeccelerationFactor = 650.0;
 	maxAirVelocityX = 45.0;
@@ -154,7 +154,7 @@ void Player::loadSprites()
 	}
 }
 
-void Player::updatePlayer(std::vector<StaticBlock> staticBlocks)
+void Player::updatePlayer(std::vector<StaticBlock> staticBlocks, std::vector<MovingBlock> movingBlocks)
 {
 	//Get player input and change players position and orientation
 	getMovementUpdates();
@@ -163,7 +163,7 @@ void Player::updatePlayer(std::vector<StaticBlock> staticBlocks)
 	calculateColliderBox();
 
 	//After player is moved calculate collisions and make adjustments before rendering frame
-	getCollisionUpdates(staticBlocks);
+	getCollisionUpdates(staticBlocks, movingBlocks);
 
 	//Check if player is not moving and change to idle
 	//Final check done in case player is walking into wall
@@ -358,11 +358,16 @@ void Player::airMove()
 	}
 }
 
-void Player::calculateCollider(float blockX, float blockY, float blockWidth, float blockHeight)
+void Player::calculateCollider(float blockX, float blockY, float blockWidth, float blockHeight, float xMove, float yMove)
 {
+	//yMove and xMove a extra parameters given for moving block collisions
+	//yMove gives the block collider a top edge from its previous frame
+	//This allows the player to stick to platform if waiting ontop of it while the block is moving downwards
+	//xMove moves player by the same x that the block moved by if standing on top of it
+
 	if (x + colliderX < blockWidth + blockX &&
 		x + colliderX + colliderWidth > blockX &&
-		y + colliderY < blockHeight + blockY &&
+		y + colliderY < blockHeight + blockY - yMove &&
 		y + colliderY + colliderHeight > blockY)
 	{
 		//Find closest edge and place player outside that edge
@@ -412,6 +417,8 @@ void Player::calculateCollider(float blockX, float blockY, float blockWidth, flo
 		//If player is shortest to top or perfectly in the middle of object then push out to the top
 		else
 		{
+			//Add blocks xMovement to player position so player follows horizontal movement when standing on top of it
+			x += xMove;
 			y = blockY + blockHeight - colliderY;
 			if (velocityY < 0.0)
 			{
@@ -423,7 +430,7 @@ void Player::calculateCollider(float blockX, float blockY, float blockWidth, flo
 	}
 }
 
-void Player::getCollisionUpdates(std::vector<StaticBlock> staticBlocks)
+void Player::getCollisionUpdates(std::vector<StaticBlock> staticBlocks, std::vector<MovingBlock> movingBlocks)
 {
 	//Assume player is not touching ground until a ground collision is made
 	//Set player state to jumping if no ground is collided with
@@ -431,13 +438,18 @@ void Player::getCollisionUpdates(std::vector<StaticBlock> staticBlocks)
 
 	for (StaticBlock block : staticBlocks)
 	{
-		calculateCollider(block.x, block.y, block.width, block.height);
+		calculateCollider(block.x, block.y, block.width, block.height, 0.0, 0.0);
 	}
 
-	calculateCollider(parent->rightEdge, 0, 100, parent->worldSizeY);
-	calculateCollider(-100 + parent->leftEdge, 0, 100, parent->worldSizeY);
-	calculateCollider(0, parent->topEdge, parent->worldSizeX, 100);
-	calculateCollider(0, -100 + parent->bottomEdge, parent->worldSizeX, 100);
+	for (MovingBlock block : movingBlocks)
+	{
+		calculateCollider(block.x, block.y, block.width, block.height, block.xMoveThisFrame, block.yMoveThisFrame);
+	}
+
+	calculateCollider(parent->rightEdge, 0, 100, parent->worldSizeY, 0.0, 0.0);
+	calculateCollider(-100 + parent->leftEdge, 0, 100, parent->worldSizeY, 0.0, 0.0);
+	calculateCollider(0, parent->topEdge, parent->worldSizeX, 100, 0.0, 0.0);
+	calculateCollider(0, -100 + parent->bottomEdge, parent->worldSizeX, 100, 0.0, 0.0);
 
 	if (!isTouchingGround && !isJumping)
 	{
