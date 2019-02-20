@@ -30,6 +30,7 @@ private:
 	void getCollisionUpdates();
 	void calculateCollider(float blockX, float blockY, float blockWidth, float blockHeight, float xMove, float yMove);
 	void detectPlayer();
+	void attack();
 
 	void calculateColliderBox();
 
@@ -38,6 +39,7 @@ private:
 	void changeToRunningState();
 	void changeToJumpingState();
 	void changeToDivingState();
+	void changeToWaitingToAttack();
 	void resetStates();
 
 	void turnLeft();
@@ -59,6 +61,21 @@ private:
 	float runningAcceleration;
 	float gravity;
 	float airDeccelerationFactor;
+
+	float jumpUpHeight;
+	float jumpUpXVelocity;
+	float jumpDownHeight;
+	float jumpDownXVelocity;
+	float diveHeight;
+	float diveXVelocity;
+
+	float delayBeforeAttacking;
+	float delayBetweenJumps;
+	float delayBetweenDives;
+	float timeSinceStartingAttack;
+	float timeSinceAttacking;
+	float delayAfterLandingAttack;
+	float timeSinceLandingAttack;
 
 	float chaseXOffset;
 	float chaseYOffset;
@@ -87,12 +104,15 @@ private:
 	bool isIdle;
 	bool isWalking;
 	bool isRunning;
-	bool isJumping;
+	bool isJumpingUp;
+	bool isJumpingDown;
 	bool isInAir;
 	bool isDiving;
 	bool isTouchingGround;
 	bool isWalkingOfRightEdge;
 	bool isWalkingOfLeftEdge;
+	bool isWaitingToAttack;
+	bool isAttacking;
 
 	int currentSprite;
 	int maxSprites;
@@ -100,7 +120,8 @@ private:
 	GLuint idleTextures[2];
 	GLuint diveTextures[4];
 	GLuint runTextures[12];
-	GLuint jumpTextures[6];
+	GLuint jumpTextures[10];
+	GLuint waitingToAttackTexture;
 
 	float timeSinceFrameChange;
 	float timeToWaitForNextWalkingFrame;
@@ -113,7 +134,7 @@ private:
 	float timeUntilChangeToJump;
 	bool jumpLanding;
 
-	//Display sizes for different player models, sizes based off of sprite image size
+	//Display sizes for different enemy models, sizes based off of sprite image size
 	float scaleFactor;
 	float walkingWidth;
 	float walkingHeight;

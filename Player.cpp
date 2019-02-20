@@ -12,7 +12,7 @@ Player::Player(float startX, float startY, World* p)
 	maxVeloctyY = 200;
 	walkingAcceleration = 300.0;
 	deccelerationFactor = 200.0;
-	jumpSpeed = 270;
+	jumpSpeed = 200;
 	gravity = 350;
 	airAcceleration = 140.0;
 	airDeccelerationFactor = 650.0;

@@ -13,9 +13,16 @@ Enemy::Enemy(float startX, float startY, World* p)
 	maxRunningVelocityX = 50.0;
 	runningAcceleration = 150.0;
 	walkingAcceleration = 100.0;
-	deccelerationFactor = 200.0;
+	deccelerationFactor = 160.0;
 	gravity = 350;
-	airDeccelerationFactor = 950.0;
+	airDeccelerationFactor = 0.0;
+
+	jumpUpHeight = 190.0;
+	jumpUpXVelocity = 90.0;
+	jumpDownHeight = 75.0;
+	jumpDownXVelocity = 90.0;
+	diveHeight = 45.0;
+	diveXVelocity = 110.0;
 
 	xReflectFactor = 0;
 	facingLeft = false;
@@ -27,7 +34,7 @@ Enemy::Enemy(float startX, float startY, World* p)
 	idleTextures[2];
 	diveTextures[4];
 	runTextures[12];
-	jumpTextures[6];
+	jumpTextures[10];
 
 	timeSinceFrameChange = 0.0;
 	timeToWaitForNextWalkingFrame = 1.2;
@@ -40,7 +47,7 @@ Enemy::Enemy(float startX, float startY, World* p)
 	timeUntilChangeToJump = 0.01;
 
 	//Display sizes for different player models, sizes based off of sprite image size
-	scaleFactor = 0.25;
+	scaleFactor = 0.2;
 	walkingWidth = 36.0 * scaleFactor;
 	walkingHeight = 39.0 * scaleFactor;
 	idleWidth = 38.0 * scaleFactor;
@@ -51,6 +58,14 @@ Enemy::Enemy(float startX, float startY, World* p)
 	divingHeight = 27 * scaleFactor;
 	runningWidth = 37 * scaleFactor;
 	runningHeight = 36 * scaleFactor;
+
+	delayBeforeAttacking = 0.7;
+	delayBetweenDives = 3.5;
+	delayBetweenJumps = 1.2;
+	timeSinceStartingAttack = 0.0;
+	timeSinceAttacking = 0.0;
+	delayAfterLandingAttack = 0.6;
+	timeSinceLandingAttack = 0.0;
 
 	parent = p;
 
@@ -66,23 +81,23 @@ Enemy::Enemy(float startX, float startY, World* p)
 //Height and width change size of box
 void Enemy::calculateColliderBox()
 {
-	chaseColliderWidth = 50;
-	chaseColliderHeight = 80;
+	chaseColliderWidth = 150;
+	chaseColliderHeight = 100;
 	diveColliderWidth = 45;
 	diveColliderHeight = 12;
-	jumpUpColliderWidth = 35;
-	jumpUpColliderHeight = 30;
-	jumpDownColliderWidth = 35;
-	jumpDownColliderHeight = 30;
+	jumpUpColliderWidth = 45;
+	jumpUpColliderHeight = 20;
+	jumpDownColliderWidth = 45;
+	jumpDownColliderHeight = 35;
 
 	chaseXOffset = -15;
-	chaseYOffset = 5;
-	diveXOffset = 20;
+	chaseYOffset = -5;
+	diveXOffset = 30;
 	diveYOffset = 0;
 	jumpUpXOffset = 20;
 	jumpUpYOffset = 25;
 	jumpDownXOffset = 20;
-	jumpDownYOffset = -25;
+	jumpDownYOffset = -20;
 
 	colliderX = 0;
 	colliderY = 0;
@@ -151,20 +166,22 @@ void Enemy::incrementSpriteCounter()
 		//Multiply velocity with time so frame changes are based on player speed as well as time elapsed
 		timeSinceFrameChange += abs(velocityX) * App::deltaTime;
 	}
-	else if (isJumping)
+	else if (isJumpingDown || isJumpingUp)
 	{
 		if (timeSinceFrameChange > timeToWaitForNextJumpingFrame)
 		{
 			//Jump animation is held at frame 1 until jump lands where jump animation is finished and state can change to idle
-			if (currentSprite == 8)
-			{
-				changeToWalkingState();
-				return;
-			}
 			if (jumpLanding)
 			{
-				currentSprite = (currentSprite + 1) % maxSprites;
-				timeSinceFrameChange = 0.0;
+				currentSprite += 1;
+				if (currentSprite == maxSprites)
+				{
+					currentSprite -= 1;
+				}
+			}
+			else
+			{
+				return;
 			}
 		}
 		timeSinceFrameChange += App::deltaTime;
@@ -216,60 +233,145 @@ void Enemy::loadSprites()
 		char *cstr = &imgSrc[0u];
 		diveTextures[i] = App::loadPNG(cstr);
 	}
+	waitingToAttackTexture = App::loadPNG("knuckles/waitingToAttack/0.png");
 }
 
 void Enemy::detectPlayer()
 {
-	if (!isInAir && !isJumping && !isDiving)
+	float pColliderX = parent->player->colliderX + parent->player->x;
+	float pColliderY = parent->player->colliderY + parent->player->y;
+	float pColliderWidth = parent->player->colliderWidth;
+	float pColliderHeight = parent->player->colliderHeight;
+
+	float chaseX = x + chaseXOffset;
+	float chaseY = y + chaseYOffset;
+
+	if (chaseX < pColliderX + pColliderWidth &&
+		chaseX + chaseColliderWidth > pColliderX &&
+		chaseY < pColliderHeight + pColliderY &&
+		chaseY + chaseColliderHeight  > pColliderY)
 	{
-		float pColliderX = parent->player->colliderX + parent->player->x;
-		float pColliderY = parent->player->colliderY + parent->player->y;
-		float pColliderWidth = parent->player->colliderWidth;
-		float pColliderHeight = parent->player->colliderHeight;
-
-		float chaseX = x + chaseXOffset;
-		float chaseY = y + chaseYOffset;
-
-		if (chaseX < pColliderX + pColliderWidth &&
-			chaseX + chaseColliderWidth > pColliderX &&
-			chaseY < pColliderHeight + pColliderY &&
-			chaseY + chaseColliderHeight  > pColliderY)
+		float playerMidPointX = pColliderX + pColliderWidth / 2;
+		float enemyMidPointX = x + colliderX + colliderWidth / 2;
+		if (isIdle)
 		{
-			float playerMidPointX = pColliderX + pColliderWidth / 2;
-			float enemyMidPointX = x + colliderX + colliderWidth / 2;
-			if (isIdle)
+			if (playerMidPointX - enemyMidPointX > 0.0)
 			{
-				if (playerMidPointX - enemyMidPointX > 0.0)
+				if (facingLeft)
 				{
-					if (facingLeft)
-					{
-						turnRight();
-						changeToRunningState();	
-					}
-				}
-				else if (!facingLeft)
-				{
-					turnLeft();
-					changeToRunningState();
+					turnRight();
+					changeToRunningState();	
 				}
 			}
-			else
+			else if (!facingLeft)
 			{
-				if (playerMidPointX - enemyMidPointX > 0.0)
-				{
-
-					turnRight();
-				}
-				else
-				{
-					turnLeft();
-				}
+				turnLeft();
 				changeToRunningState();
 			}
 		}
+		else if(isWalking || isRunning)
+		{
+			if (playerMidPointX - enemyMidPointX > 0.0)
+			{
+
+				turnRight();
+			}
+			else
+			{
+				turnLeft();
+			}
+			changeToRunningState();
+		}
+
+		if (!isWaitingToAttack && !isIdle)
+		{
+			float jumpUpX = x + jumpUpXOffset;
+			float jumpUpY = y + jumpUpYOffset;
+			float jumpDownX = x + jumpDownXOffset;
+			float jumpDownY = y + jumpDownYOffset;
+			float diveX = x + diveXOffset;
+			float diveY = y + diveYOffset;
+				
+			if (jumpUpX < pColliderX + pColliderWidth &&
+				jumpUpX + jumpUpColliderWidth > pColliderX &&
+				jumpUpY < pColliderHeight + pColliderY &&
+				jumpUpY + jumpUpColliderHeight  > pColliderY &&
+				timeSinceAttacking > delayBetweenJumps)
+			{
+				changeToWaitingToAttack();
+				isJumpingUp = true;
+			}
+			else if (jumpDownX < pColliderX + pColliderWidth &&
+					 jumpDownX + jumpDownColliderWidth > pColliderX &&
+				     jumpDownY < pColliderHeight + pColliderY &&
+					 jumpDownY + jumpDownColliderHeight  > pColliderY &&
+					 timeSinceAttacking > delayBetweenJumps)
+			{
+				changeToWaitingToAttack();
+				isJumpingDown = true;
+			}
+			else if (diveX < pColliderX + pColliderWidth &&
+					 diveX + diveColliderWidth > pColliderX &&
+					 diveY < pColliderHeight + pColliderY &&
+					 diveY + diveColliderHeight  > pColliderY && 
+					 timeSinceAttacking > delayBetweenDives)
+			{
+				changeToWaitingToAttack();
+				isDiving = true;
+			}
+		}
+	}
+	else if(!isWaitingToAttack)
+	{
+		changeToWalkingState();
+	}
+}
+
+void Enemy::attack()
+{
+	jumpLanding = false;
+	isWaitingToAttack = false;
+	isAttacking = true;
+	timeSinceLandingAttack = 0.0;
+	timeSinceAttacking = 0.0;
+	timeSinceStartingAttack = 0.0;
+	if (isDiving)
+	{
+		if (facingLeft)
+		{
+			velocityX = -diveXVelocity;
+			velocityY = diveHeight;
+		}
 		else
 		{
-			changeToWalkingState();
+			velocityX = diveXVelocity;
+			velocityY = diveHeight;
+		}
+	}
+	if (isJumpingDown)
+	{
+		if (facingLeft)
+		{
+			velocityX = -jumpDownXVelocity;
+			velocityY = jumpDownHeight;
+		}
+		else
+		{
+			velocityX = jumpDownXVelocity;
+			velocityY = jumpDownHeight;
+		}
+	}
+	if (isJumpingUp)
+	{
+		if (facingLeft)
+		{
+			velocityX = -jumpUpXVelocity;
+			velocityY = jumpUpHeight;
+		}
+		else
+		{
+			velocityX = jumpUpXVelocity;
+			velocityY = jumpUpHeight;
 		}
 	}
 }
@@ -280,12 +382,32 @@ void Enemy::update()
 	calculateColliderBox();
 
 	//Chose behaviour if player is detected in range of enemy
-	if (!isInAir)
+	if (!isInAir && !isWaitingToAttack && !isAttacking)
 	{
 		detectPlayer();
 	}
 
-	//Get player input and change players position and orientation
+	if (isWaitingToAttack)
+	{
+		timeSinceStartingAttack += App::deltaTime;
+		if (timeSinceStartingAttack > delayBeforeAttacking)
+		{
+			attack();
+		}
+	}
+	else if (isAttacking && jumpLanding)
+	{
+		timeSinceLandingAttack += App::deltaTime;
+		if (timeSinceLandingAttack > delayAfterLandingAttack)
+		{
+			changeToWalkingState();
+		}
+	}
+	else if(!isAttacking)
+	{
+		timeSinceAttacking += App::deltaTime;
+	}
+
 	getMovementUpdates();
 
 	isTouchingGround = false;
@@ -332,18 +454,11 @@ void Enemy::turnRight()
 //Get player input and move player based on current state and inputs given
 void Enemy::getMovementUpdates()
 {
-	if (isWalking || isRunning)
+	if (!isInAir)
 	{
-		if (!isInAir)
-		{
-			groundMovementUpdate();
-		}
-		else
-		{
-			airMovementUpdate();
-		}
+		groundMovementUpdate();
 	}
-	else if(isInAir)
+	else
 	{
 		airMovementUpdate();
 	}
@@ -355,6 +470,16 @@ void Enemy::getMovementUpdates()
 		xReflectFactor = 1;
 	}
 	else if (velocityX > 0)
+	{
+		facingLeft = false;
+		xReflectFactor = 0;
+	}
+	else if (aimingLeft)
+	{
+		facingLeft = true;
+		xReflectFactor = 1;
+	}
+	else
 	{
 		facingLeft = false;
 		xReflectFactor = 0;
@@ -411,7 +536,7 @@ void Enemy::groundMovementUpdate()
 				velocityX = -maxVelocityX;
 			}
 		}
-		else
+		else if(isRunning)
 		{
 			velocityX -= runningAcceleration * App::deltaTime;
 			if (velocityX < -maxRunningVelocityX)
@@ -419,7 +544,14 @@ void Enemy::groundMovementUpdate()
 				velocityX = -maxRunningVelocityX;
 			}
 		}
-
+		else
+		{
+			velocityX += deccelerationFactor * App::deltaTime;
+			if (velocityX > 0.0)
+			{
+				velocityX = 0.0;
+			}
+		}
 	}
 	else
 	{
@@ -431,13 +563,21 @@ void Enemy::groundMovementUpdate()
 				velocityX = maxVelocityX;
 			}
 		}
-		else
+		else if(isRunning)
 		{
 			velocityX += runningAcceleration * App::deltaTime;
 			if (velocityX > maxRunningVelocityX)
 			{
 				velocityX = maxRunningVelocityX;
 			}
+		}
+		else
+		{
+			velocityX -= deccelerationFactor * App::deltaTime;
+			if (velocityX < 0.0)
+			{
+				velocityX = 0.0;
+			}	
 		}
 	}
 
@@ -574,7 +714,7 @@ void Enemy::getCollisionUpdates()
 	calculateCollider(0, parent->topEdge, parent->worldSizeX, 100, 0.0, 0.0);
 	calculateCollider(0, -100 + parent->bottomEdge, parent->worldSizeX, 100, 0.0, 0.0);
 
-	if (!isTouchingGround && !isJumping)
+	if (!isTouchingGround)
 	{
 		//Short delay needed as some very short frames may not detect any collisions even if player is on a platform
 		timeSinceNotTouchingGround += App::deltaTime;
@@ -583,7 +723,7 @@ void Enemy::getCollisionUpdates()
 			isInAir = true;
 		}
 	}
-	if (isJumping && isTouchingGround)
+	if ((isJumpingUp || isJumpingDown || isDiving) && isTouchingGround)
 	{
 		jumpLanding = true;
 	}
@@ -617,9 +757,13 @@ void Enemy::resetStates()
 	timeSinceFrameChange = 0.0;
 	isWalking = false;
 	isIdle = false;
-	isJumping = false;
+	isJumpingUp = false;
+	isJumpingDown = false;
+	isAttacking = false;
 	isDiving = false;
 	isRunning = false;
+	isWaitingToAttack = false;
+	jumpLanding = false;
 }
 
 void Enemy::changeToRunningState()
@@ -634,10 +778,10 @@ void Enemy::changeToRunningState()
 
 void Enemy::changeToJumpingState()
 {
-	if (!isJumping)
+	if (!isJumpingUp || !isJumpingDown)
 	{
 		resetStates();
-		maxSprites = 6;
+		maxSprites = 10;
 		isIdle = true;
 	}
 }
@@ -649,6 +793,17 @@ void Enemy::changeToDivingState()
 		resetStates();
 		maxSprites = 4;
 		isDiving = true;
+	}
+}
+
+void Enemy::changeToWaitingToAttack()
+{
+	if (!isWaitingToAttack)
+	{
+		resetStates();
+		maxSprites = 1;
+		isWaitingToAttack = true;
+		timeSinceStartingAttack = 0.0;
 	}
 }
 
@@ -700,7 +855,14 @@ void Enemy::displayJumping()
 {
 	glEnable(GL_TEXTURE_2D);
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-	glBindTexture(GL_TEXTURE_2D, jumpTextures[currentSprite]);
+	if (isWaitingToAttack)
+	{
+		glBindTexture(GL_TEXTURE_2D, waitingToAttackTexture);
+	}
+	else
+	{
+		glBindTexture(GL_TEXTURE_2D, jumpTextures[currentSprite]);
+	}
 	glPushMatrix();
 	glTranslatef(x, y, 0.0);
 	glBegin(GL_POLYGON);
@@ -744,7 +906,14 @@ void Enemy::displayDiving()
 {
 	glEnable(GL_TEXTURE_2D);
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-	glBindTexture(GL_TEXTURE_2D, diveTextures[currentSprite]);
+	if (isWaitingToAttack)
+	{
+		glBindTexture(GL_TEXTURE_2D, waitingToAttackTexture);
+	}
+	else
+	{
+		glBindTexture(GL_TEXTURE_2D, diveTextures[currentSprite]);
+	}
 	glPushMatrix();
 	glTranslatef(x, y, 0.0);
 	glBegin(GL_POLYGON);
@@ -772,7 +941,7 @@ void Enemy::display()
 	{
 		displayRunning();
 	}
-	else if (isJumping)
+	else if (isJumpingUp || isJumpingDown)
 	{
 		displayJumping();
 	}

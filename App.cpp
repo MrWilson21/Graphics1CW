@@ -3,7 +3,7 @@
 bool App::keys[256];
 const double App::degToRad = 3.14159265359 / 180.0;
 double App::deltaTime = 0.0;
-bool App::shouldDrawBoundingBoxes = true;
+bool App::shouldDrawBoundingBoxes = false;
 
 GLuint App::loadPNG(char* name)
 {

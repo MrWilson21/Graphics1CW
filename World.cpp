@@ -33,8 +33,10 @@ void World::init()
 	cameraY = player->y + player->colliderHeight / 2;
 
 	staticBlocks.push_back(StaticBlock(50, 45, 100, 20, "blocks/0.png"));
-	staticBlocks.push_back(StaticBlock(40, 45, 10, 20, "blocks/0.png"));
-	staticBlocks.push_back(StaticBlock(150, 30, 50, 20, "blocks/0.png"));
+	staticBlocks.push_back(StaticBlock(40, 65, 10, 20, "blocks/0.png"));
+	staticBlocks.push_back(StaticBlock(200, 0, 10, 20, "blocks/0.png"));
+	staticBlocks.push_back(StaticBlock(160, 100, 50, 10, "blocks/0.png"));
+	staticBlocks.push_back(StaticBlock(210, 100, 10, 30, "blocks/0.png"));
 
 	enemies.push_back(Enemy(60, 140, this));
 
