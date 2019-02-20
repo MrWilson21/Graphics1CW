@@ -43,6 +43,15 @@
     <Filter Include="Resource Files\knuckles\idle">
       <UniqueIdentifier>{d43d7b26-7e87-4f8e-9e3b-0773385f58f8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\knuckles\jump">
+      <UniqueIdentifier>{054f4922-f9c9-4ae8-a41d-852f8b4647e4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\knuckles\dive">
+      <UniqueIdentifier>{a5160443-8022-44a5-9ae7-27a1a9566edd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\knuckles\run">
+      <UniqueIdentifier>{861e657f-802d-4e3f-9dde-d0cbd5445083}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Player.cpp">
@@ -285,6 +294,72 @@
     </Image>
     <Image Include="knuckles\walking\11.png">
       <Filter>Resource Files\knuckles\walking</Filter>
+    </Image>
+    <Image Include="knuckles\jump\5.png">
+      <Filter>Resource Files\knuckles\jump</Filter>
+    </Image>
+    <Image Include="knuckles\jump\0.png">
+      <Filter>Resource Files\knuckles\jump</Filter>
+    </Image>
+    <Image Include="knuckles\jump\1.png">
+      <Filter>Resource Files\knuckles\jump</Filter>
+    </Image>
+    <Image Include="knuckles\jump\2.png">
+      <Filter>Resource Files\knuckles\jump</Filter>
+    </Image>
+    <Image Include="knuckles\jump\3.png">
+      <Filter>Resource Files\knuckles\jump</Filter>
+    </Image>
+    <Image Include="knuckles\jump\4.png">
+      <Filter>Resource Files\knuckles\jump</Filter>
+    </Image>
+    <Image Include="knuckles\run\0.png">
+      <Filter>Resource Files\knuckles\run</Filter>
+    </Image>
+    <Image Include="knuckles\run\1.png">
+      <Filter>Resource Files\knuckles\run</Filter>
+    </Image>
+    <Image Include="knuckles\run\2.png">
+      <Filter>Resource Files\knuckles\run</Filter>
+    </Image>
+    <Image Include="knuckles\run\3.png">
+      <Filter>Resource Files\knuckles\run</Filter>
+    </Image>
+    <Image Include="knuckles\run\4.png">
+      <Filter>Resource Files\knuckles\run</Filter>
+    </Image>
+    <Image Include="knuckles\run\5.png">
+      <Filter>Resource Files\knuckles\run</Filter>
+    </Image>
+    <Image Include="knuckles\run\6.png">
+      <Filter>Resource Files\knuckles\run</Filter>
+    </Image>
+    <Image Include="knuckles\run\7.png">
+      <Filter>Resource Files\knuckles\run</Filter>
+    </Image>
+    <Image Include="knuckles\run\8.png">
+      <Filter>Resource Files\knuckles\run</Filter>
+    </Image>
+    <Image Include="knuckles\run\9.png">
+      <Filter>Resource Files\knuckles\run</Filter>
+    </Image>
+    <Image Include="knuckles\run\10.png">
+      <Filter>Resource Files\knuckles\run</Filter>
+    </Image>
+    <Image Include="knuckles\run\11.png">
+      <Filter>Resource Files\knuckles\run</Filter>
+    </Image>
+    <Image Include="knuckles\dive\0.png">
+      <Filter>Resource Files\knuckles\dive</Filter>
+    </Image>
+    <Image Include="knuckles\dive\1.png">
+      <Filter>Resource Files\knuckles\dive</Filter>
+    </Image>
+    <Image Include="knuckles\dive\2.png">
+      <Filter>Resource Files\knuckles\dive</Filter>
+    </Image>
+    <Image Include="knuckles\dive\3.png">
+      <Filter>Resource Files\knuckles\dive</Filter>
     </Image>
   </ItemGroup>
   <ItemGroup>

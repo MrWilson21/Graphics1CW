@@ -9,7 +9,7 @@ Player::Player(float startX, float startY, World* p)
 	y = startY;
 
 	maxVelocityX = 60.0;
-	maxVeloctyY = 1700.0;
+	maxVeloctyY = 200;
 	walkingAcceleration = 300.0;
 	deccelerationFactor = 200.0;
 	jumpSpeed = 270;

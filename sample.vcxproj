@@ -30,8 +30,30 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="blocks\0.png" />
+    <Image Include="knuckles\dive\0.png" />
+    <Image Include="knuckles\dive\1.png" />
+    <Image Include="knuckles\dive\2.png" />
+    <Image Include="knuckles\dive\3.png" />
     <Image Include="knuckles\idle\0.png" />
     <Image Include="knuckles\idle\1.png" />
+    <Image Include="knuckles\jump\0.png" />
+    <Image Include="knuckles\jump\1.png" />
+    <Image Include="knuckles\jump\2.png" />
+    <Image Include="knuckles\jump\3.png" />
+    <Image Include="knuckles\jump\4.png" />
+    <Image Include="knuckles\jump\5.png" />
+    <Image Include="knuckles\run\0.png" />
+    <Image Include="knuckles\run\1.png" />
+    <Image Include="knuckles\run\10.png" />
+    <Image Include="knuckles\run\11.png" />
+    <Image Include="knuckles\run\2.png" />
+    <Image Include="knuckles\run\3.png" />
+    <Image Include="knuckles\run\4.png" />
+    <Image Include="knuckles\run\5.png" />
+    <Image Include="knuckles\run\6.png" />
+    <Image Include="knuckles\run\7.png" />
+    <Image Include="knuckles\run\8.png" />
+    <Image Include="knuckles\run\9.png" />
     <Image Include="knuckles\walking\0.png" />
     <Image Include="knuckles\walking\1.png" />
     <Image Include="knuckles\walking\10.png" />

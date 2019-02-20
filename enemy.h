@@ -26,6 +26,7 @@ public:
 private:
 	void getMovementUpdates();
 	void groundMovementUpdate();
+	void airMovementUpdate();
 	void getCollisionUpdates();
 	void calculateCollider(float blockX, float blockY, float blockWidth, float blockHeight, float xMove, float yMove);
 	void detectPlayer();
@@ -34,6 +35,9 @@ private:
 
 	void changeToWalkingState();
 	void changeToIdleState();
+	void changeToRunningState();
+	void changeToJumpingState();
+	void changeToDivingState();
 	void resetStates();
 
 	void turnLeft();
@@ -41,16 +45,20 @@ private:
 
 	void displayWalking();
 	void displayIdle();
+	void displayJumping();
+	void displayRunning();
+	void displayDiving();
+
 	void incrementSpriteCounter();
 
 	float maxVelocityX;
 	float maxVeloctyY;
 	float walkingAcceleration;
 	float deccelerationFactor;
+	float maxRunningVelocityX;
+	float runningAcceleration;
 	float gravity;
-	float airAcceleration;
 	float airDeccelerationFactor;
-	float maxAirVelocityX;
 
 	float chaseXOffset;
 	float chaseYOffset;
@@ -74,9 +82,14 @@ private:
 
 	int xReflectFactor;
 	bool facingLeft;
+	bool aimingLeft;
 
 	bool isIdle;
 	bool isWalking;
+	bool isRunning;
+	bool isJumping;
+	bool isInAir;
+	bool isDiving;
 	bool isTouchingGround;
 	bool isWalkingOfRightEdge;
 	bool isWalkingOfLeftEdge;
@@ -85,10 +98,16 @@ private:
 	int maxSprites;
 	GLuint walkingTextures[12];
 	GLuint idleTextures[2];
+	GLuint diveTextures[4];
+	GLuint runTextures[12];
+	GLuint jumpTextures[6];
 
 	float timeSinceFrameChange;
 	float timeToWaitForNextWalkingFrame;
 	float timeToWaitForNextIdleFrame;
+	float timeToWaitForNextJumpingFrame;
+	float timeToWaitForNextRunningFrame;
+	float timeToWaitForNextDivingFrame;
 
 	float timeSinceNotTouchingGround;
 	float timeUntilChangeToJump;
@@ -96,10 +115,16 @@ private:
 
 	//Display sizes for different player models, sizes based off of sprite image size
 	float scaleFactor;
-	float walkingHeight;
 	float walkingWidth;
-	float idleHeight;
+	float walkingHeight;
 	float idleWidth;
+	float idleHeight;
+	float jumpingWidth;
+	float jumpingHeight;
+	float divingWidth;
+	float divingHeight;
+	float runningWidth;
+	float runningHeight;
 
 	World* parent;
 };

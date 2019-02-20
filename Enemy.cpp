@@ -9,36 +9,52 @@ Enemy::Enemy(float startX, float startY, World* p)
 	y = startY;
 
 	maxVelocityX = 30.0;
-	maxVeloctyY = 1700.0;
-	walkingAcceleration = 150.0;
+	maxVeloctyY = 200.0;
+	maxRunningVelocityX = 50.0;
+	runningAcceleration = 150.0;
+	walkingAcceleration = 100.0;
 	deccelerationFactor = 200.0;
 	gravity = 350;
-	airDeccelerationFactor = 150.0;
+	airDeccelerationFactor = 950.0;
 
 	xReflectFactor = 0;
 	facingLeft = false;
+	aimingLeft = false;
 
 	currentSprite = 0;
 	maxSprites = 0;
 	walkingTextures[12];
 	idleTextures[2];
+	diveTextures[4];
+	runTextures[12];
+	jumpTextures[6];
 
 	timeSinceFrameChange = 0.0;
-	timeToWaitForNextWalkingFrame = 1.5;
-	timeToWaitForNextIdleFrame = 0.8;
+	timeToWaitForNextWalkingFrame = 1.2;
+	timeToWaitForNextIdleFrame = 0.65;
+	timeToWaitForNextJumpingFrame = 0.05;
+	timeToWaitForNextRunningFrame = 1.2;
+	timeToWaitForNextDivingFrame = 0.1;
 
 	timeSinceNotTouchingGround = 0.0;
 	timeUntilChangeToJump = 0.01;
 
 	//Display sizes for different player models, sizes based off of sprite image size
 	scaleFactor = 0.25;
-	walkingHeight = 39.0 * scaleFactor;
 	walkingWidth = 36.0 * scaleFactor;
-	idleHeight = 37.0 * scaleFactor;
+	walkingHeight = 39.0 * scaleFactor;
 	idleWidth = 38.0 * scaleFactor;
+	idleHeight = 37.0 * scaleFactor;
+	jumpingWidth = 38 * scaleFactor;
+	jumpingHeight = 41 * scaleFactor;
+	divingWidth = 46 * scaleFactor;
+	divingHeight = 27 * scaleFactor;
+	runningWidth = 37 * scaleFactor;
+	runningHeight = 36 * scaleFactor;
 
 	parent = p;
 
+	isInAir = false;
 	resetStates();
 	changeToWalkingState();
 	calculateColliderBox();
@@ -50,8 +66,8 @@ Enemy::Enemy(float startX, float startY, World* p)
 //Height and width change size of box
 void Enemy::calculateColliderBox()
 {
-	chaseColliderWidth = 150;
-	chaseColliderHeight = 50;
+	chaseColliderWidth = 50;
+	chaseColliderHeight = 80;
 	diveColliderWidth = 45;
 	diveColliderHeight = 12;
 	jumpUpColliderWidth = 35;
@@ -121,6 +137,47 @@ void Enemy::incrementSpriteCounter()
 		//Multiply velocity with time so frame changes are based on player speed as well as time elapsed
 		timeSinceFrameChange += abs(velocityX) * App::deltaTime;
 	}
+	else if (isRunning)
+	{
+		if (timeSinceFrameChange > timeToWaitForNextRunningFrame)
+		{
+			currentSprite += 1;
+			if (currentSprite == maxSprites - 1)
+			{
+				currentSprite = 7;
+			}
+			timeSinceFrameChange = 0.0;
+		}
+		//Multiply velocity with time so frame changes are based on player speed as well as time elapsed
+		timeSinceFrameChange += abs(velocityX) * App::deltaTime;
+	}
+	else if (isJumping)
+	{
+		if (timeSinceFrameChange > timeToWaitForNextJumpingFrame)
+		{
+			//Jump animation is held at frame 1 until jump lands where jump animation is finished and state can change to idle
+			if (currentSprite == 8)
+			{
+				changeToWalkingState();
+				return;
+			}
+			if (jumpLanding)
+			{
+				currentSprite = (currentSprite + 1) % maxSprites;
+				timeSinceFrameChange = 0.0;
+			}
+		}
+		timeSinceFrameChange += App::deltaTime;
+	}
+	else if (isDiving)
+	{
+		if (timeSinceFrameChange > timeToWaitForNextDivingFrame)
+		{
+			currentSprite = (currentSprite + 1) % maxSprites;
+			timeSinceFrameChange = 0.0;
+		}
+		timeSinceFrameChange += App::deltaTime;
+	}
 }
 
 void Enemy::loadSprites()
@@ -138,54 +195,157 @@ void Enemy::loadSprites()
 		char *cstr = &imgSrc[0u];
 		walkingTextures[i] = App::loadPNG(cstr);
 	}
+
+	for (int i = 0; i < 12; i++)
+	{
+		string imgSrc = "knuckles/run/" + to_string(i) + ".png";
+		char *cstr = &imgSrc[0u];
+		runTextures[i] = App::loadPNG(cstr);
+	}
+
+	for (int i = 0; i < 6; i++)
+	{
+		string imgSrc = "knuckles/jump/" + to_string(i) + ".png";
+		char *cstr = &imgSrc[0u];
+		jumpTextures[i] = App::loadPNG(cstr);
+	}
+
+	for (int i = 0; i < 4; i++)
+	{
+		string imgSrc = "knuckles/dive/" + to_string(i) + ".png";
+		char *cstr = &imgSrc[0u];
+		diveTextures[i] = App::loadPNG(cstr);
+	}
 }
 
 void Enemy::detectPlayer()
 {
+	if (!isInAir && !isJumping && !isDiving)
+	{
+		float pColliderX = parent->player->colliderX + parent->player->x;
+		float pColliderY = parent->player->colliderY + parent->player->y;
+		float pColliderWidth = parent->player->colliderWidth;
+		float pColliderHeight = parent->player->colliderHeight;
 
+		float chaseX = x + chaseXOffset;
+		float chaseY = y + chaseYOffset;
+
+		if (chaseX < pColliderX + pColliderWidth &&
+			chaseX + chaseColliderWidth > pColliderX &&
+			chaseY < pColliderHeight + pColliderY &&
+			chaseY + chaseColliderHeight  > pColliderY)
+		{
+			float playerMidPointX = pColliderX + pColliderWidth / 2;
+			float enemyMidPointX = x + colliderX + colliderWidth / 2;
+			if (isIdle)
+			{
+				if (playerMidPointX - enemyMidPointX > 0.0)
+				{
+					if (facingLeft)
+					{
+						turnRight();
+						changeToRunningState();	
+					}
+				}
+				else if (!facingLeft)
+				{
+					turnLeft();
+					changeToRunningState();
+				}
+			}
+			else
+			{
+				if (playerMidPointX - enemyMidPointX > 0.0)
+				{
+
+					turnRight();
+				}
+				else
+				{
+					turnLeft();
+				}
+				changeToRunningState();
+			}
+		}
+		else
+		{
+			changeToWalkingState();
+		}
+	}
 }
 
 void Enemy::update()
 {
-	detectPlayer();
+	//GetShape of collider box for this frame
+	calculateColliderBox();
+
+	//Chose behaviour if player is detected in range of enemy
+	if (!isInAir)
+	{
+		detectPlayer();
+	}
 
 	//Get player input and change players position and orientation
 	getMovementUpdates();
 
-	//GetShape of collider box for this frame
-	calculateColliderBox();
-
+	isTouchingGround = false;
 	//After player is moved calculate collisions and make adjustments before rendering frame
 	getCollisionUpdates();
 
-	if (isWalkingOfLeftEdge)
+	if (isWalkingOfLeftEdge && isWalking)
 	{
-		turnRight();
+		if (velocityX < 0.0 && !isInAir)
+		{
+			velocityX = 0.0;
+			turnRight();
+		}
 	}
-	else if (isWalkingOfRightEdge)
+	else if (isWalkingOfRightEdge && isWalking)
 	{
-		turnLeft();
+		if (velocityX > 0.0 && !isInAir)
+		{
+			velocityX = 0.0;
+			turnLeft();
+		}
 	}
+	incrementSpriteCounter();
 }
 
 void Enemy::turnLeft()
 {
-	velocityX = 0.0;
-	facingLeft = true;
+	aimingLeft = true;
+	if (velocityX <= 0.0)
+	{
+		facingLeft = true;
+	}
 }
 
 void Enemy::turnRight()
 {
-	velocityX = 0.0;
-	facingLeft = false;
+	aimingLeft = false;
+	if (velocityX >= 0.0)
+	{
+		facingLeft = true;
+	}
 }
 
 //Get player input and move player based on current state and inputs given
 void Enemy::getMovementUpdates()
 {
-	if (isWalking)
+	if (isWalking || isRunning)
 	{
-		groundMovementUpdate();
+		if (!isInAir)
+		{
+			groundMovementUpdate();
+		}
+		else
+		{
+			airMovementUpdate();
+		}
+	}
+	else if(isInAir)
+	{
+		airMovementUpdate();
 	}
 	
 	//Check direction that player is moving and face in the correct position
@@ -201,22 +361,28 @@ void Enemy::getMovementUpdates()
 	}
 }
 
-void Enemy::groundMovementUpdate()
+void Enemy::airMovementUpdate()
 {
-	if (facingLeft)
+	if (velocityX > 0.0)
 	{
-		velocityX -= walkingAcceleration * App::deltaTime;
-		if (velocityX < -maxVelocityX)
+		if (velocityX - airDeccelerationFactor * App::deltaTime > 0.0)
 		{
-			velocityX = -maxVelocityX;
+			velocityX -= airDeccelerationFactor * App::deltaTime > 0.0;
+		}
+		else
+		{
+			velocityX = 0.0;
 		}
 	}
 	else
 	{
-		velocityX += walkingAcceleration * App::deltaTime;
-		if (velocityX > maxVelocityX)
+		if (velocityX + airDeccelerationFactor * App::deltaTime < 0.0)
 		{
-			velocityX = maxVelocityX;
+			velocityX += airDeccelerationFactor * App::deltaTime > 0.0;
+		}
+		else
+		{
+			velocityX = 0.0;
 		}
 	}
 
@@ -231,8 +397,61 @@ void Enemy::groundMovementUpdate()
 
 	x += xMoveThisFrame;
 	y += yMoveThisFrame;
+}
 
-	incrementSpriteCounter();
+void Enemy::groundMovementUpdate()
+{
+	if (aimingLeft)
+	{
+		if (isWalking)
+		{
+			velocityX -= walkingAcceleration * App::deltaTime;
+			if (velocityX < -maxVelocityX)
+			{
+				velocityX = -maxVelocityX;
+			}
+		}
+		else
+		{
+			velocityX -= runningAcceleration * App::deltaTime;
+			if (velocityX < -maxRunningVelocityX)
+			{
+				velocityX = -maxRunningVelocityX;
+			}
+		}
+
+	}
+	else
+	{
+		if (isWalking)
+		{
+			velocityX += walkingAcceleration * App::deltaTime;
+			if (velocityX > maxVelocityX)
+			{
+				velocityX = maxVelocityX;
+			}
+		}
+		else
+		{
+			velocityX += runningAcceleration * App::deltaTime;
+			if (velocityX > maxRunningVelocityX)
+			{
+				velocityX = maxRunningVelocityX;
+			}
+		}
+	}
+
+	velocityY -= gravity * App::deltaTime;
+	if (velocityY < -maxVeloctyY)
+	{
+		velocityY = -maxVeloctyY;
+	}
+
+	xMoveThisFrame = velocityX * App::deltaTime;
+	yMoveThisFrame = velocityY * App::deltaTime;
+
+	x += xMoveThisFrame;
+	y += yMoveThisFrame;
 }
 
 void Enemy::calculateCollider(float blockX, float blockY, float blockWidth, float blockHeight, float xMove, float yMove)
@@ -242,10 +461,10 @@ void Enemy::calculateCollider(float blockX, float blockY, float blockWidth, floa
 	//This allows the player to stick to platform if waiting ontop of it while the block is moving downwards
 	//xMove moves player by the same x that the block moved by if standing on top of it
 
-	if (x + colliderX < blockWidth + blockX &&
-		x + colliderX + colliderWidth > blockX &&
-		y + colliderY < blockHeight + blockY - yMove &&
-		y + colliderY + colliderHeight > blockY)
+	if (x + colliderX <= blockWidth + blockX &&
+		x + colliderX + colliderWidth >= blockX &&
+		y + colliderY <= blockHeight + blockY - yMove &&
+		y + colliderY + colliderHeight >= blockY)
 	{
 		//Find closest edge and place player outside that edge
 		//Set velocity of y to 0 if horizontal edge found and x to 0 if vertical edge found
@@ -270,7 +489,14 @@ void Enemy::calculateCollider(float blockX, float blockY, float blockWidth, floa
 			{
 				velocityX = 0.0;
 			}
-			turnRight();
+			if (isWalking)
+			{
+				turnRight();
+			}
+			if (isRunning)
+			{
+				changeToIdleState();
+			}
 		}
 		else if (distToLeft < distToRight &&
 			distToLeft < distToTop &&
@@ -281,7 +507,14 @@ void Enemy::calculateCollider(float blockX, float blockY, float blockWidth, floa
 			{
 				velocityX = 0.0;
 			}
-			turnLeft();
+			if (isWalking)
+			{
+				turnLeft();
+			}
+			else if (isRunning)
+			{
+				changeToIdleState();
+			}
 		}
 		else if (distToBottom < distToLeft &&
 			distToBottom < distToTop &&
@@ -306,11 +539,11 @@ void Enemy::calculateCollider(float blockX, float blockY, float blockWidth, floa
 			isTouchingGround = true;
 			timeSinceNotTouchingGround = 0.0;
 			//If right or left edges of enemy collider have not gone past the edge of block colliders right or left edges then enemy is not walking off an edge
-			if (x >= blockX)
+			if (x + colliderX + colliderWidth / 2 >= blockX)
 			{
 				isWalkingOfLeftEdge = false;
 			}
-			if (x + colliderWidth <= blockX + blockWidth)
+			if (x + colliderX + colliderWidth / 2 <= blockX + blockWidth)
 			{
 				isWalkingOfRightEdge = false;
 			}
@@ -340,6 +573,24 @@ void Enemy::getCollisionUpdates()
 	calculateCollider(-100 + parent->leftEdge, 0, 100, parent->worldSizeY, 0.0, 0.0);
 	calculateCollider(0, parent->topEdge, parent->worldSizeX, 100, 0.0, 0.0);
 	calculateCollider(0, -100 + parent->bottomEdge, parent->worldSizeX, 100, 0.0, 0.0);
+
+	if (!isTouchingGround && !isJumping)
+	{
+		//Short delay needed as some very short frames may not detect any collisions even if player is on a platform
+		timeSinceNotTouchingGround += App::deltaTime;
+		if (timeSinceNotTouchingGround > timeUntilChangeToJump)
+		{
+			isInAir = true;
+		}
+	}
+	if (isJumping && isTouchingGround)
+	{
+		jumpLanding = true;
+	}
+	if (isTouchingGround)
+	{
+		isInAir = false;
+	}
 }
 
 void Enemy::changeToWalkingState()
@@ -366,6 +617,39 @@ void Enemy::resetStates()
 	timeSinceFrameChange = 0.0;
 	isWalking = false;
 	isIdle = false;
+	isJumping = false;
+	isDiving = false;
+	isRunning = false;
+}
+
+void Enemy::changeToRunningState()
+{
+	if (!isRunning)
+	{
+		resetStates();
+		maxSprites = 12;
+		isRunning = true;
+	}
+}
+
+void Enemy::changeToJumpingState()
+{
+	if (!isJumping)
+	{
+		resetStates();
+		maxSprites = 6;
+		isIdle = true;
+	}
+}
+
+void Enemy::changeToDivingState()
+{
+	if (!isDiving)
+	{
+		resetStates();
+		maxSprites = 4;
+		isDiving = true;
+	}
 }
 
 void Enemy::displayWalking()
@@ -412,12 +696,89 @@ void Enemy::displayIdle()
 	glPopMatrix();
 }
 
+void Enemy::displayJumping()
+{
+	glEnable(GL_TEXTURE_2D);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+	glBindTexture(GL_TEXTURE_2D, jumpTextures[currentSprite]);
+	glPushMatrix();
+	glTranslatef(x, y, 0.0);
+	glBegin(GL_POLYGON);
+	glTexCoord2f(0 + xReflectFactor, 1); glVertex2f(0, jumpingHeight);
+	glTexCoord2f(1 - xReflectFactor, 1); glVertex2f(jumpingWidth, jumpingHeight);
+	glTexCoord2f(1 - xReflectFactor, 0); glVertex2f(jumpingWidth, 0);
+	glTexCoord2f(0 + xReflectFactor, 0); glVertex2f(0, 0);
+	glEnd();
+	glDisable(GL_TEXTURE_2D);
+	App::displayBoundingBox(colliderX, colliderY, colliderX + colliderWidth, colliderY + colliderHeight);
+	App::displayBoundingBox(diveXOffset, diveYOffset, diveXOffset + diveColliderWidth, diveYOffset + diveColliderHeight);
+	App::displayBoundingBox(chaseXOffset, chaseYOffset, chaseXOffset + chaseColliderWidth, chaseYOffset + chaseColliderHeight);
+	App::displayBoundingBox(jumpDownXOffset, jumpDownYOffset, jumpDownXOffset + jumpDownColliderWidth, jumpDownYOffset + jumpDownColliderHeight);
+	App::displayBoundingBox(jumpUpXOffset, jumpUpYOffset, jumpUpXOffset + jumpUpColliderWidth, jumpUpYOffset + jumpUpColliderHeight);
+	glPopMatrix();
+}
+
+void Enemy::displayRunning()
+{
+	glEnable(GL_TEXTURE_2D);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+	glBindTexture(GL_TEXTURE_2D, runTextures[currentSprite]);
+	glPushMatrix();
+	glTranslatef(x, y, 0.0);
+	glBegin(GL_POLYGON);
+	glTexCoord2f(0 + xReflectFactor, 1); glVertex2f(0, runningHeight);
+	glTexCoord2f(1 - xReflectFactor, 1); glVertex2f(runningWidth, runningHeight);
+	glTexCoord2f(1 - xReflectFactor, 0); glVertex2f(runningWidth, 0);
+	glTexCoord2f(0 + xReflectFactor, 0); glVertex2f(0, 0);
+	glEnd();
+	glDisable(GL_TEXTURE_2D);
+	App::displayBoundingBox(colliderX, colliderY, colliderX + colliderWidth, colliderY + colliderHeight);
+	App::displayBoundingBox(diveXOffset, diveYOffset, diveXOffset + diveColliderWidth, diveYOffset + diveColliderHeight);
+	App::displayBoundingBox(chaseXOffset, chaseYOffset, chaseXOffset + chaseColliderWidth, chaseYOffset + chaseColliderHeight);
+	App::displayBoundingBox(jumpDownXOffset, jumpDownYOffset, jumpDownXOffset + jumpDownColliderWidth, jumpDownYOffset + jumpDownColliderHeight);
+	App::displayBoundingBox(jumpUpXOffset, jumpUpYOffset, jumpUpXOffset + jumpUpColliderWidth, jumpUpYOffset + jumpUpColliderHeight);
+	glPopMatrix();
+}
+
+void Enemy::displayDiving()
+{
+	glEnable(GL_TEXTURE_2D);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+	glBindTexture(GL_TEXTURE_2D, diveTextures[currentSprite]);
+	glPushMatrix();
+	glTranslatef(x, y, 0.0);
+	glBegin(GL_POLYGON);
+	glTexCoord2f(0 + xReflectFactor, 1); glVertex2f(0, divingHeight);
+	glTexCoord2f(1 - xReflectFactor, 1); glVertex2f(divingWidth, divingHeight);
+	glTexCoord2f(1 - xReflectFactor, 0); glVertex2f(divingWidth, 0);
+	glTexCoord2f(0 + xReflectFactor, 0); glVertex2f(0, 0);
+	glEnd();
+	glDisable(GL_TEXTURE_2D);
+	App::displayBoundingBox(colliderX, colliderY, colliderX + colliderWidth, colliderY + colliderHeight);
+	App::displayBoundingBox(diveXOffset, diveYOffset, diveXOffset + diveColliderWidth, diveYOffset + diveColliderHeight);
+	App::displayBoundingBox(chaseXOffset, chaseYOffset, chaseXOffset + chaseColliderWidth, chaseYOffset + chaseColliderHeight);
+	App::displayBoundingBox(jumpDownXOffset, jumpDownYOffset, jumpDownXOffset + jumpDownColliderWidth, jumpDownYOffset + jumpDownColliderHeight);
+	App::displayBoundingBox(jumpUpXOffset, jumpUpYOffset, jumpUpXOffset + jumpUpColliderWidth, jumpUpYOffset + jumpUpColliderHeight);
+	glPopMatrix();
+}
+
 void Enemy::display()
 {
 	if (isWalking)
 	{
 		displayWalking();
-		return;
+	}
+	else if (isRunning)
+	{
+		displayRunning();
+	}
+	else if (isJumping)
+	{
+		displayJumping();
+	}
+	else if (isDiving)
+	{
+		displayDiving();
 	}
 	else
 	{
