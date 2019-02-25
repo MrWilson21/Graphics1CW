@@ -1,8 +1,10 @@
 #include "enemy.h"
 #include "world.h"
 
-Enemy::Enemy(float startX, float startY, World* p)
+Enemy::Enemy(float startX, float startY, World* p, int ID)
 {
+	this->ID = ID;
+
 	velocityX = 0.0;
 	velocityY = 0.0;
 	x = startX;
@@ -69,6 +71,8 @@ Enemy::Enemy(float startX, float startY, World* p)
 
 	parent = p;
 
+	isTouchingRight = false;
+	isTouchingLeft = false;
 	isInAir = false;
 	resetStates();
 	changeToWalkingState();
@@ -411,6 +415,8 @@ void Enemy::update()
 	getMovementUpdates();
 
 	isTouchingGround = false;
+	isTouchingRight = false;
+	isTouchingLeft = false;
 	//After player is moved calculate collisions and make adjustments before rendering frame
 	getCollisionUpdates();
 
@@ -430,6 +436,19 @@ void Enemy::update()
 			turnLeft();
 		}
 	}
+
+	if (isIdle)
+	{
+		if (!facingLeft && !isTouchingRight)
+		{
+			changeToWalkingState();
+		}
+		else if (facingLeft && !isTouchingLeft)
+		{
+			changeToWalkingState();
+		}
+	}
+
 	incrementSpriteCounter();
 }
 
@@ -625,6 +644,7 @@ void Enemy::calculateCollider(float blockX, float blockY, float blockWidth, floa
 			distToRight < distToBottom)
 		{
 			x = blockX + blockWidth - colliderX;
+			isTouchingRight = true;
 			if (velocityX < 0.0)
 			{
 				velocityX = 0.0;
@@ -643,6 +663,7 @@ void Enemy::calculateCollider(float blockX, float blockY, float blockWidth, floa
 			distToLeft < distToBottom)
 		{
 			x = blockX - colliderWidth - colliderX;
+			isTouchingLeft = true;
 			if (velocityX > 0.0)
 			{
 				velocityX = 0.0;
@@ -679,11 +700,11 @@ void Enemy::calculateCollider(float blockX, float blockY, float blockWidth, floa
 			isTouchingGround = true;
 			timeSinceNotTouchingGround = 0.0;
 			//If right or left edges of enemy collider have not gone past the edge of block colliders right or left edges then enemy is not walking off an edge
-			if (x + colliderX + colliderWidth / 2 >= blockX)
+			if (x + colliderX + colliderWidth / 2 >= blockX - xMove)
 			{
 				isWalkingOfLeftEdge = false;
 			}
-			if (x + colliderX + colliderWidth / 2 <= blockX + blockWidth)
+			if (x + colliderX + colliderWidth / 2 <= blockX + blockWidth - xMove)
 			{
 				isWalkingOfRightEdge = false;
 			}
@@ -698,6 +719,17 @@ void Enemy::getCollisionUpdates()
 	isTouchingGround = false;
 	isWalkingOfRightEdge = true;
 	isWalkingOfLeftEdge = true;
+
+	if ((!isAttacking))
+	{
+		for (Enemy e : parent->enemies)
+		{
+			if (this->ID != e.ID)
+			{
+				calculateCollider(e.colliderX + e.x, e.colliderY + e.y, e.colliderWidth, e.colliderHeight, 0.0, 0.0);
+			}
+		}
+	}
 
 	for (StaticBlock block : parent->staticBlocks)
 	{

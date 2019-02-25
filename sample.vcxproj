@@ -13,6 +13,7 @@
   <ItemGroup>
     <ClCompile Include="App.cpp" />
     <ClCompile Include="Enemy.cpp" />
+    <ClCompile Include="gem.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MovingBlock.cpp" />
     <ClCompile Include="Player.cpp" />
@@ -22,6 +23,7 @@
   <ItemGroup>
     <ClInclude Include="app.h" />
     <ClInclude Include="enemy.h" />
+    <ClInclude Include="gem.h" />
     <ClInclude Include="Image_Loading\nvImage.h" />
     <ClInclude Include="movingblock.h" />
     <ClInclude Include="player.h" />
@@ -30,6 +32,12 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="blocks\0.png" />
+    <Image Include="fist\fist.png" />
+    <Image Include="fist\gems\blue.png" />
+    <Image Include="fist\gems\orange.png" />
+    <Image Include="fist\gems\purple.png" />
+    <Image Include="fist\gems\red.png" />
+    <Image Include="fist\gems\yellow.png" />
     <Image Include="knuckles\dive\0.png" />
     <Image Include="knuckles\dive\1.png" />
     <Image Include="knuckles\dive\2.png" />

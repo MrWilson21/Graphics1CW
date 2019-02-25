@@ -52,6 +52,12 @@
     <Filter Include="Resource Files\knuckles\run">
       <UniqueIdentifier>{861e657f-802d-4e3f-9dde-d0cbd5445083}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\fist">
+      <UniqueIdentifier>{87325794-1abd-42e9-8f04-7f1bbfb67ffa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\fist\gems">
+      <UniqueIdentifier>{ab27f92d-9f5e-4fe4-9658-36818f6d0596}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Player.cpp">
@@ -75,6 +81,9 @@
     <ClCompile Include="Enemy.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="gem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Image_Loading\nvImage.h">
@@ -96,6 +105,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="movingblock.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -360,6 +372,24 @@
     </Image>
     <Image Include="knuckles\dive\3.png">
       <Filter>Resource Files\knuckles\dive</Filter>
+    </Image>
+    <Image Include="fist\fist.png">
+      <Filter>Resource Files\fist</Filter>
+    </Image>
+    <Image Include="fist\gems\blue.png">
+      <Filter>Resource Files\fist\gems</Filter>
+    </Image>
+    <Image Include="fist\gems\orange.png">
+      <Filter>Resource Files\fist\gems</Filter>
+    </Image>
+    <Image Include="fist\gems\purple.png">
+      <Filter>Resource Files\fist\gems</Filter>
+    </Image>
+    <Image Include="fist\gems\red.png">
+      <Filter>Resource Files\fist\gems</Filter>
+    </Image>
+    <Image Include="fist\gems\yellow.png">
+      <Filter>Resource Files\fist\gems</Filter>
     </Image>
   </ItemGroup>
   <ItemGroup>

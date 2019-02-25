@@ -18,7 +18,9 @@ public:
 	float colliderWidth;
 	float colliderHeight;
 
-	Enemy(float startX, float startY, World* p);
+	int ID;
+
+	Enemy(float startX, float startY, World* p, int ID);
 	void update();
 	void display();
 	void loadSprites();
@@ -107,6 +109,8 @@ private:
 	bool isJumpingUp;
 	bool isJumpingDown;
 	bool isInAir;
+	bool isTouchingLeft;
+	bool isTouchingRight;
 	bool isDiving;
 	bool isTouchingGround;
 	bool isWalkingOfRightEdge;

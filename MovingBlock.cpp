@@ -56,7 +56,6 @@ void MovingBlock::move()
 		x += distanceToMoveX;
 		y += distanceToMoveY;
 	}
-	cout << xMoveThisFrame << "\t" << yMoveThisFrame << "\n";
 }
 
 void MovingBlock::display()

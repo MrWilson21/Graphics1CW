@@ -19,7 +19,7 @@ World::World()
 
 	paralaxBackGround[11];
 
-	player = new Player(30, 40, this);
+	player = new Player(30, 90, this);
 }
 
 void World::init()
@@ -32,14 +32,17 @@ void World::init()
 	cameraX = player->x + player->colliderWidth / 2;
 	cameraY = player->y + player->colliderHeight / 2;
 
-	staticBlocks.push_back(StaticBlock(50, 45, 100, 20, "blocks/0.png"));
-	staticBlocks.push_back(StaticBlock(40, 65, 10, 20, "blocks/0.png"));
-	staticBlocks.push_back(StaticBlock(200, 0, 10, 20, "blocks/0.png"));
-	staticBlocks.push_back(StaticBlock(160, 100, 50, 10, "blocks/0.png"));
-	staticBlocks.push_back(StaticBlock(210, 100, 10, 30, "blocks/0.png"));
+	//staticBlocks.push_back(StaticBlock(30, 45, 150, 20, "blocks/0.png"));
+	staticBlocks.push_back(StaticBlock(30, 65, 100, 10, "blocks/0.png"));
+	staticBlocks.push_back(StaticBlock(130, 0, 10, 40, "blocks/0.png"));
+	//staticBlocks.push_back(StaticBlock(160, 100, 50, 10, "blocks/0.png"));
+	//staticBlocks.push_back(StaticBlock(210, 100, 10, 30, "blocks/0.png"));
 
-	enemies.push_back(Enemy(60, 140, this));
-
+	for(int i = 0; i < 20; i++)
+	{
+		enemies.push_back(Enemy(20, 30, this, i));
+	}
+	
 	for (int i = 0; i < enemies.size(); i++)
 	{
 		enemies[i].loadSprites();
@@ -47,11 +50,11 @@ void World::init()
 
 
 	std::vector<App::Point> p;
-	p.push_back(App::Point{ 300,10 });
-	p.push_back(App::Point{ 350,200 });
-	p.push_back(App::Point{ 400,30 });
-	p.push_back(App::Point{ 100,100 });
-	//movingBlocks.push_back(MovingBlock(p, 250, 30, 30, "blocks/0.png"));
+	p.push_back(App::Point{ 30,10 });
+	p.push_back(App::Point{ 100,10 });
+	//p.push_back(App::Point{ 100,100 });
+	//p.push_back(App::Point{ 50,30 });
+	//movingBlocks.push_back(MovingBlock(p, 30, 30, 20, "blocks/0.png"));
 }
 
 
