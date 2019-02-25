@@ -38,7 +38,7 @@ void World::init()
 	//staticBlocks.push_back(StaticBlock(160, 100, 50, 10, "blocks/0.png"));
 	//staticBlocks.push_back(StaticBlock(210, 100, 10, 30, "blocks/0.png"));
 
-	for(int i = 0; i < 20; i++)
+	for(int i = 0; i < 2; i++)
 	{
 		enemies.push_back(Enemy(20, 30, this, i));
 	}
@@ -48,13 +48,19 @@ void World::init()
 		enemies[i].loadSprites();
 	}
 
+	gems.push_back(Gem(80, 140, 0, "green"));
+	gems.push_back(Gem(80, 120, 1, "red"));
+	gems.push_back(Gem(80, 100, 2,"yellow"));
+	gems.push_back(Gem(80, 80, 3, "purple"));
+	gems.push_back(Gem(80, 60, 4, "blue"));
+	gems.push_back(Gem(80, 40, 5, "orange"));
 
 	std::vector<App::Point> p;
 	p.push_back(App::Point{ 30,10 });
 	p.push_back(App::Point{ 100,10 });
-	//p.push_back(App::Point{ 100,100 });
-	//p.push_back(App::Point{ 50,30 });
-	//movingBlocks.push_back(MovingBlock(p, 30, 30, 20, "blocks/0.png"));
+	p.push_back(App::Point{ 100,100 });
+	p.push_back(App::Point{ 50,30 });
+	//movingBlocks.push_back(MovingBlock(p, 150, 30, 20, "blocks/0.png"));
 }
 
 
@@ -278,6 +284,14 @@ void World::update()
 		enemies[i].update();
 	}
 
+	for (int i = 0; i < gems.size(); i++)
+	{
+		if (!gems[i].collected)
+		{
+			gems[i].update(player);
+		}
+	}
+
 	player->update();
 }
 
@@ -316,6 +330,14 @@ void World::display()
 	for (int i = 0; i < enemies.size(); i++)
 	{
 		enemies[i].display();
+	}
+
+	for (int i = 0; i < gems.size(); i++)
+	{
+		if (!gems[i].collected)
+		{
+			gems[i].display();
+		}
 	}
 
 	player->display();

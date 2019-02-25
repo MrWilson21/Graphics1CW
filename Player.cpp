@@ -38,6 +38,8 @@ Player::Player(float startX, float startY, World* p)
 	timeUntilChangeToJump = 0.01;
 	jumpLanding = false;
 
+	gemsCollected = 0;
+
 	//Display sizes for different player models, sizes based off of sprite image size
 	scaleFactor = 0.2;
 	walkingHeight = 68.0 * scaleFactor;
@@ -467,6 +469,16 @@ void Player::getCollisionUpdates()
 	}
 }
 
+void Player::changeToAttackingState()
+{
+
+}
+
+void Player::collideFistWithEnemies()
+{
+
+}
+
 void Player::changeToWalkingState()
 {
 	if (!isWalking)
@@ -562,6 +574,11 @@ void Player::displayIdle()
 	glDisable(GL_TEXTURE_2D);
 	App::displayBoundingBox(colliderX, colliderY, colliderX + colliderWidth, colliderY + colliderHeight);
 	glPopMatrix();
+}
+
+void Player::displayFist()
+{
+
 }
 
 void Player::display()

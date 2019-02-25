@@ -58,6 +58,24 @@
     <Filter Include="Resource Files\fist\gems">
       <UniqueIdentifier>{ab27f92d-9f5e-4fe4-9658-36818f6d0596}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\fist\gems\blue">
+      <UniqueIdentifier>{129a5dc6-b68e-46d2-bc7b-f4c7b33e137a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\fist\gems\red">
+      <UniqueIdentifier>{c3925f5f-82e4-460c-8265-ea2c789b9483}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\fist\gems\green">
+      <UniqueIdentifier>{78e5a174-d443-401a-9661-72d308f013a4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\fist\gems\purple">
+      <UniqueIdentifier>{5a500314-d61f-4d4d-a52b-5b2debde3e63}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\fist\gems\yellow">
+      <UniqueIdentifier>{4ed3d242-c7da-4c39-92f2-ccd88f551861}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\fist\gems\orange">
+      <UniqueIdentifier>{9627de46-f6a1-4e97-bef1-f917c680f1d0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Player.cpp">
@@ -376,19 +394,151 @@
     <Image Include="fist\fist.png">
       <Filter>Resource Files\fist</Filter>
     </Image>
-    <Image Include="fist\gems\blue.png">
-      <Filter>Resource Files\fist\gems</Filter>
+    <Image Include="fist\gems\yellow\0.png">
+      <Filter>Resource Files\fist\gems\yellow</Filter>
     </Image>
-    <Image Include="fist\gems\orange.png">
-      <Filter>Resource Files\fist\gems</Filter>
+    <Image Include="fist\gems\yellow\1.png">
+      <Filter>Resource Files\fist\gems\yellow</Filter>
     </Image>
-    <Image Include="fist\gems\purple.png">
-      <Filter>Resource Files\fist\gems</Filter>
+    <Image Include="fist\gems\yellow\2.png">
+      <Filter>Resource Files\fist\gems\yellow</Filter>
     </Image>
-    <Image Include="fist\gems\red.png">
-      <Filter>Resource Files\fist\gems</Filter>
+    <Image Include="fist\gems\yellow\3.png">
+      <Filter>Resource Files\fist\gems\yellow</Filter>
     </Image>
-    <Image Include="fist\gems\yellow.png">
+    <Image Include="fist\gems\yellow\4.png">
+      <Filter>Resource Files\fist\gems\yellow</Filter>
+    </Image>
+    <Image Include="fist\gems\yellow\5.png">
+      <Filter>Resource Files\fist\gems\yellow</Filter>
+    </Image>
+    <Image Include="fist\gems\yellow\6.png">
+      <Filter>Resource Files\fist\gems\yellow</Filter>
+    </Image>
+    <Image Include="fist\gems\yellow\7.png">
+      <Filter>Resource Files\fist\gems\yellow</Filter>
+    </Image>
+    <Image Include="fist\gems\red\0.png">
+      <Filter>Resource Files\fist\gems\red</Filter>
+    </Image>
+    <Image Include="fist\gems\red\1.png">
+      <Filter>Resource Files\fist\gems\red</Filter>
+    </Image>
+    <Image Include="fist\gems\red\2.png">
+      <Filter>Resource Files\fist\gems\red</Filter>
+    </Image>
+    <Image Include="fist\gems\red\3.png">
+      <Filter>Resource Files\fist\gems\red</Filter>
+    </Image>
+    <Image Include="fist\gems\red\4.png">
+      <Filter>Resource Files\fist\gems\red</Filter>
+    </Image>
+    <Image Include="fist\gems\red\5.png">
+      <Filter>Resource Files\fist\gems\red</Filter>
+    </Image>
+    <Image Include="fist\gems\red\6.png">
+      <Filter>Resource Files\fist\gems\red</Filter>
+    </Image>
+    <Image Include="fist\gems\red\7.png">
+      <Filter>Resource Files\fist\gems\red</Filter>
+    </Image>
+    <Image Include="fist\gems\purple\0.png">
+      <Filter>Resource Files\fist\gems\purple</Filter>
+    </Image>
+    <Image Include="fist\gems\purple\1.png">
+      <Filter>Resource Files\fist\gems\purple</Filter>
+    </Image>
+    <Image Include="fist\gems\purple\2.png">
+      <Filter>Resource Files\fist\gems\purple</Filter>
+    </Image>
+    <Image Include="fist\gems\purple\3.png">
+      <Filter>Resource Files\fist\gems\purple</Filter>
+    </Image>
+    <Image Include="fist\gems\purple\4.png">
+      <Filter>Resource Files\fist\gems\purple</Filter>
+    </Image>
+    <Image Include="fist\gems\purple\5.png">
+      <Filter>Resource Files\fist\gems\purple</Filter>
+    </Image>
+    <Image Include="fist\gems\purple\6.png">
+      <Filter>Resource Files\fist\gems\purple</Filter>
+    </Image>
+    <Image Include="fist\gems\purple\7.png">
+      <Filter>Resource Files\fist\gems\purple</Filter>
+    </Image>
+    <Image Include="fist\gems\orange\0.png">
+      <Filter>Resource Files\fist\gems\orange</Filter>
+    </Image>
+    <Image Include="fist\gems\orange\1.png">
+      <Filter>Resource Files\fist\gems\orange</Filter>
+    </Image>
+    <Image Include="fist\gems\orange\2.png">
+      <Filter>Resource Files\fist\gems\orange</Filter>
+    </Image>
+    <Image Include="fist\gems\orange\3.png">
+      <Filter>Resource Files\fist\gems\orange</Filter>
+    </Image>
+    <Image Include="fist\gems\orange\4.png">
+      <Filter>Resource Files\fist\gems\orange</Filter>
+    </Image>
+    <Image Include="fist\gems\orange\5.png">
+      <Filter>Resource Files\fist\gems\orange</Filter>
+    </Image>
+    <Image Include="fist\gems\orange\6.png">
+      <Filter>Resource Files\fist\gems\orange</Filter>
+    </Image>
+    <Image Include="fist\gems\orange\7.png">
+      <Filter>Resource Files\fist\gems\orange</Filter>
+    </Image>
+    <Image Include="fist\gems\green\0.png">
+      <Filter>Resource Files\fist\gems\green</Filter>
+    </Image>
+    <Image Include="fist\gems\green\1.png">
+      <Filter>Resource Files\fist\gems\green</Filter>
+    </Image>
+    <Image Include="fist\gems\green\2.png">
+      <Filter>Resource Files\fist\gems\green</Filter>
+    </Image>
+    <Image Include="fist\gems\green\3.png">
+      <Filter>Resource Files\fist\gems\green</Filter>
+    </Image>
+    <Image Include="fist\gems\green\4.png">
+      <Filter>Resource Files\fist\gems\green</Filter>
+    </Image>
+    <Image Include="fist\gems\green\5.png">
+      <Filter>Resource Files\fist\gems\green</Filter>
+    </Image>
+    <Image Include="fist\gems\green\6.png">
+      <Filter>Resource Files\fist\gems\green</Filter>
+    </Image>
+    <Image Include="fist\gems\green\7.png">
+      <Filter>Resource Files\fist\gems\green</Filter>
+    </Image>
+    <Image Include="fist\gems\blue\0.png">
+      <Filter>Resource Files\fist\gems\blue</Filter>
+    </Image>
+    <Image Include="fist\gems\blue\1.png">
+      <Filter>Resource Files\fist\gems\blue</Filter>
+    </Image>
+    <Image Include="fist\gems\blue\2.png">
+      <Filter>Resource Files\fist\gems\blue</Filter>
+    </Image>
+    <Image Include="fist\gems\blue\3.png">
+      <Filter>Resource Files\fist\gems\blue</Filter>
+    </Image>
+    <Image Include="fist\gems\blue\4.png">
+      <Filter>Resource Files\fist\gems\blue</Filter>
+    </Image>
+    <Image Include="fist\gems\blue\5.png">
+      <Filter>Resource Files\fist\gems\blue</Filter>
+    </Image>
+    <Image Include="fist\gems\blue\6.png">
+      <Filter>Resource Files\fist\gems\blue</Filter>
+    </Image>
+    <Image Include="fist\gems\blue\7.png">
+      <Filter>Resource Files\fist\gems\blue</Filter>
+    </Image>
+    <Image Include="fist\gems\black.png">
       <Filter>Resource Files\fist\gems</Filter>
     </Image>
   </ItemGroup>

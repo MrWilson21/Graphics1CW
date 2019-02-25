@@ -23,6 +23,8 @@ class Player
 		void display();
 		void loadSprites();
 
+		int gemsCollected;
+
 	private:
 		void getMovementUpdates();
 		void groundMovementUpdate();
@@ -44,6 +46,10 @@ class Player
 		void displayJumping();
 		void displayIdle();
 		void incrementSpriteCounter();
+
+		void displayFist();
+		void changeToAttackingState();
+		void collideFistWithEnemies();
 
 		float maxVelocityX;
 		float maxVeloctyY;
@@ -94,4 +100,22 @@ class Player
 		float jumpingWidth;
 
 		World* parent;
+
+		float fistX;
+		float fistY;
+		float fistWidth;
+		float fistHeight;
+		float fistColliderX;
+		float fistColliderY;
+		float fistColliderWidth;
+		float fistColliderHeight;
+		GLuint fistTexture;
+		float fistTransparency;
+		float fistVelocityX;
+		bool fistActive;
+		float timeFistWasAliveFor;
+		float fistLifeTime;
+
+		float timeSinceAttack;
+		float delayBetweenAttacks;
 };

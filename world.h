@@ -4,6 +4,7 @@
 #include "movingblock.h"
 #include "player.h"
 #include "enemy.h"
+#include "gem.h"
 
 class World
 {
@@ -18,9 +19,11 @@ public:
 	void displayWorldBoundaries();
 
 	Player* player;
-	std::vector<StaticBlock> staticBlocks;	
-	std::vector<MovingBlock> movingBlocks;
-	std::vector<Enemy> enemies;
+	vector<StaticBlock> staticBlocks;	
+	vector<MovingBlock> movingBlocks;
+	vector<Enemy> enemies;
+
+	vector<Gem> gems;
 	
 	float worldStartX;
 	float worldStartY;
@@ -31,6 +34,8 @@ public:
 	float rightEdge;
 	float topEdge;
 	float bottomEdge;
+
+
 
 private:
 	void initBackGround();
