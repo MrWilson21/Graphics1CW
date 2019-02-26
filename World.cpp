@@ -48,19 +48,19 @@ void World::init()
 		enemies[i].loadSprites();
 	}
 
-	gems.push_back(Gem(80, 140, 0, "green"));
-	gems.push_back(Gem(80, 120, 1, "red"));
-	gems.push_back(Gem(80, 100, 2,"yellow"));
+	gems.push_back(Gem(80, 80, 0, "green"));
+	gems.push_back(Gem(80, 80, 1, "red"));
+	gems.push_back(Gem(80, 80, 2,"yellow"));
 	gems.push_back(Gem(80, 80, 3, "purple"));
-	gems.push_back(Gem(80, 60, 4, "blue"));
-	gems.push_back(Gem(80, 40, 5, "orange"));
+	gems.push_back(Gem(80, 80, 4, "blue"));
+	gems.push_back(Gem(80, 80, 5, "orange"));
 
 	std::vector<App::Point> p;
 	p.push_back(App::Point{ 30,10 });
 	p.push_back(App::Point{ 100,10 });
 	p.push_back(App::Point{ 100,100 });
 	p.push_back(App::Point{ 50,30 });
-	//movingBlocks.push_back(MovingBlock(p, 150, 30, 20, "blocks/0.png"));
+	//movingBlocks.push_back(MovingBlock(p, 350, 30, 20, "blocks/0.png"));
 }
 
 
@@ -286,10 +286,7 @@ void World::update()
 
 	for (int i = 0; i < gems.size(); i++)
 	{
-		if (!gems[i].collected)
-		{
-			gems[i].update(player);
-		}
+		gems[i].update(player);
 	}
 
 	player->update();

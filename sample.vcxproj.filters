@@ -85,6 +85,9 @@
     <Filter Include="Resource Files\shaggy\attack\power">
       <UniqueIdentifier>{b50f2f88-933f-4215-a826-e15661d71d9c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\shaggy\hearts">
+      <UniqueIdentifier>{5592c7c7-b6c6-4add-a863-298bd58f7769}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Player.cpp">
@@ -609,6 +612,21 @@
     </Image>
     <Image Include="fist\fist.png">
       <Filter>Resource Files\fist</Filter>
+    </Image>
+    <Image Include="knuckles\dying.png">
+      <Filter>Resource Files\knuckles</Filter>
+    </Image>
+    <Image Include="shaggy\hearts\0.png">
+      <Filter>Resource Files\shaggy\hearts</Filter>
+    </Image>
+    <Image Include="shaggy\hearts\2.png">
+      <Filter>Resource Files\shaggy\hearts</Filter>
+    </Image>
+    <Image Include="shaggy\hearts\3.png">
+      <Filter>Resource Files\shaggy\hearts</Filter>
+    </Image>
+    <Image Include="shaggy\hearts\1.png">
+      <Filter>Resource Files\shaggy\hearts</Filter>
     </Image>
   </ItemGroup>
   <ItemGroup>

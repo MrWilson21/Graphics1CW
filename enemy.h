@@ -20,11 +20,15 @@ public:
 
 	int ID;
 
+	bool isDying;
+
 	Enemy(float startX, float startY, World* p, int ID);
 	void update();
 	void display();
 	void loadSprites();
 	void die(float angle, bool facingLeft);
+
+	bool operator==(const Enemy& e);
 
 private:
 	void getMovementUpdates();
@@ -55,6 +59,7 @@ private:
 	void displayJumping();
 	void displayRunning();
 	void displayDiving();
+	void displayDying();
 
 	void incrementSpriteCounter();
 
@@ -120,7 +125,6 @@ private:
 	bool isWalkingOfLeftEdge;
 	bool isWaitingToAttack;
 	bool isAttacking;
-	bool isDying;
 
 	int currentSprite;
 	int maxSprites;
@@ -130,6 +134,7 @@ private:
 	GLuint runTextures[12];
 	GLuint jumpTextures[10];
 	GLuint waitingToAttackTexture;
+	GLuint dyingTexture;
 
 	float timeSinceFrameChange;
 	float timeToWaitForNextWalkingFrame;
@@ -154,9 +159,16 @@ private:
 	float divingHeight;
 	float runningWidth;
 	float runningHeight;
+	float dyingHeight;
+	float dyingWidth;
 
 	float dieFlySpeed;
 	float dieAngle;
+	float timeUntilFadeOut;
+	float dieDecceleration;
+	float fadeOutSpeed;
+	float timeSinceDying;
+	float transparency;
 
 	World* parent;
 };

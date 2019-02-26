@@ -7,7 +7,7 @@ int	mouse_x=0, mouse_y=0;
 bool LeftPressed = false;
 int screenWidthPixels=480, screenHeightPixels=480; //Window size in pixels
 float screenWidth = 100.0, screenHeight = 100.0; //Game uses these coordinates, on a square window coordinates will go from 0 to 100 on each axis
-float scale = 1;
+float scale = 1.5;
 
 double maxFrameTime = 0.1;	//Unusual object movement can occur if a frame takes too long to render so a max should be set
 int maxFps = 200;
@@ -54,6 +54,37 @@ void display()
 	for (Gem gem : world.gems)
 	{
 		gem.displayUI(screenWidth, screenHeight);
+	}
+
+	if (App::keys[VK_NUMPAD1])
+	{
+		world.player->health -= 1;
+		cout << world.player->health << "\n";
+	}
+	if (App::keys[VK_NUMPAD2])
+	{
+		world.player->health += 1;
+		cout << world.player->health << "\n";
+	}
+
+	int pHealth = world.player->health;
+	int heartCount = 0;
+
+	while (pHealth > 0)
+	{
+		int heartsToRemove = pHealth % 4;
+		world.player->displayHearts(heartCount, heartsToRemove, screenWidth, screenHeight);
+		heartCount++;
+		//If hearts to remove is 0 it means a whole heart was displayed (4%4 = 0)
+		if (heartsToRemove == 0)
+		{
+			pHealth -= 4;
+		}
+		else
+		{
+			pHealth -= heartsToRemove;
+		}
+		
 	}
 	
 	glFlush();

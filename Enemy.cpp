@@ -60,6 +60,8 @@ Enemy::Enemy(float startX, float startY, World* p, int ID)
 	divingHeight = 27 * scaleFactor;
 	runningWidth = 37 * scaleFactor;
 	runningHeight = 36 * scaleFactor;
+	dyingWidth = 40 * scaleFactor;
+	dyingHeight = 42 * scaleFactor;
 
 	delayBeforeAttacking = 0.7;
 	delayBetweenDives = 3.5;
@@ -69,7 +71,12 @@ Enemy::Enemy(float startX, float startY, World* p, int ID)
 	delayAfterLandingAttack = 0.6;
 	timeSinceLandingAttack = 0.0;
 
-	dieFlySpeed = 1.0;
+	dieFlySpeed = 400.0;
+	timeUntilFadeOut = 0.25;
+	dieDecceleration = 300.0;
+	fadeOutSpeed = 6.0;
+	timeSinceDying = 0.0;
+	transparency = 1.0;
 
 	parent = p;
 
@@ -240,6 +247,7 @@ void Enemy::loadSprites()
 		diveTextures[i] = App::loadPNG(cstr);
 	}
 	waitingToAttackTexture = App::loadPNG("knuckles/waitingToAttack/0.png");
+	dyingTexture = App::loadPNG("knuckles/dying.png");
 }
 
 void Enemy::detectPlayer()
@@ -774,6 +782,40 @@ void Enemy::getCollisionUpdates()
 	}
 }
 
+void Enemy::die(float angle, bool facingLeft)
+{
+	changeToDieState();
+	dieAngle = angle;
+	this->facingLeft = facingLeft;
+}
+
+bool Enemy::operator==(const Enemy & e)
+{
+	if (ID == e.ID)
+	{
+		return true;
+	}
+	return false;
+}
+
+void Enemy::updateDie()
+{
+	x += cos(dieAngle*App::degToRad) * dieFlySpeed * App::deltaTime;
+	y += sin(dieAngle*App::degToRad) * dieFlySpeed * App::deltaTime;
+	cout << ID << "\n";
+
+	timeSinceDying += App::deltaTime;
+	dieFlySpeed -= dieDecceleration * App::deltaTime;
+	if (timeSinceDying > timeUntilFadeOut)
+	{
+		transparency -= fadeOutSpeed * App::deltaTime;
+		if (transparency < 0.0)
+		{
+			parent->enemies.erase(std::find(parent->enemies.begin(), parent->enemies.end(), *this));
+		}
+	}
+}
+
 void Enemy::changeToWalkingState()
 {
 	if (!isWalking)
@@ -893,18 +935,6 @@ void Enemy::displayIdle()
 	glPopMatrix();
 }
 
-void Enemy::die(float angle, bool facingLeft)
-{
-	changeToDieState();
-	dieAngle = angle;
-	this->facingLeft = facingLeft;
-}
-
-void Enemy::updateDie()
-{
-	//float xMove = 
-}
-
 void Enemy::changeToDieState()
 {
 	if (!isDying)
@@ -994,9 +1024,32 @@ void Enemy::displayDiving()
 	glPopMatrix();
 }
 
+void Enemy::displayDying()
+{
+	glEnable(GL_TEXTURE_2D);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+	glBindTexture(GL_TEXTURE_2D, dyingTexture);
+	glPushMatrix();
+	glTranslatef(x, y, 0.0);
+	glRotatef(dieAngle - 90, 0.0, 0.0, 1.0);
+	glColor4f(1.0, 1.0, 1.0, transparency);
+	glBegin(GL_POLYGON);
+	glTexCoord2f(0 + xReflectFactor, 1); glVertex2f(0, dyingHeight);
+	glTexCoord2f(1 - xReflectFactor, 1); glVertex2f(dyingWidth, dyingHeight);
+	glTexCoord2f(1 - xReflectFactor, 0); glVertex2f(dyingWidth, 0);
+	glTexCoord2f(0 + xReflectFactor, 0); glVertex2f(0, 0);
+	glEnd();
+	glDisable(GL_TEXTURE_2D);
+	glPopMatrix();
+}
+
 void Enemy::display()
 {
-	if (isWalking)
+	if (isDying)
+	{
+		displayDying();
+	}
+	else if (isWalking)
 	{
 		displayWalking();
 	}

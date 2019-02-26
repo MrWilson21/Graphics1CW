@@ -86,6 +86,7 @@
     <Image Include="knuckles\dive\1.png" />
     <Image Include="knuckles\dive\2.png" />
     <Image Include="knuckles\dive\3.png" />
+    <Image Include="knuckles\dying.png" />
     <Image Include="knuckles\idle\0.png" />
     <Image Include="knuckles\idle\1.png" />
     <Image Include="knuckles\jump\0.png" />
@@ -138,6 +139,10 @@
     <Image Include="shaggy\attack\power\7.png" />
     <Image Include="shaggy\attack\power\8.png" />
     <Image Include="shaggy\attack\power\9.png" />
+    <Image Include="shaggy\hearts\1.png" />
+    <Image Include="shaggy\hearts\2.png" />
+    <Image Include="shaggy\hearts\3.png" />
+    <Image Include="shaggy\hearts\0.png" />
     <Image Include="shaggy\idle\0.png" />
     <Image Include="shaggy\idle\1.png" />
     <Image Include="shaggy\idle\10.png" />

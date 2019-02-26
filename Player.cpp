@@ -41,6 +41,7 @@ Player::Player(float startX, float startY, World* p)
 	jumpLanding = false;
 
 	gemsCollected = 0;
+	health = 12;
 
 	//Display sizes for different player models, sizes based off of sprite image size
 	scaleFactor = 0.2;
@@ -74,6 +75,13 @@ Player::Player(float startX, float startY, World* p)
 	timeSinceAttack = 0.0;
 	delayBetweenAttacks = 0.1;
 	
+	heartScale = 0.4;
+	heartOffsetFromTop = 5;
+	heartOffsetFromRight = 5;
+	heartSpacing = 1.5;
+	heartWidth = 15 * heartScale;
+	heartHeight = 13 * heartScale;
+
 	parent = p;
 
 	resetStates();
@@ -211,6 +219,13 @@ void Player::loadSprites()
 		string imgSrc = "shaggy/attack/noPower/" + to_string(i) + ".png";
 		char *cstr = &imgSrc[0u];
 		attackNoPowerTextures[i] = App::loadPNG(cstr);
+	}
+
+	for (int i = 0; i < 4; i++)
+	{
+		string imgSrc = "shaggy/hearts/" + to_string(i) + ".png";
+		char *cstr = &imgSrc[0u];
+		heartTextures[i] = App::loadPNG(cstr);
 	}
 	fistTexture = App::loadPNG("fist/fist.png");
 }
@@ -618,9 +633,18 @@ void Player::collideFistWithEnemies()
 		if (fistX + fistColliderX < eX + eWidth &&
 			fistX + fistColliderX + fistColliderWidth > eX &&
 			fistY + fistColliderY < eY + eHeight &&
-			fistY + fistColliderY + fistColliderHeight > eY)
+			fistY + fistColliderY + fistColliderHeight > eY &&
+			!parent->enemies[i].isDying)
 		{
-			float angle = -85 + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (85 - (-85))));
+			float angle;
+			if (facingLeft)
+			{
+				angle = 95 + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (175 - (95))));
+			}
+			else
+			{
+				angle = -85 + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (85 - (-85))));
+			}
 			parent->enemies[i].die(angle, fistFacingLeft);
 		}
 	}
@@ -780,9 +804,7 @@ void Player::displayAttacking()
 
 void Player::displayFist()
 {
-	//cout << fistTransparency << "\n";
 	glEnable(GL_TEXTURE_2D);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 	glBindTexture(GL_TEXTURE_2D, fistTexture);
 	glPushMatrix();
@@ -795,9 +817,31 @@ void Player::displayFist()
 	glTexCoord2f(0 + fistFacingLeft, 0); glVertex2f(0, 0);
 	glEnd();
 	glDisable(GL_TEXTURE_2D);
-	App::displayBoundingBox(fistColliderX, fistColliderY, fistColliderX + fistColliderWidth, fistColliderY + fistColliderHeight);
+	if (fistColliderActive)
+	{
+		App::displayBoundingBox(fistColliderX, fistColliderY, fistColliderX + fistColliderWidth, fistColliderY + fistColliderHeight);
+	}
 	glPopMatrix();
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+}
+
+void Player::displayHearts(int heartNo, int spriteToRender, float screenWidth, float screenHeight)
+{
+	float posX = screenWidth - heartOffsetFromRight - heartNo * (heartSpacing + heartWidth) - heartWidth;
+	float posY = screenHeight - heartOffsetFromTop - heartHeight;
+
+	glPushMatrix();
+	glTranslatef(posX, posY, 0.0);
+	glEnable(GL_TEXTURE_2D);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+	glBindTexture(GL_TEXTURE_2D, heartTextures[spriteToRender]);
+	glBegin(GL_POLYGON);
+	glTexCoord2f(0, 1); glVertex2f(0, heartHeight);
+	glTexCoord2f(1, 1); glVertex2f(heartWidth, heartHeight);
+	glTexCoord2f(1, 0); glVertex2f(heartWidth, 0);
+	glTexCoord2f(0, 0); glVertex2f(0, 0);
+	glEnd();
+	glDisable(GL_TEXTURE_2D);
+	glPopMatrix();
 }
 
 void Player::display()

@@ -2,8 +2,8 @@
 
 Gem::Gem(float x, float y, int orderNumber, string sprite)
 {
-	scale = 0.35;
-	UIScale = 0.6;
+	scale = 0.2;
+	UIScale = 0.3;
 	this->x = x;
 	this->y = y;
 	this->width = 22 * scale;
@@ -14,9 +14,9 @@ Gem::Gem(float x, float y, int orderNumber, string sprite)
 	collected = false;
 
 	timeSinceFrameChange = 0.0;
-	delayBetweenFrameChanges = 0.15;
+	delayBetweenFrameChanges = 0.12;
 
-	currentSprite = 0;
+	currentSprite = orderNumber;
 	maxSprites = 8;
 
 	movingDown = false;
@@ -26,7 +26,7 @@ Gem::Gem(float x, float y, int orderNumber, string sprite)
 
 	offSetFromLeft = 5;
 	offsetFromTop = 5;
-	spacing = 3;
+	spacing = 2;
 	this->orderNumber = orderNumber;
 
 	for (int i = 0; i < maxSprites; i++)
@@ -80,10 +80,9 @@ void Gem::update(Player* p)
 
 		y += velocityY * App::deltaTime;
 
-		incrementSpriteCounter();
-
 		collideWithPlayer(p);
 	}
+	incrementSpriteCounter();
 }
 
 void Gem::incrementSpriteCounter()

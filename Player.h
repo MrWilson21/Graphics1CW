@@ -21,9 +21,11 @@ class Player
 		Player(float startX, float startY, World* p);
 		void update();
 		void display();
+		void displayHearts(int heartNo, int spriteToRender, float screenWidth, float screenHeight);
 		void loadSprites();
 
 		int gemsCollected;
+		int health;
 
 	private:
 		void getMovementUpdates();
@@ -83,6 +85,7 @@ class Player
 		GLuint jumpingTextures[9];
 		GLuint attackPowerTextures[10];
 		GLuint attackNoPowerTextures[10];
+		GLuint heartTextures[10];
 
 		float timeSinceFrameChange;
 		float timeSinceIdleAnimation;
@@ -136,4 +139,11 @@ class Player
 
 		float timeSinceAttack;
 		float delayBetweenAttacks;
+
+		float heartOffsetFromTop;
+		float heartOffsetFromRight;
+		float heartSpacing;
+		float heartWidth;
+		float heartHeight;
+		float heartScale;
 };
