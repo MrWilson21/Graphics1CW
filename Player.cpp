@@ -15,7 +15,7 @@ Player::Player(float startX, float startY, World* p)
 	jumpSpeed = 200;
 	gravity = 350;
 	airAcceleration = 140.0;
-	airDeccelerationFactor = 650.0;
+	airDeccelerationFactor = 70.0;
 	maxAirVelocityX = 45.0;
 
 	xReflectFactor = 0;
@@ -26,6 +26,8 @@ Player::Player(float startX, float startY, World* p)
 	walkingTextures[12];
 	idleTextures[18];
 	jumpingTextures[9];
+	attackPowerTextures[10];
+	attackNoPowerTextures[10];
 
 	timeSinceFrameChange = 0.0;
 	timeSinceIdleAnimation = 0.0;
@@ -48,6 +50,29 @@ Player::Player(float startX, float startY, World* p)
 	idleWidth = 36.0 * scaleFactor;
 	jumpingHeight = 68 * scaleFactor;
 	jumpingWidth = 34 * scaleFactor;
+	attackingHeight = 68 * scaleFactor;
+	attackingWidth = 42 * scaleFactor;
+
+	fistScale = 0.15;
+	fistWidth = 936 * fistScale * scaleFactor;
+	fistHeight = 672 * fistScale * scaleFactor;
+	fistColliderWidth = 10;
+	fistColliderHeight = fistHeight;
+	fistVelocityX = 250.0;
+	fistActive = false;
+	fistDistanceToMove = 50.0;
+	fistDistanceBeforeFadingOut = 30.0;
+	fistXOffset = 5;
+	fistColliderActive = false;
+	gemsNeededToAttack = 6;
+	timeToWaitForNextAttackingFrame = 0.05;
+	fistFadingIn = false;
+	fistFadingOut = false;
+	fistFadeInSpeed = 3.5;
+	fistFadeOutSpeed = 1.0;
+
+	timeSinceAttack = 0.0;
+	delayBetweenAttacks = 0.1;
 	
 	parent = p;
 
@@ -130,6 +155,25 @@ void Player::incrementSpriteCounter()
 		}
 		timeSinceFrameChange += App::deltaTime;
 	}
+	else if (isAttacking)
+	{
+		if (timeSinceFrameChange > timeToWaitForNextAttackingFrame)
+		{
+			currentSprite = currentSprite + 1;
+			timeSinceFrameChange = 0.0;
+			if (currentSprite == maxSprites)
+			{
+				timeSinceAttack = 0.0;
+				changeToIdleState();
+			}
+		}
+		//Multiply velocity with time so frame changes are based on player speed as well as time elapsed
+		timeSinceFrameChange += App::deltaTime;
+	}
+	else
+	{
+		cout << "sprite increment error, no state detected\n";
+	}
 }
 
 void Player::loadSprites()
@@ -154,10 +198,84 @@ void Player::loadSprites()
 		char *cstr = &imgSrc[0u];
 		jumpingTextures[i] = App::loadPNG(cstr);
 	}
+
+	for (int i = 0; i < 10; i++)
+	{
+		string imgSrc = "shaggy/attack/power/" + to_string(i) + ".png";
+		char *cstr = &imgSrc[0u];
+		attackPowerTextures[i] = App::loadPNG(cstr);
+	}
+	
+	for (int i = 0; i < 10; i++)
+	{
+		string imgSrc = "shaggy/attack/noPower/" + to_string(i) + ".png";
+		char *cstr = &imgSrc[0u];
+		attackNoPowerTextures[i] = App::loadPNG(cstr);
+	}
+	fistTexture = App::loadPNG("fist/fist.png");
+}
+
+void Player::updateFist()
+{
+	if (fistFadingIn)
+	{
+		fistTransparency += fistFadeInSpeed * App::deltaTime;
+		if (fistTransparency > 1.0)
+		{
+			fistFadingIn = false;
+			fistColliderActive = true;
+			fistTransparency = 1.0;
+		}
+	}
+	else if (fistColliderActive)
+	{
+		if (fistFacingLeft)
+		{
+			fistX -= fistVelocityX * App::deltaTime;
+		}
+		else
+		{
+			fistX += fistVelocityX * App::deltaTime;
+		}
+		fistDistanceMoved += fistVelocityX * App::deltaTime;
+		
+		if (fistDistanceMoved > fistDistanceBeforeFadingOut)
+		{
+			fistFadingOut = true;
+			if (fistDistanceMoved > fistDistanceToMove)
+			{
+				fistColliderActive = false;
+			}
+		}
+	}
+	
+	if (fistFadingOut)
+	{
+		fistTransparency -= fistFadeOutSpeed * App::deltaTime;
+		if (fistTransparency < 0.0)
+		{
+			fistFadingOut = false;
+			fistActive = false;
+			fistTransparency = 0.0;
+		}
+	}
 }
 
 void Player::update()
 {
+	//Change to attack state if attack input detected
+	if (!isAttacking)
+	{
+		if (App::keys[VK_DOWN] && timeSinceAttack > delayBetweenAttacks)
+		{
+			changeToAttackingState();
+		}
+		else if(!fistActive)
+		{
+			timeSinceAttack += App::deltaTime;
+		}	
+	}
+
 	//Get player input and change players position and orientation
 	getMovementUpdates();
 
@@ -170,16 +288,35 @@ void Player::update()
 	//Check if player is not moving and change to idle
 	//Final check done in case player is walking into wall
 	//give player an idle state so it doesnt look like he is running on the spot into a wall
-	if (velocityX == 0 && velocityY == 0 && !isJumping)
+	if (velocityX == 0 && velocityY == 0 && !isJumping && !isAttacking)
 	{
 		changeToIdleState();
+	}
+
+	if (fistActive)
+	{
+		updateFist();
+		if (fistColliderActive)
+		{
+			if (fistFacingLeft)
+			{
+				fistColliderX = 0;
+				fistColliderY = 0;
+			}
+			else
+			{
+				fistColliderX = fistWidth - 10;
+				fistColliderY = 0;
+			}
+			collideFistWithEnemies();
+		}
 	}
 }
 
 //Get player input and move player based on current state and inputs given
 void Player::getMovementUpdates()
 {
-	if (isJumping)
+	if (isJumping || (isAttacking && !isTouchingGround))
 	{
 		airMovementUpdate();
 	}
@@ -193,12 +330,12 @@ void Player::groundMovementUpdate()
 {
 	groundMove();
 
-	if (App::keys[VK_SPACE])
+	if (App::keys[VK_SPACE] && !isAttacking)
 	{
 		velocityY = jumpSpeed;
 		changeToJumpingState();
 	}
-	else if (abs(velocityX) > 0)
+	else if (abs(velocityX) > 0 && !isAttacking)
 	{
 		changeToWalkingState();
 	}
@@ -270,7 +407,7 @@ void Player::airMovementUpdate()
 
 void Player::groundMove()
 {
-	if (App::keys[VK_LEFT])
+	if (App::keys[VK_LEFT] && !isAttacking)
 	{
 		velocityX -= walkingAcceleration * App::deltaTime;
 		if (velocityX < -maxVelocityX)
@@ -278,7 +415,7 @@ void Player::groundMove()
 			velocityX = -maxVelocityX;
 		}
 	}
-	else if (App::keys[VK_RIGHT])
+	else if (App::keys[VK_RIGHT] && !isAttacking)
 	{
 		velocityX += walkingAcceleration * App::deltaTime;
 		if (velocityX > maxVelocityX)
@@ -324,7 +461,7 @@ void Player::airMove()
 	}
 	else
 	{
-		if (App::keys[VK_LEFT])
+		if (App::keys[VK_LEFT] && !isAttacking)
 		{
 			velocityX -= airAcceleration * App::deltaTime;
 			if (velocityX < -maxAirVelocityX)
@@ -332,7 +469,7 @@ void Player::airMove()
 				velocityX = -maxAirVelocityX;
 			}
 		}
-		else if (App::keys[VK_RIGHT])
+		else if (App::keys[VK_RIGHT] && !isAttacking)
 		{
 			velocityX += airAcceleration * App::deltaTime;
 			if (velocityX > maxAirVelocityX)
@@ -453,7 +590,7 @@ void Player::getCollisionUpdates()
 	calculateCollider(0, parent->topEdge, parent->worldSizeX, 100, 0.0, 0.0);
 	calculateCollider(0, -100 + parent->bottomEdge, parent->worldSizeX, 100, 0.0, 0.0);
 
-	if (!isTouchingGround && !isJumping)
+	if (!isTouchingGround && !isJumping && !isAttacking)
 	{
 		//Short delay needed as some very short frames may not detect any collisions even if player is on a platform
 		timeSinceNotTouchingGround += App::deltaTime;
@@ -469,16 +606,55 @@ void Player::getCollisionUpdates()
 	}
 }
 
-void Player::changeToAttackingState()
-{
-
-}
-
 void Player::collideFistWithEnemies()
 {
+	for (int i = 0; i < parent->enemies.size(); i++)
+	{
+		float eX = parent->enemies[i].colliderX + parent->enemies[i].x;
+		float eY = parent->enemies[i].colliderY + parent->enemies[i].y;
+		float eWidth = parent->enemies[i].colliderWidth;
+		float eHeight = parent->enemies[i].colliderHeight;
 
+		if (fistX + fistColliderX < eX + eWidth &&
+			fistX + fistColliderX + fistColliderWidth > eX &&
+			fistY + fistColliderY < eY + eHeight &&
+			fistY + fistColliderY + fistColliderHeight > eY)
+		{
+			float angle = -85 + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (85 - (-85))));
+			parent->enemies[i].die(angle, fistFacingLeft);
+		}
+	}
 }
 
+void Player::changeToAttackingState()
+{
+	if (!isAttacking)
+	{
+		resetStates();
+		maxSprites = 10;
+		isAttacking = true;
+
+		if (gemsCollected == gemsNeededToAttack)
+		{
+			if (facingLeft)
+			{
+				fistX = x + colliderX + (colliderWidth / 2) + fistXOffset;
+			}
+			else
+			{
+				fistX = x + colliderX + (colliderWidth / 2) - fistXOffset - fistWidth;
+			}
+			fistY = y + (colliderHeight / 2.0) - (fistHeight / 2.0);
+			fistActive = true;
+			fistColliderActive = false;
+			fistFadingIn = true;
+			fistFadingOut = false;
+			fistDistanceMoved = 0.0;
+			fistTransparency = 0.0;
+			fistFacingLeft = facingLeft;
+		}
+	}
+}
 void Player::changeToWalkingState()
 {
 	if (!isWalking)
@@ -520,6 +696,7 @@ void Player::resetStates()
 	isRunning = false;
 	isWalking = false;
 	isIdle = false;
+	isAttacking = false;
 }
 
 void Player::displayWalking()
@@ -576,9 +753,51 @@ void Player::displayIdle()
 	glPopMatrix();
 }
 
+void Player::displayAttacking()
+{
+	glEnable(GL_TEXTURE_2D);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+	if (gemsCollected == gemsNeededToAttack)
+	{
+		glBindTexture(GL_TEXTURE_2D, attackPowerTextures[currentSprite]);
+	}
+	else
+	{
+		glBindTexture(GL_TEXTURE_2D, attackNoPowerTextures[currentSprite]);
+	}
+	glPushMatrix();
+	glTranslatef(x, y, 0.0);
+	glBegin(GL_POLYGON);
+	glTexCoord2f(0 + xReflectFactor, 1); glVertex2f(0, attackingHeight);
+	glTexCoord2f(1 - xReflectFactor, 1); glVertex2f(attackingWidth, attackingHeight);
+	glTexCoord2f(1 - xReflectFactor, 0); glVertex2f(attackingWidth, 0);
+	glTexCoord2f(0 + xReflectFactor, 0); glVertex2f(0, 0);
+	glEnd();
+	glDisable(GL_TEXTURE_2D);
+	App::displayBoundingBox(colliderX, colliderY, colliderX + colliderWidth, colliderY + colliderHeight);
+	glPopMatrix();
+}
+
 void Player::displayFist()
 {
-
+	//cout << fistTransparency << "\n";
+	glEnable(GL_TEXTURE_2D);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+	glBindTexture(GL_TEXTURE_2D, fistTexture);
+	glPushMatrix();
+	glTranslatef(fistX, fistY, 0.0);
+	glColor4f(1.0, 1.0, 1.0, fistTransparency);
+	glBegin(GL_POLYGON);
+	glTexCoord2f(0 + fistFacingLeft, 1); glVertex2f(0, fistHeight);
+	glTexCoord2f(1 - fistFacingLeft, 1); glVertex2f(fistWidth, fistHeight);
+	glTexCoord2f(1 - fistFacingLeft, 0); glVertex2f(fistWidth, 0);
+	glTexCoord2f(0 + fistFacingLeft, 0); glVertex2f(0, 0);
+	glEnd();
+	glDisable(GL_TEXTURE_2D);
+	App::displayBoundingBox(fistColliderX, fistColliderY, fistColliderX + fistColliderWidth, fistColliderY + fistColliderHeight);
+	glPopMatrix();
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 void Player::display()
@@ -586,14 +805,22 @@ void Player::display()
 	if (isWalking)
 	{
 		displayWalking();
-		return;
 	}
 	else if(isJumping)
 	{
 		displayJumping();
 	}
+	else if (isAttacking)
+	{
+		displayAttacking();
+	}
 	else
 	{
 		displayIdle();
+	}
+	
+	if (fistActive)
+	{
+		displayFist();
 	}
 }

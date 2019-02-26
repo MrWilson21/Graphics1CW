@@ -76,6 +76,15 @@
     <Filter Include="Resource Files\fist\gems\orange">
       <UniqueIdentifier>{9627de46-f6a1-4e97-bef1-f917c680f1d0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\shaggy\attack">
+      <UniqueIdentifier>{99852a96-4fd3-47c8-9aed-35c740f8d5eb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\shaggy\attack\noPower">
+      <UniqueIdentifier>{ba0d324d-6b7d-4f5c-8e93-7a1ea03b82db}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\shaggy\attack\power">
+      <UniqueIdentifier>{b50f2f88-933f-4215-a826-e15661d71d9c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Player.cpp">
@@ -391,9 +400,6 @@
     <Image Include="knuckles\dive\3.png">
       <Filter>Resource Files\knuckles\dive</Filter>
     </Image>
-    <Image Include="fist\fist.png">
-      <Filter>Resource Files\fist</Filter>
-    </Image>
     <Image Include="fist\gems\yellow\0.png">
       <Filter>Resource Files\fist\gems\yellow</Filter>
     </Image>
@@ -540,6 +546,69 @@
     </Image>
     <Image Include="fist\gems\black.png">
       <Filter>Resource Files\fist\gems</Filter>
+    </Image>
+    <Image Include="shaggy\attack\noPower\0.png">
+      <Filter>Resource Files\shaggy\attack\noPower</Filter>
+    </Image>
+    <Image Include="shaggy\attack\noPower\1.png">
+      <Filter>Resource Files\shaggy\attack\noPower</Filter>
+    </Image>
+    <Image Include="shaggy\attack\noPower\2.png">
+      <Filter>Resource Files\shaggy\attack\noPower</Filter>
+    </Image>
+    <Image Include="shaggy\attack\noPower\3.png">
+      <Filter>Resource Files\shaggy\attack\noPower</Filter>
+    </Image>
+    <Image Include="shaggy\attack\noPower\4.png">
+      <Filter>Resource Files\shaggy\attack\noPower</Filter>
+    </Image>
+    <Image Include="shaggy\attack\noPower\5.png">
+      <Filter>Resource Files\shaggy\attack\noPower</Filter>
+    </Image>
+    <Image Include="shaggy\attack\noPower\6.png">
+      <Filter>Resource Files\shaggy\attack\noPower</Filter>
+    </Image>
+    <Image Include="shaggy\attack\noPower\7.png">
+      <Filter>Resource Files\shaggy\attack\noPower</Filter>
+    </Image>
+    <Image Include="shaggy\attack\noPower\8.png">
+      <Filter>Resource Files\shaggy\attack\noPower</Filter>
+    </Image>
+    <Image Include="shaggy\attack\noPower\9.png">
+      <Filter>Resource Files\shaggy\attack\noPower</Filter>
+    </Image>
+    <Image Include="shaggy\attack\power\0.png">
+      <Filter>Resource Files\shaggy\attack\power</Filter>
+    </Image>
+    <Image Include="shaggy\attack\power\1.png">
+      <Filter>Resource Files\shaggy\attack\power</Filter>
+    </Image>
+    <Image Include="shaggy\attack\power\2.png">
+      <Filter>Resource Files\shaggy\attack\power</Filter>
+    </Image>
+    <Image Include="shaggy\attack\power\3.png">
+      <Filter>Resource Files\shaggy\attack\power</Filter>
+    </Image>
+    <Image Include="shaggy\attack\power\4.png">
+      <Filter>Resource Files\shaggy\attack\power</Filter>
+    </Image>
+    <Image Include="shaggy\attack\power\5.png">
+      <Filter>Resource Files\shaggy\attack\power</Filter>
+    </Image>
+    <Image Include="shaggy\attack\power\6.png">
+      <Filter>Resource Files\shaggy\attack\power</Filter>
+    </Image>
+    <Image Include="shaggy\attack\power\7.png">
+      <Filter>Resource Files\shaggy\attack\power</Filter>
+    </Image>
+    <Image Include="shaggy\attack\power\8.png">
+      <Filter>Resource Files\shaggy\attack\power</Filter>
+    </Image>
+    <Image Include="shaggy\attack\power\9.png">
+      <Filter>Resource Files\shaggy\attack\power</Filter>
+    </Image>
+    <Image Include="fist\fist.png">
+      <Filter>Resource Files\fist</Filter>
     </Image>
   </ItemGroup>
   <ItemGroup>

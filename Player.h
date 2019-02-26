@@ -45,10 +45,12 @@ class Player
 		void displayWalking();
 		void displayJumping();
 		void displayIdle();
+		void displayAttacking();
 		void incrementSpriteCounter();
 
 		void displayFist();
 		void changeToAttackingState();
+		void updateFist();
 		void collideFistWithEnemies();
 
 		float maxVelocityX;
@@ -72,12 +74,15 @@ class Player
 		bool isWalking;
 		bool isJumping;
 		bool isTouchingGround;
+		bool isAttacking;
 
 		int currentSprite;
 		int maxSprites;
 		GLuint walkingTextures[12];
 		GLuint idleTextures[18];
 		GLuint jumpingTextures[9];
+		GLuint attackPowerTextures[10];
+		GLuint attackNoPowerTextures[10];
 
 		float timeSinceFrameChange;
 		float timeSinceIdleAnimation;
@@ -85,6 +90,7 @@ class Player
 		float timeToWaitUntilIdleAnimation;
 		float timeToWaitForNextIdleFrame;
 		float timeToWaitForNextJumpingFrame;
+		float timeToWaitForNextAttackingFrame;
 
 		float timeSinceNotTouchingGround;
 		float timeUntilChangeToJump;
@@ -98,6 +104,8 @@ class Player
 		float idleWidth;
 		float jumpingHeight;
 		float jumpingWidth;
+		float attackingHeight;
+		float attackingWidth;
 
 		World* parent;
 
@@ -112,9 +120,19 @@ class Player
 		GLuint fistTexture;
 		float fistTransparency;
 		float fistVelocityX;
+		bool fistColliderActive;
 		bool fistActive;
-		float timeFistWasAliveFor;
-		float fistLifeTime;
+		bool fistFadingIn;
+		bool fistFadingOut;
+		bool fistFacingLeft;
+		float fistDistanceToMove;
+		float fistDistanceBeforeFadingOut;
+		float fistDistanceMoved;
+		float fistScale;
+		float fistXOffset;
+		float fistFadeInSpeed;
+		float fistFadeOutSpeed;
+		int gemsNeededToAttack;
 
 		float timeSinceAttack;
 		float delayBetweenAttacks;

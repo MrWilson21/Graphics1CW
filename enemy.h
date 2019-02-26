@@ -24,6 +24,7 @@ public:
 	void update();
 	void display();
 	void loadSprites();
+	void die(float angle, bool facingLeft);
 
 private:
 	void getMovementUpdates();
@@ -33,6 +34,8 @@ private:
 	void calculateCollider(float blockX, float blockY, float blockWidth, float blockHeight, float xMove, float yMove);
 	void detectPlayer();
 	void attack();
+	void changeToDieState();
+	void updateDie();
 
 	void calculateColliderBox();
 
@@ -117,6 +120,7 @@ private:
 	bool isWalkingOfLeftEdge;
 	bool isWaitingToAttack;
 	bool isAttacking;
+	bool isDying;
 
 	int currentSprite;
 	int maxSprites;
@@ -150,6 +154,9 @@ private:
 	float divingHeight;
 	float runningWidth;
 	float runningHeight;
+
+	float dieFlySpeed;
+	float dieAngle;
 
 	World* parent;
 };

@@ -69,6 +69,8 @@ Enemy::Enemy(float startX, float startY, World* p, int ID)
 	delayAfterLandingAttack = 0.6;
 	timeSinceLandingAttack = 0.0;
 
+	dieFlySpeed = 1.0;
+
 	parent = p;
 
 	isTouchingRight = false;
@@ -382,74 +384,81 @@ void Enemy::attack()
 
 void Enemy::update()
 {
-	//GetShape of collider box for this frame
-	calculateColliderBox();
-
-	//Chose behaviour if player is detected in range of enemy
-	if (!isInAir && !isWaitingToAttack && !isAttacking)
+	if (!isDying)
 	{
-		detectPlayer();
-	}
+		//GetShape of collider box for this frame
+		calculateColliderBox();
 
-	if (isWaitingToAttack)
-	{
-		timeSinceStartingAttack += App::deltaTime;
-		if (timeSinceStartingAttack > delayBeforeAttacking)
+		//Chose behaviour if player is detected in range of enemy
+		if (!isInAir && !isWaitingToAttack && !isAttacking)
 		{
-			attack();
+			detectPlayer();
 		}
-	}
-	else if (isAttacking && jumpLanding)
-	{
-		timeSinceLandingAttack += App::deltaTime;
-		if (timeSinceLandingAttack > delayAfterLandingAttack)
-		{
-			changeToWalkingState();
-		}
-	}
-	else if(!isAttacking)
-	{
-		timeSinceAttacking += App::deltaTime;
-	}
 
-	getMovementUpdates();
-
-	isTouchingGround = false;
-	isTouchingRight = false;
-	isTouchingLeft = false;
-	//After player is moved calculate collisions and make adjustments before rendering frame
-	getCollisionUpdates();
-
-	if (isWalkingOfLeftEdge && isWalking)
-	{
-		if (velocityX < 0.0 && !isInAir)
+		if (isWaitingToAttack)
 		{
-			velocityX = 0.0;
-			turnRight();
+			timeSinceStartingAttack += App::deltaTime;
+			if (timeSinceStartingAttack > delayBeforeAttacking)
+			{
+				attack();
+			}
 		}
+		else if (isAttacking && jumpLanding)
+		{
+			timeSinceLandingAttack += App::deltaTime;
+			if (timeSinceLandingAttack > delayAfterLandingAttack)
+			{
+				changeToWalkingState();
+			}
+		}
+		else if (!isAttacking)
+		{
+			timeSinceAttacking += App::deltaTime;
+		}
+
+		getMovementUpdates();
+
+		isTouchingGround = false;
+		isTouchingRight = false;
+		isTouchingLeft = false;
+		//After player is moved calculate collisions and make adjustments before rendering frame
+		getCollisionUpdates();
+
+		if (isWalkingOfLeftEdge && isWalking)
+		{
+			if (velocityX < 0.0 && !isInAir)
+			{
+				velocityX = 0.0;
+				turnRight();
+			}
+		}
+		else if (isWalkingOfRightEdge && isWalking)
+		{
+			if (velocityX > 0.0 && !isInAir)
+			{
+				velocityX = 0.0;
+				turnLeft();
+			}
+		}
+
+		if (isIdle)
+		{
+			if (!facingLeft && !isTouchingRight)
+			{
+				changeToWalkingState();
+			}
+			else if (facingLeft && !isTouchingLeft)
+			{
+				changeToWalkingState();
+			}
+		}
+
+		incrementSpriteCounter();
 	}
-	else if (isWalkingOfRightEdge && isWalking)
+	else
 	{
-		if (velocityX > 0.0 && !isInAir)
-		{
-			velocityX = 0.0;
-			turnLeft();
-		}
+		updateDie();
 	}
-
-	if (isIdle)
-	{
-		if (!facingLeft && !isTouchingRight)
-		{
-			changeToWalkingState();
-		}
-		else if (facingLeft && !isTouchingLeft)
-		{
-			changeToWalkingState();
-		}
-	}
-
-	incrementSpriteCounter();
 }
 
 void Enemy::turnLeft()
@@ -724,7 +733,7 @@ void Enemy::getCollisionUpdates()
 	{
 		for (Enemy e : parent->enemies)
 		{
-			if (this->ID != e.ID)
+			if (this->ID != e.ID && !e.isDying)
 			{
 				calculateCollider(e.colliderX + e.x, e.colliderY + e.y, e.colliderWidth, e.colliderHeight, 0.0, 0.0);
 			}
@@ -796,6 +805,7 @@ void Enemy::resetStates()
 	isRunning = false;
 	isWaitingToAttack = false;
 	jumpLanding = false;
+	isDying = false;
 }
 
 void Enemy::changeToRunningState()
@@ -881,6 +891,27 @@ void Enemy::displayIdle()
 	App::displayBoundingBox(jumpDownXOffset, jumpDownYOffset, jumpDownXOffset + jumpDownColliderWidth, jumpDownYOffset + jumpDownColliderHeight);
 	App::displayBoundingBox(jumpUpXOffset, jumpUpYOffset, jumpUpXOffset + jumpUpColliderWidth, jumpUpYOffset + jumpUpColliderHeight);
 	glPopMatrix();
+}
+
+void Enemy::die(float angle, bool facingLeft)
+{
+	changeToDieState();
+	dieAngle = angle;
+	this->facingLeft = facingLeft;
+}
+
+void Enemy::updateDie()
+{
+	//float xMove = 
+}
+
+void Enemy::changeToDieState()
+{
+	if (!isDying)
+	{
+		resetStates();
+		isDying = true;
+	}
 }
 
 void Enemy::displayJumping()
