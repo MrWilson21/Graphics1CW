@@ -649,6 +649,9 @@
     <Image Include="menu\title.png">
       <Filter>Resource Files\menu</Filter>
     </Image>
+    <Image Include="menu\loading.png">
+      <Filter>Resource Files\menu</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md" />

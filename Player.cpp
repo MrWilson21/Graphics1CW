@@ -281,7 +281,7 @@ void Player::update()
 	//Change to attack state if attack input detected
 	if (!isAttacking)
 	{
-		if (App::keys[VK_DOWN] && timeSinceAttack > delayBetweenAttacks)
+		if (App::keys[VK_SPACE] && timeSinceAttack > delayBetweenAttacks)
 		{
 			changeToAttackingState();
 		}
@@ -345,7 +345,7 @@ void Player::groundMovementUpdate()
 {
 	groundMove();
 
-	if (App::keys[VK_SPACE] && !isAttacking)
+	if (App::keys[VK_UP] && !isAttacking)
 	{
 		velocityY = jumpSpeed;
 		changeToJumpingState();

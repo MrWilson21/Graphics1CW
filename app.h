@@ -36,6 +36,11 @@ class App
 		static bool worldIsInPlay;
 		static bool isLoading;
 
+		static float fadeTransparency;
+		static bool isFadingIn;
+		static bool isFadingOut;
+		static float fadeSpeed;
+
 		typedef struct Point {
 			float x;
 			float y;

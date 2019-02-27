@@ -2,6 +2,10 @@
 
 World::World()
 {
+}
+
+void World::init()
+{
 	worldStartX = 0.0;
 	worldStartY = 0.0;
 	worldSizeX = 500.0;
@@ -20,10 +24,7 @@ World::World()
 	paralaxBackGround[11];
 
 	player = new Player(30, 90, this);
-}
 
-void World::init()
-{
 	player->loadSprites();
 
 	initBackGround();

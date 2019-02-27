@@ -20,12 +20,12 @@ void Button::initialise(float x, float y, float width, float height, float scale
 	activeTexture = App::loadPNG("menu/buttons/1.png");
 }
 
-void Button::checkIfButtonHighlighted()
+void Button::checkIfButtonHighlighted(float screenWidth, float screenHeight)
 {
-	if (App::mouseX > x &&
-		App::mouseX < x + width &&
-		App::mouseY > y &&
-		App::mouseY < y + height)
+	if (App::mouseX > x * screenWidth &&
+		App::mouseX < x * screenWidth + width &&
+		App::mouseY > y * screenHeight &&
+		App::mouseY < y * screenHeight + height)
 	{
 		highlighted = true;
 	}
@@ -40,10 +40,10 @@ void Button::checkIfButtonHighlighted()
 	}
 }
 
-void Button::display()
+void Button::display(float screenWidth, float screenHeight)
 {
 	glPushMatrix();
-	glTranslatef(x, y, 0.0);
+	glTranslatef(screenWidth * x, screenHeight * y, 0.0);
 	glEnable(GL_TEXTURE_2D);
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 	if (highlighted)

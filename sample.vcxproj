@@ -123,6 +123,7 @@
     <Image Include="knuckles\walking\9.png" />
     <Image Include="menu\buttons\0.png" />
     <Image Include="menu\buttons\1.png" />
+    <Image Include="menu\loading.png" />
     <Image Include="menu\title.png" />
     <Image Include="shaggy\attack\noPower\0.png" />
     <Image Include="shaggy\attack\noPower\1.png" />

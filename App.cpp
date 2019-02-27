@@ -3,7 +3,7 @@
 bool App::keys[256];
 const double App::degToRad = 3.14159265359 / 180.0;
 double App::deltaTime = 0.0;
-bool App::shouldDrawBoundingBoxes = true;
+bool App::shouldDrawBoundingBoxes = false;
 bool App::leftPressed = false;
 float App::mouseX = 0;
 float App::mouseY = 0;
@@ -12,6 +12,10 @@ bool App::isOnMenu = true;
 bool App::isPaused = false;
 bool App::worldIsInPlay = false;
 bool App::isLoading = false;
+bool App::isFadingIn = false;
+bool App::isFadingOut = false;
+float App::fadeTransparency = 1.0;
+float App::fadeSpeed = 1.0;
 
 GLuint App::loadPNG(char* name, bool repeatX, bool repeatY)
 {

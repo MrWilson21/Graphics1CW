@@ -4,14 +4,25 @@
 #include "gem.h"
 #include "button.h"
 
-int screenWidthPixels=480, screenHeightPixels=480; //Window size in pixels
+int screenWidthPixels=853, screenHeightPixels=480; //Window size in pixels
 float screenWidth = 100.0, screenHeight = 100.0; //Game uses these coordinates, on a square window coordinates will go from 0 to 100 on each axis
+float aspectRatio = 1.0;
+float minAspectRatio = 1.5;
+float maxAspectRatio = 2.5;
+int minScreenWidth = 853;
+int minScreenHeight = 480;
 float scale = 1.5;
+HWND hWnd = NULL;
 
 double maxFrameTime = 0.01;	//Unusual object movement can occur if a frame takes too long to render so a max should be set
 int maxFps = 200;
+float UiAspectRatio = 1920.0 / 1080.0; // = 1.78
 steady_clock::time_point totalFrameTime = steady_clock::now();
-World world = World();
+World world;
+Button playButton = Button();
+
+GLuint loadingTexture;
+GLuint menuTexture;
 
 //OPENGL FUNCTION PROTOTYPES
 void display();				//called in winmain to draw everything to the screen
@@ -19,8 +30,11 @@ void reshape(int width, int height);				//called when the window is resized
 void init();				//called in winmain when the program starts. 
 void update();				//called in winmain to update variables
 void displayPause();
-
-Button button = Button();
+void displayWorld();
+void displayMenu();
+void displayLoading();
+void initWorld();
+void pressPlay();
 
 /*************    START OF OPENGL FUNCTIONS   ****************/
 void display()									
@@ -28,6 +42,216 @@ void display()
 	glClear(GL_COLOR_BUFFER_BIT);
 	glLoadIdentity();
 
+	if (App::isOnMenu)
+	{
+		displayMenu();
+	}
+	else if (App::isLoading)
+	{
+		displayLoading();
+	}
+	else if (App::worldIsInPlay)
+	{
+		displayWorld();
+	}
+
+	glColor4f(0.0, 0.0, 0.0, 1.0 - App::fadeTransparency);
+	glBegin(GL_POLYGON);
+	glVertex2f(0, screenHeight);
+	glVertex2f(screenWidth, screenHeight);
+	glVertex2f(screenWidth, 0);
+	glVertex2f(0, 0);
+	glEnd();
+	glColor4f(1.0, 1.0, 1.0, 1.0);
+	
+	glFlush();
+}
+
+void reshape(int width, int height)		// Resize the OpenGL window
+{
+	screenWidthPixels=width; screenHeightPixels = height;           // to ensure the mouse coordinates match 
+																	// we will use these values to set the coordinate system
+	if ((float)width / (float)height > 1.0)
+	{
+		screenHeight = 100.0 * scale;
+		screenWidth = 100.0 * (float)width * scale / (float)height;
+	}
+	else if ((float)height / (float)width > 1)
+	{
+		screenWidth = 100.0 * scale;
+		screenHeight = 100.0 * scale * (float)height / (float)width;
+	}
+	else
+	{
+		screenHeight = 100.0 * scale;
+		screenWidth = 100.0 * scale;
+	}
+
+	aspectRatio = screenWidth / screenHeight;
+	
+	glViewport(0,0,width, height);						// Reset the current viewport
+
+	glMatrixMode(GL_PROJECTION);						// select the projection matrix stack
+	glLoadIdentity();									// reset the top of the projection matrix to an identity matrix
+
+	gluOrtho2D(0,screenWidth,0,screenHeight);           // set the coordinate system for the window
+
+	glMatrixMode(GL_MODELVIEW);							// Select the modelview matrix stack
+	glLoadIdentity();									// Reset the top of the modelview matrix to an identity matrix
+}
+void init()
+{
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	loadingTexture = App::loadPNG("menu/loading.png");
+	menuTexture = App::loadPNG("menu/title.png");
+	playButton.initialise(0.5, 0.5, 300, 187, 0.1, "", &pressPlay);
+	glClearColor(0.0, 0.0, 0.0, 0.0);						
+}
+
+void initWorld()
+{
+	world.init();
+}
+
+void pressPlay()
+{
+	App::isFadingOut = true;
+}
+
+void update()
+{
+	if (App::isOnMenu && !App::isFadingOut)
+	{
+		playButton.checkIfButtonHighlighted(screenWidth, screenHeight);
+	}
+	else if (App::isOnMenu && App::isFadingOut && App::fadeTransparency <= 0.0)
+	{
+		App::isOnMenu = false;
+		App::isLoading = true;
+		App::fadeTransparency = 1.0;
+	}
+	else if (App::isLoading && App::isFadingOut)
+	{
+		initWorld();
+		App::worldIsInPlay = true;
+		App::isLoading = false;
+	}
+	else if (App::worldIsInPlay && App::fadeTransparency > 0.0 && App::isFadingOut)
+	{
+		App::fadeTransparency = 0.0;
+	}
+	else if (App::worldIsInPlay  && !App::isPaused)
+	{
+		world.update();
+		App::isFadingOut = false;
+		App::isFadingIn = true;
+	}
+
+	if (App::isFadingOut)
+	{
+		App::fadeTransparency -= App::fadeSpeed * App::deltaTime;
+		if (App::fadeTransparency < 0.0)
+		{
+			App::fadeTransparency = 0.0;
+		}
+	}
+	else if (App::isFadingIn)
+	{
+		App::fadeTransparency += App::fadeSpeed * App::deltaTime;
+		if (App::fadeTransparency > 1.0)
+		{
+			App::fadeTransparency = 1.0;
+		}
+	}
+	App::leftPressed = false;
+
+	/*int w = screenWidthPixels;
+	int h = screenHeightPixels;
+	if (w < minScreenWidth || h < minScreenHeight)
+	{
+		w = minScreenWidth;
+		h = minScreenHeight;
+		MoveWindow(hWnd, 0, 0, w + 100, h + 100, true);
+		cout << "c" << w << "\t" << screenWidthPixels << "\t" <<  h << "\n";
+	}
+
+	if ((float)w / (float)h < minAspectRatio)
+	{
+		cout << "a";
+		w = (int)((float)h * minAspectRatio);
+		MoveWindow(hWnd, 0, 0, w, h, true);
+	}
+	else if ((float)w / (float)h > maxAspectRatio)
+	{
+		cout << "b";
+		w = (int)((float)h * maxAspectRatio);
+		MoveWindow(hWnd, 0, 0, w, h, true);
+	}*/
+}
+
+void displayMenu()
+{
+	float w;
+	float h;
+	if (aspectRatio > UiAspectRatio)
+	{
+		w = 0;
+		h = (1.0 - (UiAspectRatio / aspectRatio)) / 2.0;
+	}
+	else
+	{
+		h = 0;
+		w = (1.0-(aspectRatio / UiAspectRatio)) / 2.0;
+	}
+
+	glPushMatrix();
+	glEnable(GL_TEXTURE_2D);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+	glBindTexture(GL_TEXTURE_2D, menuTexture);
+	glBegin(GL_POLYGON);
+	glTexCoord2f(w, 1-h); glVertex2f(0, screenHeight);
+	glTexCoord2f(1-w, 1-h); glVertex2f(screenWidth, screenHeight);
+	glTexCoord2f(1-w, h); glVertex2f(screenWidth, 0);
+	glTexCoord2f(w, h); glVertex2f(0, 0);
+	glEnd();
+	glDisable(GL_TEXTURE_2D);
+	glPopMatrix();
+
+	playButton.display(screenWidth, screenHeight);
+}
+
+void displayLoading()
+{
+	float w;
+	float h;
+	if (aspectRatio > UiAspectRatio)
+	{
+		w = 0;
+		h = (1.0 - (UiAspectRatio / aspectRatio)) / 2.0;
+	}
+	else
+	{
+		h = 0;
+		w = (1.0 - (aspectRatio / UiAspectRatio)) / 2.0;
+	}
+
+	glPushMatrix();
+	glEnable(GL_TEXTURE_2D);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+	glBindTexture(GL_TEXTURE_2D, loadingTexture);
+	glBegin(GL_POLYGON);
+	glTexCoord2f(w, 1-h); glVertex2f(0, screenHeight);
+	glTexCoord2f(1-w, 1-h); glVertex2f(screenWidth, screenHeight);
+	glTexCoord2f(1-w, h); glVertex2f(screenWidth, 0);
+	glTexCoord2f(w, h); glVertex2f(0, 0);
+	glEnd();
+	glDisable(GL_TEXTURE_2D);
+	glPopMatrix();
+}
+
+void displayWorld()
+{
 	//Render world and bounding boxes
 	glPushMatrix();
 	world.moveCamera(screenWidth, screenHeight);
@@ -40,19 +264,6 @@ void display()
 		world.displayWorldBoundaries();
 	}
 	glPopMatrix();
-	
-	if(App::leftPressed)
-		glColor3f(1.0,0.0,0.0);
-	else
-		glColor3f(1.0,1.0,1.0);
-	glPointSize(10.0f);
-	glBegin(GL_POINTS);
-	glVertex2i(App::mouseX, App::mouseY);
-	glEnd();
-	glPointSize(1.0f);
-
-	//DisplayButtons
-	button.display();
 
 	//Display gem UI
 	for (Gem gem : world.gems)
@@ -78,65 +289,12 @@ void display()
 		{
 			pHealth -= heartsToRemove;
 		}
-		
 	}
-	
-	glFlush();
-}
-
-void reshape(int width, int height)		// Resize the OpenGL window
-{
-	screenWidthPixels=width; screenHeightPixels = height;           // to ensure the mouse coordinates match 
-																	// we will use these values to set the coordinate system
-	if ((float)width / (float)height > 1.0)
-	{
-		screenHeight = 100.0 * scale;
-		screenWidth = 100.0 * (float)width * scale / (float)height;
-	}
-	else if ((float)height / (float)width > 1)
-	{
-		screenWidth = 100.0 * scale;
-		screenHeight = 100.0 * scale * (float)height / (float)width;
-	}
-	else
-	{
-		screenHeight = 100.0 * scale;
-		screenWidth = 100.0 * scale;
-	}
-	
-	glViewport(0,0,width, height);						// Reset the current viewport
-
-	glMatrixMode(GL_PROJECTION);						// select the projection matrix stack
-	glLoadIdentity();									// reset the top of the projection matrix to an identity matrix
-
-	gluOrtho2D(0,screenWidth,0,screenHeight);           // set the coordinate system for the window
-
-	glMatrixMode(GL_MODELVIEW);							// Select the modelview matrix stack
-	glLoadIdentity();									// Reset the top of the modelview matrix to an identity matrix
-}
-void init()
-{
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	world.init();
-	button.initialise(30, 30, 300, 187, 0.1, "", &displayPause);
-	glClearColor(0.0, 0.0, 0.0, 0.0);						
-}
-void update()
-{
-	world.update();
-	button.checkIfButtonHighlighted();
-	App::leftPressed = false;
-}
-
-void displayMenu()
-{
-
 }
 
 void displayPause()
 {
-	cout << "yeeeeeet\n";
+	return;
 }
 /**************** END OPENGL FUNCTIONS *************************/
 
@@ -149,7 +307,7 @@ int WINAPI WinMain(	HINSTANCE, HINSTANCE, LPSTR, int);  // Win32 main function
 //win32 global variabless
 HDC			hDC=NULL;		// Private GDI Device Context
 HGLRC		hRC=NULL;		// Permanent Rendering Context
-HWND		hWnd=NULL;		// Holds Our Window Handle
+		// Holds Our Window Handle
 HINSTANCE	hInstance;		// Holds The Instance Of The Application
 
 
@@ -189,14 +347,12 @@ int WINAPI WinMain(	HINSTANCE	hInstance,			// Instance
 		}
 		else										// If There Are No Messages
 		{
-			if(App::keys[VK_ESCAPE])
-				done = true;
-			if (App::leftPressed)
+			if (App::keys[VK_ESCAPE])
 			{
-				cout << "Aaa";
+				done = true;
 			}
-			display();					// Draw The Scene
 			update();					// update variables
+			display();					// Draw The Scene
 			SwapBuffers(hDC);				// Swap Buffers (Double Buffering)
 
 			App::deltaTime = double(duration_cast<duration<double>>(steady_clock::now() - totalFrameTime).count());
@@ -246,7 +402,7 @@ LRESULT CALLBACK WndProc(	HWND	hWnd,			// Handle For This Window
 
 		case WM_SIZE:								// Resize The OpenGL Window
 		{
-			reshape(LOWORD(lParam),HIWORD(lParam));  // LoWord=Width, HiWord=Height
+			reshape(LOWORD(lParam), HIWORD(lParam));  // LoWord=Width, HiWord=Height
 			return 0;								// Jump Back
 		}
 		break;
@@ -273,6 +429,17 @@ LRESULT CALLBACK WndProc(	HWND	hWnd,			// Handle For This Window
 		case WM_KEYDOWN:							// Is A Key Being Held Down?
 		{
 			App::keys[wParam] = true;					// If So, Mark It As TRUE
+			if (wParam == VK_CONTROL)
+			{
+				if (App::shouldDrawBoundingBoxes)
+				{
+					App::shouldDrawBoundingBoxes = false;
+				}
+				else
+				{
+					App::shouldDrawBoundingBoxes = true;
+				}
+			}
 			return 0;								// Jump Back
 		}
 		break;
