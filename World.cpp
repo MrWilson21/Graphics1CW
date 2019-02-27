@@ -38,7 +38,7 @@ void World::init()
 	//staticBlocks.push_back(StaticBlock(160, 100, 50, 10, "blocks/0.png"));
 	//staticBlocks.push_back(StaticBlock(210, 100, 10, 30, "blocks/0.png"));
 
-	for(int i = 0; i < 2; i++)
+	for(int i = 0; i < 10; i++)
 	{
 		enemies.push_back(Enemy(20, 30, this, i));
 	}

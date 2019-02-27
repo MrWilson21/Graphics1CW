@@ -2,19 +2,15 @@
 #include "staticBlock.h"
 #include "world.h"
 #include "gem.h"
+#include "button.h"
 
-int	mouse_x=0, mouse_y=0;
-bool LeftPressed = false;
 int screenWidthPixels=480, screenHeightPixels=480; //Window size in pixels
 float screenWidth = 100.0, screenHeight = 100.0; //Game uses these coordinates, on a square window coordinates will go from 0 to 100 on each axis
 float scale = 1.5;
 
-double maxFrameTime = 0.1;	//Unusual object movement can occur if a frame takes too long to render so a max should be set
+double maxFrameTime = 0.01;	//Unusual object movement can occur if a frame takes too long to render so a max should be set
 int maxFps = 200;
 steady_clock::time_point totalFrameTime = steady_clock::now();
-
-std::vector<StaticBlock> staticBlocks;
-
 World world = World();
 
 //OPENGL FUNCTION PROTOTYPES
@@ -22,23 +18,17 @@ void display();				//called in winmain to draw everything to the screen
 void reshape(int width, int height);				//called when the window is resized
 void init();				//called in winmain when the program starts. 
 void update();				//called in winmain to update variables
+void displayPause();
+
+Button button = Button();
 
 /*************    START OF OPENGL FUNCTIONS   ****************/
 void display()									
 {
 	glClear(GL_COLOR_BUFFER_BIT);
 	glLoadIdentity();
-	
-	if(LeftPressed)
-		glColor3f(1.0,0.0,0.0);
-	else
-		glColor3f(1.0,1.0,1.0);
-	glPointSize(10.0f);
-	glBegin(GL_POINTS);
-	glVertex2i(mouse_x, mouse_y);
-	glEnd();
-	glPointSize(1.0f);
 
+	//Render world and bounding boxes
 	glPushMatrix();
 	world.moveCamera(screenWidth, screenHeight);
 	world.displayBackground(screenWidth, screenHeight);
@@ -50,7 +40,21 @@ void display()
 		world.displayWorldBoundaries();
 	}
 	glPopMatrix();
+	
+	if(App::leftPressed)
+		glColor3f(1.0,0.0,0.0);
+	else
+		glColor3f(1.0,1.0,1.0);
+	glPointSize(10.0f);
+	glBegin(GL_POINTS);
+	glVertex2i(App::mouseX, App::mouseY);
+	glEnd();
+	glPointSize(1.0f);
 
+	//DisplayButtons
+	button.display();
+
+	//Display gem UI
 	for (Gem gem : world.gems)
 	{
 		gem.displayUI(screenWidth, screenHeight);
@@ -115,11 +119,24 @@ void init()
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	world.init();
+	button.initialise(30, 30, 300, 187, 0.1, "", &displayPause);
 	glClearColor(0.0, 0.0, 0.0, 0.0);						
 }
 void update()
 {
 	world.update();
+	button.checkIfButtonHighlighted();
+	App::leftPressed = false;
+}
+
+void displayMenu()
+{
+
+}
+
+void displayPause()
+{
+	cout << "yeeeeeet\n";
 }
 /**************** END OPENGL FUNCTIONS *************************/
 
@@ -174,32 +191,36 @@ int WINAPI WinMain(	HINSTANCE	hInstance,			// Instance
 		{
 			if(App::keys[VK_ESCAPE])
 				done = true;
-			
+			if (App::leftPressed)
+			{
+				cout << "Aaa";
+			}
 			display();					// Draw The Scene
 			update();					// update variables
 			SwapBuffers(hDC);				// Swap Buffers (Double Buffering)
-		}
-		App::deltaTime = double(duration_cast<duration<double>>(steady_clock::now() - totalFrameTime).count());
-		
-		//Limit fps to prevent cpu being hogged for unneccesarily large fps
-		if (1.0 / App::deltaTime > maxFps)
-		{
-			double timeToWait = (1.0 / maxFps) - App::deltaTime;
-			while (timeToWait > 0.0)
+
+			App::deltaTime = double(duration_cast<duration<double>>(steady_clock::now() - totalFrameTime).count());
+
+			//Limit fps to prevent cpu being hogged for unneccesarily large fps
+			if (1.0 / App::deltaTime > maxFps)
 			{
-				std::this_thread::sleep_for(std::chrono::nanoseconds{0});
-				App::deltaTime = double(duration_cast<duration<double>>(steady_clock::now() - totalFrameTime).count());
-				timeToWait = (1.0 / maxFps) - App::deltaTime;
+				double timeToWait = (1.0 / maxFps) - App::deltaTime;
+				while (timeToWait > 0.0)
+				{
+					std::this_thread::sleep_for(std::chrono::nanoseconds{ 0 });
+					App::deltaTime = double(duration_cast<duration<double>>(steady_clock::now() - totalFrameTime).count());
+					timeToWait = (1.0 / maxFps) - App::deltaTime;
+				}
 			}
-		}
 
-		App::deltaTime = double(duration_cast<duration<double>>(steady_clock::now() - totalFrameTime).count());
-		totalFrameTime = steady_clock::now();
+			App::deltaTime = double(duration_cast<duration<double>>(steady_clock::now() - totalFrameTime).count());
+			totalFrameTime = steady_clock::now();
 
-		//Force delta time to be less than max frame time
-		if (App::deltaTime > maxFrameTime)
-		{
-			App::deltaTime = maxFrameTime;
+			//Force delta time to be less than max frame time
+			if (App::deltaTime > maxFrameTime)
+			{
+				App::deltaTime = maxFrameTime;
+			}
 		}
 	}
 
@@ -232,22 +253,21 @@ LRESULT CALLBACK WndProc(	HWND	hWnd,			// Handle For This Window
 
 		case WM_LBUTTONDOWN:
 			{
-	            mouse_x = LOWORD(lParam);          
-				mouse_y = screenHeightPixels - HIWORD(lParam);
-				LeftPressed = true;
+	            App::mouseX = LOWORD(lParam) * screenWidth / screenWidthPixels;          
+				App::mouseY = (screenHeightPixels - HIWORD(lParam)) * screenHeight / screenHeightPixels;
+				App::leftPressed = true;
 			}
 		break;
 
 		case WM_LBUTTONUP:
 			{
-	            LeftPressed = false;
 			}
 		break;
 
 		case WM_MOUSEMOVE:
 			{
-	            mouse_x = LOWORD(lParam);          
-				mouse_y = screenHeightPixels  - HIWORD(lParam);
+				App::mouseX = LOWORD(lParam) * screenWidth / screenWidthPixels;
+				App::mouseY = (screenHeightPixels - HIWORD(lParam)) * screenHeight / screenHeightPixels;
 			}
 		break;
 		case WM_KEYDOWN:							// Is A Key Being Held Down?

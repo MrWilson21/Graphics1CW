@@ -88,6 +88,12 @@
     <Filter Include="Resource Files\shaggy\hearts">
       <UniqueIdentifier>{5592c7c7-b6c6-4add-a863-298bd58f7769}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\menu">
+      <UniqueIdentifier>{b59ff8a2-c259-4095-ba3b-ae54db45dc88}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\menu\buttons">
+      <UniqueIdentifier>{c94f5a4e-cd1f-476d-b912-8969fc465ffb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Player.cpp">
@@ -114,6 +120,9 @@
     <ClCompile Include="gem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Button.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Image_Loading\nvImage.h">
@@ -138,6 +147,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="gem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="button.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -627,6 +639,15 @@
     </Image>
     <Image Include="shaggy\hearts\1.png">
       <Filter>Resource Files\shaggy\hearts</Filter>
+    </Image>
+    <Image Include="menu\buttons\1.png">
+      <Filter>Resource Files\menu\buttons</Filter>
+    </Image>
+    <Image Include="menu\buttons\0.png">
+      <Filter>Resource Files\menu\buttons</Filter>
+    </Image>
+    <Image Include="menu\title.png">
+      <Filter>Resource Files\menu</Filter>
     </Image>
   </ItemGroup>
   <ItemGroup>

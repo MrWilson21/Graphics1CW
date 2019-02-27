@@ -12,6 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="App.cpp" />
+    <ClCompile Include="Button.cpp" />
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="gem.cpp" />
     <ClCompile Include="Main.cpp" />
@@ -22,6 +23,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="app.h" />
+    <ClInclude Include="button.h" />
     <ClInclude Include="enemy.h" />
     <ClInclude Include="gem.h" />
     <ClInclude Include="Image_Loading\nvImage.h" />
@@ -119,6 +121,9 @@
     <Image Include="knuckles\walking\7.png" />
     <Image Include="knuckles\walking\8.png" />
     <Image Include="knuckles\walking\9.png" />
+    <Image Include="menu\buttons\0.png" />
+    <Image Include="menu\buttons\1.png" />
+    <Image Include="menu\title.png" />
     <Image Include="shaggy\attack\noPower\0.png" />
     <Image Include="shaggy\attack\noPower\1.png" />
     <Image Include="shaggy\attack\noPower\2.png" />

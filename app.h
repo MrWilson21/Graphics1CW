@@ -27,6 +27,15 @@ class App
 		static GLuint loadPNG(char* name, bool repeatX = false, bool repeatY = false);
 		static void displayBoundingBox(float x1, float y1, float x2, float y2);
 
+		static bool leftPressed;
+		static float mouseX;
+		static float mouseY;
+
+		static bool isOnMenu;
+		static bool isPaused;
+		static bool worldIsInPlay;
+		static bool isLoading;
+
 		typedef struct Point {
 			float x;
 			float y;

@@ -3,7 +3,15 @@
 bool App::keys[256];
 const double App::degToRad = 3.14159265359 / 180.0;
 double App::deltaTime = 0.0;
-bool App::shouldDrawBoundingBoxes = false;
+bool App::shouldDrawBoundingBoxes = true;
+bool App::leftPressed = false;
+float App::mouseX = 0;
+float App::mouseY = 0;
+
+bool App::isOnMenu = true;
+bool App::isPaused = false;
+bool App::worldIsInPlay = false;
+bool App::isLoading = false;
 
 GLuint App::loadPNG(char* name, bool repeatX, bool repeatY)
 {
