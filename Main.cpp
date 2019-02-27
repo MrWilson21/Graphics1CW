@@ -56,17 +56,7 @@ void display()
 		gem.displayUI(screenWidth, screenHeight);
 	}
 
-	if (App::keys[VK_NUMPAD1])
-	{
-		world.player->health -= 1;
-		cout << world.player->health << "\n";
-	}
-	if (App::keys[VK_NUMPAD2])
-	{
-		world.player->health += 1;
-		cout << world.player->health << "\n";
-	}
-
+	//Display player hearts
 	int pHealth = world.player->health;
 	int heartCount = 0;
 

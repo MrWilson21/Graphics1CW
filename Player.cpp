@@ -817,6 +817,7 @@ void Player::displayFist()
 	glTexCoord2f(0 + fistFacingLeft, 0); glVertex2f(0, 0);
 	glEnd();
 	glDisable(GL_TEXTURE_2D);
+	glColor4f(1.0, 1.0, 1.0, 1.0);
 	if (fistColliderActive)
 	{
 		App::displayBoundingBox(fistColliderX, fistColliderY, fistColliderX + fistColliderWidth, fistColliderY + fistColliderHeight);
