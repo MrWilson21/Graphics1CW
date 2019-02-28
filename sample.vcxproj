@@ -145,6 +145,10 @@
     <Image Include="shaggy\attack\power\7.png" />
     <Image Include="shaggy\attack\power\8.png" />
     <Image Include="shaggy\attack\power\9.png" />
+    <Image Include="shaggy\death\0.png" />
+    <Image Include="shaggy\death\1.png" />
+    <Image Include="shaggy\death\2.png" />
+    <Image Include="shaggy\death\3.png" />
     <Image Include="shaggy\hearts\1.png" />
     <Image Include="shaggy\hearts\2.png" />
     <Image Include="shaggy\hearts\3.png" />

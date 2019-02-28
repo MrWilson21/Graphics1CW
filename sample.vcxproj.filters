@@ -94,6 +94,9 @@
     <Filter Include="Resource Files\menu\buttons">
       <UniqueIdentifier>{c94f5a4e-cd1f-476d-b912-8969fc465ffb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\shaggy\death">
+      <UniqueIdentifier>{c85c13b5-438d-4c4e-9f69-b44cc55114b6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Player.cpp">
@@ -651,6 +654,18 @@
     </Image>
     <Image Include="menu\loading.png">
       <Filter>Resource Files\menu</Filter>
+    </Image>
+    <Image Include="shaggy\death\0.png">
+      <Filter>Resource Files\shaggy\death</Filter>
+    </Image>
+    <Image Include="shaggy\death\1.png">
+      <Filter>Resource Files\shaggy\death</Filter>
+    </Image>
+    <Image Include="shaggy\death\2.png">
+      <Filter>Resource Files\shaggy\death</Filter>
+    </Image>
+    <Image Include="shaggy\death\3.png">
+      <Filter>Resource Files\shaggy\death</Filter>
     </Image>
   </ItemGroup>
   <ItemGroup>
