@@ -31,6 +31,11 @@ void World::init()
 	playerCameraBoxRadiusX = 30;
 	playerCameraBoxRadiusY = 40;
 
+	delayUntilGameEnd = 1.5;
+	timeSinceGameEnd = 0.0;
+	gameEnding = false;
+	gameEnded = false;
+
 	paralaxBackGround[11];
 
 	player = new Player(30, 90, this);
@@ -49,7 +54,7 @@ void World::init()
 	//staticBlocks.push_back(StaticBlock(160, 100, 50, 10, "blocks/0.png"));
 	//staticBlocks.push_back(StaticBlock(210, 100, 10, 30, "blocks/0.png"));
 
-	for(int i = 0; i < 10; i++)
+	for(int i = 0; i < 1; i++)
 	{
 		enemies.push_back(Enemy(20, 30, this, i));
 	}
@@ -72,6 +77,11 @@ void World::init()
 	p.push_back(App::Point{ 100,100 });
 	p.push_back(App::Point{ 50,30 });
 	movingBlocks.push_back(MovingBlock(p, 350, 30, 20, 10, 10, "blocks/0.png"));
+}
+
+void World::signalGameEnd()
+{
+	gameEnding = true;
 }
 
 //Define background parameters and textures here and intitialise them
@@ -284,6 +294,11 @@ void World::displayBackground(float screenWidth, float screenHeight)
 
 void World::update()
 {
+	if (enemies.size() == 0)
+	{
+		signalGameEnd();
+	}
+
 	for (int i=0; i < movingBlocks.size(); i++)
 	{
 		movingBlocks[i].move();
@@ -297,6 +312,17 @@ void World::update()
 	for (int i = 0; i < gems.size(); i++)
 	{
 		gems[i].update(player);
+	}
+
+	if (gameEnding)
+	{
+		timeSinceGameEnd += App::deltaTime;
+		App::fadeTransparency -= App::deltaTime / delayUntilGameEnd;
+		if (timeSinceGameEnd > delayUntilGameEnd)
+		{
+			gameEnded = true;
+			App::fadeTransparency = 0.0;
+		}
 	}
 
 	player->update();

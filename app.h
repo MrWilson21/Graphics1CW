@@ -31,6 +31,7 @@ class App
 		static void changeToWorldScreen();
 		static void changeToLoadingScreen();
 		static void resetScreenState();
+		static void changeToGameOverScreen();
 		static void fadeIn();
 		static void fadeOut();
 
@@ -43,6 +44,7 @@ class App
 		static bool isPaused;
 		static bool worldIsInPlay;
 		static bool isLoadingScreen;
+		static bool isGameOverScreen;
 
 		static bool hasLoaded;
 		static bool playButtonPressed;

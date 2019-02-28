@@ -34,10 +34,10 @@ void display();				//called in winmain to draw everything to the screen
 void reshape(int width, int height);				//called when the window is resized
 void init();				//called in winmain when the program starts. 
 void update();				//called in winmain to update variables
-void displayPause();
 void displayWorld();
 void displayMenu();
 void displayLoading();
+void displayGameOver();
 void initWorld();
 void pressPlay();
 void quitToMenu();
@@ -61,6 +61,10 @@ void display()
 	else if (App::worldIsInPlay)
 	{
 		displayWorld();
+	}
+	else if (App::isGameOverScreen)
+	{
+		displayGameOver();
 	}
 
 	glColor4f(0.0, 0.0, 0.0, 1.0 - App::fadeTransparency);
@@ -177,7 +181,11 @@ void update()
 				}
 				
 			}
-			if (App::isPaused)
+			if (world.gameEnded)
+			{
+				App::changeToGameOverScreen();
+			}
+			else if (App::isPaused)
 			{
 				resumeButton.checkIfButtonHighlighted(screenWidth, screenHeight);
 				quitToMenuButton.checkIfButtonHighlighted(screenWidth, screenHeight);
@@ -189,6 +197,16 @@ void update()
 			}
 		}
 		else if (App::fadeTransparency == 0.0)
+		{
+			App::changeToMenuScreen();
+		}
+	}
+	else if (App::isGameOverScreen)
+	{
+		quitToMenuButton.checkIfButtonHighlighted(screenWidth, screenHeight);
+		quitToDesktopButton.checkIfButtonHighlighted(screenWidth, screenHeight);
+
+		if (App::quitToMenuPressed && !App::isFadingOut)
 		{
 			App::changeToMenuScreen();
 		}
@@ -260,6 +278,12 @@ void displayLoading()
 	glPopMatrix();
 }
 
+void displayGameOver()
+{
+	quitToMenuButton.display(screenWidth, screenHeight);
+	quitToDesktopButton.display(screenWidth, screenHeight);
+}
+
 void displayWorld()
 {
 	//Render world and bounding boxes
@@ -316,11 +340,6 @@ void displayWorld()
 		quitToMenuButton.display(screenWidth, screenHeight);
 		quitToDesktopButton.display(screenWidth, screenHeight);
 	}
-}
-
-void displayPause()
-{
-	return;
 }
 
 void pressPlay()

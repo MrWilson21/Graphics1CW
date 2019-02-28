@@ -35,6 +35,7 @@ Player::Player(float startX, float startY, World* p)
 	timeToWaitUntilIdleAnimation = 3.0;
 	timeToWaitForNextIdleFrame = 0.06;
 	timeToWaitForNextJumpingFrame = 0.04;
+	timeToWaitForNextDyingFrame = 0.4;
 
 	timeSinceNotTouchingGround = 0.0;
 	timeUntilChangeToJump = 0.01;
@@ -53,6 +54,8 @@ Player::Player(float startX, float startY, World* p)
 	jumpingWidth = 34 * scaleFactor;
 	attackingHeight = 68 * scaleFactor;
 	attackingWidth = 42 * scaleFactor;
+	dyingWidth = 27 * scaleFactor;
+	dyingHeight = 68 * scaleFactor;
 
 	fistScale = 0.15;
 	fistWidth = 936 * fistScale * scaleFactor;
@@ -74,6 +77,12 @@ Player::Player(float startX, float startY, World* p)
 
 	timeSinceAttack = 0.0;
 	delayBetweenAttacks = 0.1;
+	
+	isInvinsible = false;
+	timeBetweenHits = 1.5;
+	timeSinceLastHit = 0.0;
+	timeBetweenFlashes = 0.12;
+	timeSinceFlash = 0.0;
 	
 	heartScale = 0.4;
 	heartOffsetFromTop = 5;
@@ -134,7 +143,6 @@ void Player::incrementSpriteCounter()
 			}
 		}
 	}
-
 	else if (isWalking)
 	{
 		if (timeSinceFrameChange > timeToWaitForNextWalkingFrame)
@@ -175,7 +183,22 @@ void Player::incrementSpriteCounter()
 				changeToIdleState();
 			}
 		}
-		//Multiply velocity with time so frame changes are based on player speed as well as time elapsed
+		timeSinceFrameChange += App::deltaTime;
+	}
+	else if (isDying)
+	{
+		if (timeSinceFrameChange > timeToWaitForNextDyingFrame)
+		{
+			if (currentSprite < maxSprites - 1)
+			{
+				currentSprite += 1;
+			}
+			else
+			{
+				parent->signalGameEnd();
+			}
+			timeSinceFrameChange = 0.0;
+		}
 		timeSinceFrameChange += App::deltaTime;
 	}
 	else
@@ -226,6 +249,13 @@ void Player::loadSprites()
 		string imgSrc = "shaggy/hearts/" + to_string(i) + ".png";
 		char *cstr = &imgSrc[0u];
 		heartTextures[i] = App::loadPNG(cstr);
+	}
+
+	for (int i = 0; i < 4; i++)
+	{
+		string imgSrc = "shaggy/death/" + to_string(i) + ".png";
+		char *cstr = &imgSrc[0u];
+		dyingTextures[i] = App::loadPNG(cstr);
 	}
 	fistTexture = App::loadPNG("fist/fist.png");
 }
@@ -278,8 +308,13 @@ void Player::updateFist()
 
 void Player::update()
 {
+	if (health < 1)
+	{
+		changeToDyingState();
+	}
+
 	//Change to attack state if attack input detected
-	if (!isAttacking)
+	if (!isAttacking && !isDying)
 	{
 		if (App::keys[VK_SPACE] && timeSinceAttack > delayBetweenAttacks)
 		{
@@ -303,7 +338,7 @@ void Player::update()
 	//Check if player is not moving and change to idle
 	//Final check done in case player is walking into wall
 	//give player an idle state so it doesnt look like he is running on the spot into a wall
-	if (velocityX == 0 && velocityY == 0 && !isJumping && !isAttacking)
+	if (velocityX == 0 && velocityY == 0 && !(isAttacking || isDying || isJumping))
 	{
 		changeToIdleState();
 	}
@@ -331,7 +366,7 @@ void Player::update()
 //Get player input and move player based on current state and inputs given
 void Player::getMovementUpdates()
 {
-	if (isJumping || (isAttacking && !isTouchingGround))
+	if (isJumping || ((isAttacking || isDying) && !isTouchingGround))
 	{
 		airMovementUpdate();
 	}
@@ -345,12 +380,12 @@ void Player::groundMovementUpdate()
 {
 	groundMove();
 
-	if (App::keys[VK_UP] && !isAttacking)
+	if (App::keys[VK_UP] && !(isAttacking || isDying))
 	{
 		velocityY = jumpSpeed;
 		changeToJumpingState();
 	}
-	else if (abs(velocityX) > 0 && !isAttacking)
+	else if (abs(velocityX) > 0 && !(isAttacking || isDying))
 	{
 		changeToWalkingState();
 	}
@@ -422,7 +457,7 @@ void Player::airMovementUpdate()
 
 void Player::groundMove()
 {
-	if (App::keys[VK_LEFT] && !isAttacking)
+	if (App::keys[VK_LEFT] && !(isAttacking || isDying))
 	{
 		velocityX -= walkingAcceleration * App::deltaTime;
 		if (velocityX < -maxVelocityX)
@@ -430,7 +465,7 @@ void Player::groundMove()
 			velocityX = -maxVelocityX;
 		}
 	}
-	else if (App::keys[VK_RIGHT] && !isAttacking)
+	else if (App::keys[VK_RIGHT] && !(isAttacking || isDying))
 	{
 		velocityX += walkingAcceleration * App::deltaTime;
 		if (velocityX > maxVelocityX)
@@ -476,7 +511,7 @@ void Player::airMove()
 	}
 	else
 	{
-		if (App::keys[VK_LEFT] && !isAttacking)
+		if (App::keys[VK_LEFT] && !(isAttacking || isDying))
 		{
 			velocityX -= airAcceleration * App::deltaTime;
 			if (velocityX < -maxAirVelocityX)
@@ -484,7 +519,7 @@ void Player::airMove()
 				velocityX = -maxAirVelocityX;
 			}
 		}
-		else if (App::keys[VK_RIGHT] && !isAttacking)
+		else if (App::keys[VK_RIGHT] && !(isAttacking || isDying))
 		{
 			velocityX += airAcceleration * App::deltaTime;
 			if (velocityX > maxAirVelocityX)
@@ -605,7 +640,7 @@ void Player::getCollisionUpdates()
 	calculateCollider(0, parent->topEdge, parent->worldSizeX, 100, 0.0, 0.0);
 	calculateCollider(0, -100 + parent->bottomEdge, parent->worldSizeX, 100, 0.0, 0.0);
 
-	if (!isTouchingGround && !isJumping && !isAttacking)
+	if (!isTouchingGround && !isJumping && !isAttacking && !isDying)
 	{
 		//Short delay needed as some very short frames may not detect any collisions even if player is on a platform
 		timeSinceNotTouchingGround += App::deltaTime;
@@ -618,6 +653,31 @@ void Player::getCollisionUpdates()
 	if (isJumping && isTouchingGround)
 	{
 		jumpLanding = true;
+	}
+
+	if (!isInvinsible && !isDying)
+	{
+		for (Enemy enemy : parent->enemies)
+		{
+			if (x + colliderX < enemy.x + enemy.colliderX + enemy.colliderWidth &&
+				x + colliderX + colliderWidth > enemy.x + enemy.colliderX &&
+				y + colliderY < enemy.y + enemy.colliderY + enemy.colliderHeight &&
+				y + colliderY + colliderHeight > enemy.y + enemy.colliderY)
+			{
+				health -= 1;
+				isInvinsible = true;
+				timeSinceLastHit = 0.0;
+				break;
+			}
+		}
+	}
+	else
+	{
+		timeSinceLastHit += App::deltaTime;
+		if (timeSinceLastHit > timeBetweenHits)
+		{
+			isInvinsible = false;
+		}
 	}
 }
 
@@ -708,6 +768,16 @@ void Player::changeToJumpingState()
 		isJumping = true;
 	}
 }
+void Player::changeToDyingState()
+{
+	if (!isDying)
+	{
+		resetStates();
+		maxSprites = 4;
+		isDying = true;
+		isInvinsible = false;
+	}
+}
 void Player::resetStates()
 {
 	currentSprite = 0;
@@ -716,6 +786,7 @@ void Player::resetStates()
 	isWalking = false;
 	isIdle = false;
 	isAttacking = false;
+	isDying = false;
 }
 
 void Player::displayWalking()
@@ -765,6 +836,24 @@ void Player::displayIdle()
 	glTexCoord2f(0 + xReflectFactor, 1); glVertex2f(0, idleHeight);
 	glTexCoord2f(1 - xReflectFactor, 1); glVertex2f(idleWidth, idleHeight);
 	glTexCoord2f(1 - xReflectFactor, 0); glVertex2f(idleWidth, 0);
+	glTexCoord2f(0 + xReflectFactor, 0); glVertex2f(0, 0);
+	glEnd();
+	glDisable(GL_TEXTURE_2D);
+	App::displayBoundingBox(colliderX, colliderY, colliderX + colliderWidth, colliderY + colliderHeight);
+	glPopMatrix();
+}
+
+void Player::displayDying()
+{
+	glEnable(GL_TEXTURE_2D);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+	glBindTexture(GL_TEXTURE_2D, dyingTextures[currentSprite]);
+	glPushMatrix();
+	glTranslatef(x, y, 0.0);
+	glBegin(GL_POLYGON);
+	glTexCoord2f(0 + xReflectFactor, 1); glVertex2f(0, dyingHeight);
+	glTexCoord2f(1 - xReflectFactor, 1); glVertex2f(dyingWidth, dyingHeight);
+	glTexCoord2f(1 - xReflectFactor, 0); glVertex2f(dyingWidth, 0);
 	glTexCoord2f(0 + xReflectFactor, 0); glVertex2f(0, 0);
 	glEnd();
 	glDisable(GL_TEXTURE_2D);
@@ -842,21 +931,34 @@ void Player::displayHearts(int heartNo, int spriteToRender, float screenWidth, f
 
 void Player::display()
 {
-	if (isWalking)
+	if (!isInvinsible || timeSinceFlash < timeBetweenFlashes)
 	{
-		displayWalking();
+		if (isWalking)
+		{
+			displayWalking();
+		}
+		else if (isJumping)
+		{
+			displayJumping();
+		}
+		else if (isAttacking)
+		{
+			displayAttacking();
+		}
+		else if (isDying)
+		{
+			displayDying();
+		}
+		else
+		{
+			displayIdle();
+		}
 	}
-	else if(isJumping)
+
+	timeSinceFlash += App::deltaTime;
+	if (timeSinceFlash > timeBetweenFlashes * 2)
 	{
-		displayJumping();
-	}
-	else if (isAttacking)
-	{
-		displayAttacking();
-	}
-	else
-	{
-		displayIdle();
+		timeSinceFlash = 0.0;
 	}
 	
 	if (fistActive)

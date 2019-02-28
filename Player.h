@@ -41,11 +41,13 @@ class Player
 		void changeToWalkingState();
 		void changeToIdleState();
 		void changeToJumpingState();
+		void changeToDyingState();
 		void resetStates();
 
 		void displayWalking();
 		void displayJumping();
 		void displayIdle();
+		void displayDying();
 		void displayAttacking();
 		void incrementSpriteCounter();
 
@@ -75,6 +77,7 @@ class Player
 		bool isJumping;
 		bool isTouchingGround;
 		bool isAttacking;
+		bool isDying;
 
 		int currentSprite;
 		int maxSprites;
@@ -84,6 +87,7 @@ class Player
 		GLuint attackPowerTextures[10];
 		GLuint attackNoPowerTextures[10];
 		GLuint heartTextures[10];
+		GLuint dyingTextures[4];
 
 		float timeSinceFrameChange;
 		float timeSinceIdleAnimation;
@@ -92,6 +96,13 @@ class Player
 		float timeToWaitForNextIdleFrame;
 		float timeToWaitForNextJumpingFrame;
 		float timeToWaitForNextAttackingFrame;
+		float timeToWaitForNextDyingFrame;
+		
+		bool isInvinsible;
+		float timeBetweenHits;
+		float timeSinceLastHit;
+		float timeBetweenFlashes;
+		float timeSinceFlash;
 
 		float timeSinceNotTouchingGround;
 		float timeUntilChangeToJump;
@@ -107,6 +118,8 @@ class Player
 		float jumpingWidth;
 		float attackingHeight;
 		float attackingWidth;
+		float dyingWidth;
+		float dyingHeight;
 
 		World* parent;
 

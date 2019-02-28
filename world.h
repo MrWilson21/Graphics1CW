@@ -18,6 +18,7 @@ public:
 	void displayBackground(float screenWidth, float screenHeight);
 	void displayPlayerCameraBox(float screenWidth, float screenHeight);
 	void displayWorldBoundaries();
+	void signalGameEnd();
 
 	Player* player;
 	vector<StaticBlock> staticBlocks;	
@@ -36,6 +37,8 @@ public:
 	float topEdge;
 	float bottomEdge;
 
+	bool gameEnded;
+
 private:
 	void initBackGround();
 
@@ -43,6 +46,10 @@ private:
 	float cameraY;
 	float playerCameraBoxRadiusX;
 	float playerCameraBoxRadiusY;
+
+	float delayUntilGameEnd;
+	float timeSinceGameEnd;
+	bool gameEnding;
 
 	typedef struct BackGround {
 		bool isStatic;

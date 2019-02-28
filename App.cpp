@@ -18,6 +18,7 @@ bool App::isLoadingScreen = false;
 bool App::isFadingOut = false;
 bool App::playButtonPressed = false;
 bool App::quitToMenuPressed = false;
+bool App::isGameOverScreen = false;
 float App::fadeTransparency = 1.0;
 float App::fadeSpeed = 3.0;
 
@@ -106,10 +107,18 @@ void App::resetScreenState()
 	App::isOnMenu = false;
 	App::isPaused = false;
 	App::isLoadingScreen = false;
+	App::isGameOverScreen = false;
 	App::worldIsInPlay = false;
 	App::isFadingOut = false;
 	App::isFadingIn = true;
 	App::fadeTransparency = 0.0;
+}
+
+void App::changeToGameOverScreen()
+{
+	App::resetScreenState();
+	App::quitToMenuPressed = false;
+	App::isGameOverScreen = true;
 }
 
 void App::changeToMenuScreen()

@@ -71,10 +71,10 @@ Enemy::Enemy(float startX, float startY, World* p, int ID)
 	delayAfterLandingAttack = 0.6;
 	timeSinceLandingAttack = 0.0;
 
-	dieFlySpeed = 400.0;
-	timeUntilFadeOut = 0.25;
+	dieFlySpeed = 200.0;
+	timeUntilFadeOut = 0.2;
 	dieDecceleration = 300.0;
-	fadeOutSpeed = 6.0;
+	fadeOutSpeed = 2.0;
 	timeSinceDying = 0.0;
 	transparency = 1.0;
 
