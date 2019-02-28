@@ -126,6 +126,7 @@ void pressPlay()
 void update()
 {
 	//Check play button if menu is showing and if not already fading out
+	//If faded out then change to loading screen
 	if (App::isOnMenu)
 	{
 		if (!App::playButtonPressed)
@@ -138,6 +139,8 @@ void update()
 		}
 	}
 	//If loading screen has faded in then start to load world
+	//Program freezes for a few seconds while world initialises
+	//fade out load screen after world load
 	else if (App::isLoadingScreen)
 	{
 		if (!App::isFadingIn && !App::hasLoaded)
