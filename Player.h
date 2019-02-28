@@ -39,7 +39,6 @@ class Player
 		void calculateColliderBox();
 
 		void changeToWalkingState();
-		void changeToRunningState();
 		void changeToIdleState();
 		void changeToJumpingState();
 		void resetStates();
@@ -72,7 +71,6 @@ class Player
 		bool facingLeft;
 
 		bool isIdle;
-		bool isRunning;
 		bool isWalking;
 		bool isJumping;
 		bool isTouchingGround;

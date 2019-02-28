@@ -35,6 +35,7 @@ class App
 		static void fadeOut();
 
 		static bool leftPressed;
+		static bool escapePressed;
 		static float mouseX;
 		static float mouseY;
 
@@ -45,6 +46,7 @@ class App
 
 		static bool hasLoaded;
 		static bool playButtonPressed;
+		static bool quitToMenuPressed;
 
 		static float fadeTransparency;
 		static bool isFadingIn;

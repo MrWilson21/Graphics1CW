@@ -688,10 +688,6 @@ void Player::changeToWalkingState()
 		isWalking = true;
 	}
 }
-void Player::changeToRunningState()
-{
-
-}
 void Player::changeToIdleState()
 {
 	if (!isIdle)
@@ -717,7 +713,6 @@ void Player::resetStates()
 	currentSprite = 0;
 	timeSinceFrameChange = 0.0;
 	isJumping = false;
-	isRunning = false;
 	isWalking = false;
 	isIdle = false;
 	isAttacking = false;

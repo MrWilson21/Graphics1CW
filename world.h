@@ -11,6 +11,7 @@ class World
 public:
 	World();
 	void init();
+	void reset();
 	void update();
 	void display();
 	void moveCamera(float screenWidth, float screenHeight);
@@ -34,8 +35,6 @@ public:
 	float rightEdge;
 	float topEdge;
 	float bottomEdge;
-
-
 
 private:
 	void initBackGround();

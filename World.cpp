@@ -4,6 +4,16 @@ World::World()
 {
 }
 
+//Destory all entities belonging to world so it can be re intialised
+void World::reset()
+{
+	delete player;
+	staticBlocks.clear();
+	movingBlocks.clear();
+	enemies.clear();
+	gems.clear();
+}
+
 void World::init()
 {
 	worldStartX = 0.0;
@@ -63,7 +73,6 @@ void World::init()
 	p.push_back(App::Point{ 50,30 });
 	movingBlocks.push_back(MovingBlock(p, 350, 30, 20, 10, 10, "blocks/0.png"));
 }
-
 
 //Define background parameters and textures here and intitialise them
 void World::initBackGround()

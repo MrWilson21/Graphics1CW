@@ -5,6 +5,7 @@ const double App::degToRad = 3.14159265359 / 180.0;
 double App::deltaTime = 0.0;
 bool App::shouldDrawBoundingBoxes = false;
 bool App::leftPressed = false;
+bool App::escapePressed = false;
 float App::mouseX = 0;
 float App::mouseY = 0;
 
@@ -16,8 +17,9 @@ bool App::isFadingIn = false;
 bool App::isLoadingScreen = false;
 bool App::isFadingOut = false;
 bool App::playButtonPressed = false;
+bool App::quitToMenuPressed = false;
 float App::fadeTransparency = 1.0;
-float App::fadeSpeed = 1.0;
+float App::fadeSpeed = 3.0;
 
 GLuint App::loadPNG(char* name, bool repeatX, bool repeatY)
 {
@@ -118,6 +120,7 @@ void App::changeToMenuScreen()
 }
 void App::changeToWorldScreen()
 {
+	App::quitToMenuPressed = false;
 	App::resetScreenState();
 	App::worldIsInPlay = true;
 }

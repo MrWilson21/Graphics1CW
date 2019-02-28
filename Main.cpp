@@ -13,13 +13,18 @@ int minScreenWidth = 853;
 int minScreenHeight = 480;
 float scale = 1.5;
 HWND hWnd = NULL;
+bool done = false;								// Bool Variable To Exit Loop
 
 double maxFrameTime = 0.01;	//Unusual object movement can occur if a frame takes too long to render so a max should be set
 int maxFps = 200;
 float UiAspectRatio = 1920.0 / 1080.0; // = 1.78
 steady_clock::time_point totalFrameTime = steady_clock::now();
 World world;
+
 Button playButton = Button();
+Button resumeButton = Button();
+Button quitToMenuButton = Button();
+Button quitToDesktopButton = Button();
 
 GLuint loadingTexture;
 GLuint menuTexture;
@@ -35,6 +40,9 @@ void displayMenu();
 void displayLoading();
 void initWorld();
 void pressPlay();
+void quitToMenu();
+void quitToDesktop();
+void resume();
 
 /*************    START OF OPENGL FUNCTIONS   ****************/
 void display()									
@@ -105,22 +113,23 @@ void init()
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	loadingTexture = App::loadPNG("menu/loading.png");
 	menuTexture = App::loadPNG("menu/title.png");
+	
 	playButton.initialise(0.5, 0.5, 300, 87, 0.2, "", &pressPlay);
+	resumeButton.initialise(0.5, 0.65, 300, 87, 0.2, "", &resume);
+	quitToMenuButton.initialise(0.5, 0.5, 300, 87, 0.2, "", &quitToMenu);
+	quitToDesktopButton.initialise(0.5, 0.35, 300, 87, 0.2, "", &quitToDesktop);
+	
 	App::changeToMenuScreen();
+	
 	glClearColor(0.0, 0.0, 0.0, 0.0);						
 }
 
 void initWorld()
 {
+	world.reset();
 	world.init();
 	App::hasLoaded = true;
 	App::isFadingOut = true;
-}
-
-void pressPlay()
-{
-	App::isFadingOut = true;
-	App::playButtonPressed = true;
 }
 
 void update()
@@ -154,35 +163,41 @@ void update()
 	}
 	else if (App::worldIsInPlay)
 	{
-		world.update();
+		if (!App::quitToMenuPressed)
+		{		
+			if (App::escapePressed)
+			{
+				if (App::isPaused)
+				{
+					App::isPaused = false;
+				}
+				else
+				{
+					App::isPaused = true;
+				}
+				
+			}
+			if (App::isPaused)
+			{
+				resumeButton.checkIfButtonHighlighted(screenWidth, screenHeight);
+				quitToMenuButton.checkIfButtonHighlighted(screenWidth, screenHeight);
+				quitToDesktopButton.checkIfButtonHighlighted(screenWidth, screenHeight);
+			}
+			else
+			{
+				world.update();
+			}
+		}
+		else if (App::fadeTransparency == 0.0)
+		{
+			App::changeToMenuScreen();
+		}
 	}
 
+	App::escapePressed = false;
 	App::leftPressed = false;
 	App::fadeOut();
 	App::fadeIn();
-
-	/*int w = screenWidthPixels;
-	int h = screenHeightPixels;
-	if (w < minScreenWidth || h < minScreenHeight)
-	{
-		w = minScreenWidth;
-		h = minScreenHeight;
-		MoveWindow(hWnd, 0, 0, w + 100, h + 100, true);
-		cout << "c" << w << "\t" << screenWidthPixels << "\t" <<  h << "\n";
-	}
-
-	if ((float)w / (float)h < minAspectRatio)
-	{
-		cout << "a";
-		w = (int)((float)h * minAspectRatio);
-		MoveWindow(hWnd, 0, 0, w, h, true);
-	}
-	else if ((float)w / (float)h > maxAspectRatio)
-	{
-		cout << "b";
-		w = (int)((float)h * maxAspectRatio);
-		MoveWindow(hWnd, 0, 0, w, h, true);
-	}*/
 }
 
 void displayMenu()
@@ -285,11 +300,49 @@ void displayWorld()
 			pHealth -= heartsToRemove;
 		}
 	}
+
+	if (App::isPaused)
+	{
+		glColor4f(0.0, 0.0, 0.0, 0.5);
+		glBegin(GL_POLYGON);
+		glVertex2f(0, screenHeight);
+		glVertex2f(screenWidth, screenHeight);
+		glVertex2f(screenWidth, 0);
+		glVertex2f(0, 0);
+		glEnd();
+		glColor4f(1.0, 1.0, 1.0, 1.0);
+
+		resumeButton.display(screenWidth, screenHeight);
+		quitToMenuButton.display(screenWidth, screenHeight);
+		quitToDesktopButton.display(screenWidth, screenHeight);
+	}
 }
 
 void displayPause()
 {
 	return;
+}
+
+void pressPlay()
+{
+	App::isFadingOut = true;
+	App::playButtonPressed = true;
+}
+
+void quitToMenu()
+{
+	App::quitToMenuPressed = true;
+	App::isFadingOut = true;
+}
+
+void quitToDesktop()
+{
+	done = true;
+}
+
+void resume()
+{
+	App::isPaused = false;
 }
 /**************** END OPENGL FUNCTIONS *************************/
 
@@ -313,7 +366,6 @@ int WINAPI WinMain(	HINSTANCE	hInstance,			// Instance
 					int			nCmdShow)			// Window Show State
 {
 	MSG		msg;									// Windows Message Structure
-	bool	done=false;								// Bool Variable To Exit Loop
 
 
 	AllocConsole();
@@ -342,10 +394,6 @@ int WINAPI WinMain(	HINSTANCE	hInstance,			// Instance
 		}
 		else										// If There Are No Messages
 		{
-			if (App::keys[VK_ESCAPE])
-			{
-				done = true;
-			}
 			update();					// update variables
 			display();					// Draw The Scene
 			SwapBuffers(hDC);				// Swap Buffers (Double Buffering)
@@ -433,6 +481,17 @@ LRESULT CALLBACK WndProc(	HWND	hWnd,			// Handle For This Window
 				else
 				{
 					App::shouldDrawBoundingBoxes = true;
+				}
+			}
+			else if (wParam == VK_ESCAPE)
+			{
+				if (App::escapePressed)
+				{
+					App::escapePressed = false;
+				}
+				else
+				{
+					App::escapePressed = true;
 				}
 			}
 			return 0;								// Jump Back

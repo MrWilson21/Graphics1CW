@@ -802,7 +802,6 @@ void Enemy::updateDie()
 {
 	x += cos(dieAngle*App::degToRad) * dieFlySpeed * App::deltaTime;
 	y += sin(dieAngle*App::degToRad) * dieFlySpeed * App::deltaTime;
-	cout << ID << "\n";
 
 	timeSinceDying += App::deltaTime;
 	dieFlySpeed -= dieDecceleration * App::deltaTime;
