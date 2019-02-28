@@ -22,10 +22,10 @@ void Button::initialise(float x, float y, float width, float height, float scale
 
 void Button::checkIfButtonHighlighted(float screenWidth, float screenHeight)
 {
-	if (App::mouseX > x * screenWidth &&
-		App::mouseX < x * screenWidth + width &&
-		App::mouseY > y * screenHeight &&
-		App::mouseY < y * screenHeight + height)
+	if (App::mouseX > x * screenWidth - width / 2.0 &&
+		App::mouseX < x * screenWidth + width / 2.0 &&
+		App::mouseY > y * screenHeight - height / 2.0 &&
+		App::mouseY < y * screenHeight + height / 2.0)
 	{
 		highlighted = true;
 	}
@@ -43,7 +43,7 @@ void Button::checkIfButtonHighlighted(float screenWidth, float screenHeight)
 void Button::display(float screenWidth, float screenHeight)
 {
 	glPushMatrix();
-	glTranslatef(screenWidth * x, screenHeight * y, 0.0);
+	glTranslatef(screenWidth * x - width / 2.0, screenHeight * y -height / 2.0, 0.0);
 	glEnable(GL_TEXTURE_2D);
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 	if (highlighted)

@@ -11,9 +11,11 @@ float App::mouseY = 0;
 bool App::isOnMenu = true;
 bool App::isPaused = false;
 bool App::worldIsInPlay = false;
-bool App::isLoading = false;
+bool App::hasLoaded = false;
 bool App::isFadingIn = false;
+bool App::isLoadingScreen = false;
 bool App::isFadingOut = false;
+bool App::playButtonPressed = false;
 float App::fadeTransparency = 1.0;
 float App::fadeSpeed = 1.0;
 
@@ -70,4 +72,59 @@ void App::displayBoundingBox(float x1, float y1, float x2, float y2)
 		glVertex2f(x1, y2);
 		glEnd();
 	}
+}
+
+void App::fadeIn()
+{
+	if (App::isFadingIn)
+	{
+		App::fadeTransparency += App::fadeSpeed * App::deltaTime;
+		if (App::fadeTransparency >= 1.0)
+		{
+			App::fadeTransparency = 1.0;
+			App::isFadingIn = false;
+		}
+	}
+}
+void App::fadeOut()
+{
+	if (App::isFadingOut)
+	{
+		App::fadeTransparency -= App::fadeSpeed * App::deltaTime;
+		if (App::fadeTransparency <= 0.0)
+		{
+			App::fadeTransparency = 0.0;
+			App::isFadingOut = false;
+		}
+	}
+}
+
+void App::resetScreenState()
+{
+	App::isOnMenu = false;
+	App::isPaused = false;
+	App::isLoadingScreen = false;
+	App::worldIsInPlay = false;
+	App::isFadingOut = false;
+	App::isFadingIn = true;
+	App::fadeTransparency = 0.0;
+}
+
+void App::changeToMenuScreen()
+{
+	App::playButtonPressed = false;
+	App::resetScreenState();
+	App::isOnMenu = true;
+}
+void App::changeToWorldScreen()
+{
+	App::resetScreenState();
+	App::worldIsInPlay = true;
+}
+
+void App::changeToLoadingScreen()
+{
+	App::hasLoaded = false;
+	App::resetScreenState();
+	App::isLoadingScreen = true;
 }

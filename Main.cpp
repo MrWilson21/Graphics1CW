@@ -46,7 +46,7 @@ void display()
 	{
 		displayMenu();
 	}
-	else if (App::isLoading)
+	else if (App::isLoadingScreen)
 	{
 		displayLoading();
 	}
@@ -105,66 +105,58 @@ void init()
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	loadingTexture = App::loadPNG("menu/loading.png");
 	menuTexture = App::loadPNG("menu/title.png");
-	playButton.initialise(0.5, 0.5, 300, 187, 0.1, "", &pressPlay);
+	playButton.initialise(0.5, 0.5, 300, 87, 0.2, "", &pressPlay);
+	App::changeToMenuScreen();
 	glClearColor(0.0, 0.0, 0.0, 0.0);						
 }
 
 void initWorld()
 {
 	world.init();
+	App::hasLoaded = true;
+	App::isFadingOut = true;
 }
 
 void pressPlay()
 {
 	App::isFadingOut = true;
+	App::playButtonPressed = true;
 }
 
 void update()
 {
-	if (App::isOnMenu && !App::isFadingOut)
+	//Check play button if menu is showing and if not already fading out
+	if (App::isOnMenu)
 	{
-		playButton.checkIfButtonHighlighted(screenWidth, screenHeight);
+		if (!App::playButtonPressed)
+		{
+			playButton.checkIfButtonHighlighted(screenWidth, screenHeight);
+		}
+		else if (App::fadeTransparency == 0.0)
+		{
+			App::changeToLoadingScreen();
+		}
 	}
-	else if (App::isOnMenu && App::isFadingOut && App::fadeTransparency <= 0.0)
+	//If loading screen has faded in then start to load world
+	else if (App::isLoadingScreen)
 	{
-		App::isOnMenu = false;
-		App::isLoading = true;
-		App::fadeTransparency = 1.0;
+		if (!App::isFadingIn && !App::hasLoaded)
+		{
+			initWorld();
+		}
+		else if (!App::isFadingOut && App::hasLoaded)
+		{
+			App::changeToWorldScreen();
+		}
 	}
-	else if (App::isLoading && App::isFadingOut)
-	{
-		initWorld();
-		App::worldIsInPlay = true;
-		App::isLoading = false;
-	}
-	else if (App::worldIsInPlay && App::fadeTransparency > 0.0 && App::isFadingOut)
-	{
-		App::fadeTransparency = 0.0;
-	}
-	else if (App::worldIsInPlay  && !App::isPaused)
+	else if (App::worldIsInPlay)
 	{
 		world.update();
-		App::isFadingOut = false;
-		App::isFadingIn = true;
 	}
 
-	if (App::isFadingOut)
-	{
-		App::fadeTransparency -= App::fadeSpeed * App::deltaTime;
-		if (App::fadeTransparency < 0.0)
-		{
-			App::fadeTransparency = 0.0;
-		}
-	}
-	else if (App::isFadingIn)
-	{
-		App::fadeTransparency += App::fadeSpeed * App::deltaTime;
-		if (App::fadeTransparency > 1.0)
-		{
-			App::fadeTransparency = 1.0;
-		}
-	}
 	App::leftPressed = false;
+	App::fadeOut();
+	App::fadeIn();
 
 	/*int w = screenWidthPixels;
 	int h = screenHeightPixels;

@@ -27,6 +27,13 @@ class App
 		static GLuint loadPNG(char* name, bool repeatX = false, bool repeatY = false);
 		static void displayBoundingBox(float x1, float y1, float x2, float y2);
 
+		static void changeToMenuScreen();
+		static void changeToWorldScreen();
+		static void changeToLoadingScreen();
+		static void resetScreenState();
+		static void fadeIn();
+		static void fadeOut();
+
 		static bool leftPressed;
 		static float mouseX;
 		static float mouseY;
@@ -34,7 +41,10 @@ class App
 		static bool isOnMenu;
 		static bool isPaused;
 		static bool worldIsInPlay;
-		static bool isLoading;
+		static bool isLoadingScreen;
+
+		static bool hasLoaded;
+		static bool playButtonPressed;
 
 		static float fadeTransparency;
 		static bool isFadingIn;
