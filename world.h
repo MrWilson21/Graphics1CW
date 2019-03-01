@@ -5,6 +5,7 @@
 #include "player.h"
 #include "enemy.h"
 #include "gem.h"
+#include "rotatingBlock.h"
 
 class World
 {
@@ -23,6 +24,7 @@ public:
 	Player* player;
 	vector<StaticBlock> staticBlocks;	
 	vector<MovingBlock> movingBlocks;
+	vector<RotatingBlock> rotatingBlocks;
 	vector<Enemy> enemies;
 
 	vector<Gem> gems;

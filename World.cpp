@@ -12,6 +12,7 @@ void World::reset()
 	movingBlocks.clear();
 	enemies.clear();
 	gems.clear();
+	rotatingBlocks.clear();
 }
 
 void World::init()
@@ -49,14 +50,16 @@ void World::init()
 	cameraY = player->y + player->colliderHeight / 2;
 
 	//staticBlocks.push_back(StaticBlock(30, 45, 150, 20, "blocks/0.png"));
-	staticBlocks.push_back(StaticBlock(30, 65, 100, 10, 10, 10, "blocks/0.png"));
-	staticBlocks.push_back(StaticBlock(130, 0, 10, 40, 10, 10, "blocks/0.png"));
+	//staticBlocks.push_back(StaticBlock(30, 65, 100, 10, 10, 10, "blocks/0.png"));
+	//staticBlocks.push_back(StaticBlock(130, 0, 10, 40, 10, 10, "blocks/0.png"));
 	//staticBlocks.push_back(StaticBlock(160, 100, 50, 10, "blocks/0.png"));
-	//staticBlocks.push_back(StaticBlock(210, 100, 10, 30, "blocks/0.png"));
+	staticBlocks.push_back(StaticBlock(250, 0, 10, 60, 10, 10, "blocks/0.png"));
+
+	rotatingBlocks.push_back(RotatingBlock(40, 30, 40, 40, 10, 10, 0, "blocks/0.png"));
 
 	for(int i = 0; i < 1; i++)
 	{
-		enemies.push_back(Enemy(20, 30, this, i));
+		enemies.push_back(Enemy(300, 30, this, i));
 	}
 	
 	for (int i = 0; i < enemies.size(); i++)
@@ -76,7 +79,7 @@ void World::init()
 	p.push_back(App::Point{ 100,10 });
 	p.push_back(App::Point{ 100,100 });
 	p.push_back(App::Point{ 50,30 });
-	movingBlocks.push_back(MovingBlock(p, 350, 30, 20, 10, 10, "blocks/0.png"));
+	//movingBlocks.push_back(MovingBlock(p, 350, 30, 20, 10, 10, "blocks/0.png"));
 }
 
 void World::signalGameEnd()
@@ -358,6 +361,14 @@ void World::display()
 	for (int i = 0; i < movingBlocks.size(); i++)
 	{
 		movingBlocks[i].display();
+	}
+
+	for (int i = 0; i < rotatingBlocks.size(); i++)
+	{
+		rotatingBlocks[i].display();
+		rotatingBlocks[i].rotation += App::deltaTime * App::keys[VK_NUMPAD2] * 50;
+		rotatingBlocks[i].rotation -= App::deltaTime * App::keys[VK_NUMPAD1] * 50;
+		rotatingBlocks[i].calculatePoints();
 	}
 
 	for (int i = 0; i < enemies.size(); i++)

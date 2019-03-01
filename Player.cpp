@@ -619,6 +619,256 @@ void Player::calculateCollider(float blockX, float blockY, float blockWidth, flo
 	}
 }
 
+void Player::calculateRotatingCollider(App::Point b0, App::Point b1, App::Point b2, App::Point b3, float rotation)
+{
+	//Test if colliding
+	//Get closest edge from both objects
+	//find intersection point of two closest edges
+	//find closest corner of each object to the intersection point
+	//move corner of player to intersection point or move intersection point of player to corner of collider, whichever is closest
+	//Move intersection point of player 
+
+	if (rotation / 90 == 1.0 || rotation == 0)
+	{
+		calculateCollider(b3.x, b3.y, b1.x - b3.x, b1.y - b3.y, 0.0, 0.0);
+		return;
+	}
+
+	//b0 and p0 are top left corners going clockwise
+	App::Point a0 = App::Point{ x + colliderX, y + colliderY + colliderHeight};
+	App::Point a1 = App::Point{ x + colliderX + colliderWidth, y + colliderY + colliderHeight };
+	App::Point a2 = App::Point{ x + colliderX + colliderWidth, y + colliderY };
+	App::Point a3 = App::Point{ x + colliderX, y + colliderY };
+
+	App::Point axis1 = (b2 - b3) / (b2 - b3).abs();
+	App::Point axis2 = (b1 - b2) / (b1 - b2).abs();
+	App::Point axis3 = (a2 - a3) / (a2 - a3).abs();
+	App::Point axis4 = (a1 - a2) / (a1 - a2).abs();
+
+	//Test axis 1
+	float projections[4];
+	projections[0] = (a0 - b3).dot(axis1);
+	projections[1] = (a1 - b3).dot(axis1);
+	projections[2] = (a2 - b3).dot(axis1);
+	projections[3] = (a3 - b3).dot(axis1);
+
+	std::sort(projections, projections + 4);
+
+	if (projections[0] > (b2 - b3).abs() || projections[3] < 0)
+	{
+		return;
+	}
+
+	//Calculate distances from each edge
+	float distToRightBlock = (b2 - b3).abs() - projections[0];
+	float distToLeftBlock = projections[3];
+
+	//Test axis 2
+	projections[0] = (a0 - b2).dot(axis2);
+	projections[1] = (a1 - b2).dot(axis2);
+	projections[2] = (a2 - b2).dot(axis2);
+	projections[3] = (a3 - b2).dot(axis2);
+
+	std::sort(projections, projections + 4);
+
+	if (projections[0] > (b1 - b2).abs() || projections[3] < 0)
+	{
+		return;
+	}
+
+	//Calculate distances from each edge
+	float distToTopBlock = (b1 - b2).abs() - projections[0];
+	float distToBottomBlock = projections[3];
+
+	//Test axis 3
+	projections[0] = (b0 - a3).dot(axis3);
+	projections[1] = (b1 - a3).dot(axis3);
+	projections[2] = (b2 - a3).dot(axis3);
+	projections[3] = (b3 - a3).dot(axis3);
+
+	std::sort(projections, projections + 4);
+
+	if (projections[0] > (a2 - a3).abs() || projections[3] < 0)
+	{
+		return;
+	}
+
+	//Calculate distances from each edge
+	float distToRightPlayer = (a2 - a3).abs() - projections[0];
+	float distToLeftPlayer = projections[3];
+
+	//Test axis 4
+	projections[0] = (b0 - a2).dot(axis4);
+	projections[1] = (b1 - a2).dot(axis4);
+	projections[2] = (b2 - a2).dot(axis4);
+	projections[3] = (b3 - a2).dot(axis4);
+
+	std::sort(projections, projections + 4);
+
+	if (projections[0] > (a1 - a2).abs() || projections[3] < 0)
+	{
+		return;
+	}
+
+	//Calculate distances from each edge
+	float distToTopPlayer = (a1 - a2).abs() - projections[0];
+	float distToBottomPlayer = projections[3];
+
+	App::Point bContact1;
+	App::Point bContact2;
+	App::Point pContact1;
+	App::Point pContact2;
+
+	bool intersectedWithVerticalPlayerEdge = false;
+
+	//Get the two corners that surround the point where block intersected
+	if (distToRightBlock < distToLeftBlock &&
+		distToRightBlock < distToTopBlock &&
+		distToRightBlock < distToBottomBlock)
+	{
+		bContact1 = b1;
+		bContact2 = b2;
+	}
+	else if (distToLeftBlock < distToRightBlock &&
+		distToLeftBlock < distToTopBlock &&
+		distToLeftBlock < distToBottomBlock)
+	{
+		bContact1 = b0;
+		bContact2 = b3;
+	}
+	else if (distToBottomBlock < distToLeftBlock &&
+		distToBottomBlock < distToTopBlock &&
+		distToBottomBlock < distToRightBlock)
+	{
+		bContact1 = b3;
+		bContact2 = b2;
+		intersectedWithVerticalPlayerEdge = true;
+	}
+	else
+	{
+		bContact1 = b0;
+		bContact2 = b1;
+		intersectedWithVerticalPlayerEdge = true;
+	}
+
+	//Get the two corners that surround the point where player intersected 
+	if (distToRightPlayer < distToLeftPlayer &&
+		distToRightPlayer < distToTopPlayer &&
+		distToRightPlayer < distToBottomPlayer)
+	{
+		pContact1 = a1;
+		pContact2 = a2;
+	}
+	else if (distToLeftPlayer < distToRightPlayer &&
+		distToLeftPlayer < distToTopPlayer &&
+		distToLeftPlayer < distToBottomPlayer)
+	{
+		pContact1 = a0;
+		pContact2 = a3;
+	}
+	else if (distToBottomPlayer < distToLeftPlayer &&
+		distToBottomPlayer < distToTopPlayer &&
+		distToBottomPlayer < distToRightPlayer)
+	{
+		pContact1 = a3;
+		pContact2 = a2;
+	}
+	else
+	{
+		pContact1 = a0;
+		pContact2 = a1;
+	}
+
+	float yIntersect;
+	float xIntersect;
+	//Gradient of the line going between two block corners
+	float blockSlope = (bContact1 - bContact2).y / (bContact1 - bContact2).x;
+
+	//If intersected with a horizontal edge then x will be equal to the x of the player edge
+	//Solve for y of intersection point
+	if (intersectedWithVerticalPlayerEdge)
+	{
+		yIntersect = pContact1.y;
+		xIntersect = (yIntersect - bContact1.y) / blockSlope;
+	}
+	//If intersected with a vertical edge then y will be equal to the y of the player edge
+	//Solve for x of intersection point
+	else
+	{
+		xIntersect = pContact1.x;
+		yIntersect = bContact1.y + (xIntersect*blockSlope);
+	}
+
+	//Gradient of the line going between two player corners
+	//float playerSlope = (pContact1 - pContact2).y / (pContact1 - pContact2).x;
+
+	//Get point of intersect between player and block
+	//float xIntersect = bContact1.x + (bContact1.y - y) / (playerSlope - blockSlope);
+	//float yIntersect = y + xIntersect * playerSlope;
+	App::Point pointOfIntersect = App::Point{ xIntersect, yIntersect };
+
+	//Get distances from point of intersection to corners of player and block
+	float distToCornerPlayer1 = pContact1.distance(pointOfIntersect);
+	float distToCornerPlayer2 = pContact2.distance(pointOfIntersect);
+	float distToCornerBlock1 = bContact1.distance(pointOfIntersect);
+	float distToCornerBlock2 = bContact2.distance(pointOfIntersect);
+
+	App::Point closestPlayerCorner;
+	App::Point closestBlockCorner;
+	bool blockIsClosest = false;
+	float closest;
+
+	//Find which corner is closest
+	if (distToCornerPlayer1 > distToCornerPlayer2)
+	{
+		closestPlayerCorner = pContact1;
+		closest = distToCornerPlayer1;
+	}
+	else
+	{
+		closestPlayerCorner = pContact2;
+		closest = distToCornerPlayer2;
+	}
+	if (distToCornerBlock1 > distToCornerBlock2)
+	{
+		closestBlockCorner = bContact1;
+		if (distToCornerBlock1 > closest)
+		{
+			blockIsClosest = true;
+		}
+	}
+	else
+	{
+		closestBlockCorner = bContact2;
+		if (distToCornerBlock1 > closest)
+		{
+			blockIsClosest = true;
+		}
+	}
+	if (blockIsClosest)
+	{
+		//move player intersection point to closest corner of block
+		App::Point newPos = (a3 - pointOfIntersect) + closestBlockCorner;
+		//x = newPos.x - colliderX;
+		//y = newPos.y - colliderY;
+		//cout << newPos.x << "\t" << newPos.y << "\t" << blockSlope << "n\n";
+		cout << pointOfIntersect.x << "\t" << pointOfIntersect.y << "    corner\n";
+		c = pointOfIntersect;
+	}
+	else
+	{
+		//move player corner to intersection point
+		App::Point newPos = (a3 - closestPlayerCorner) + pointOfIntersect;
+		//x = newPos.x - colliderX;
+		//y = newPos.y - colliderY;
+		//cout << newPos.x << "\t" << newPos.y << "\t" << blockSlope << "\t" << "\n";
+		cout << pointOfIntersect.x << "\t" << pointOfIntersect.y << "\n";
+		c = pointOfIntersect;
+	}
+	//cout << x << "\t" << y << "\t" << blockSlope << "\t" << playerSlope << "\n";
+	glColor3f(1.0, 0.0, 0.0);
+}
+
 void Player::getCollisionUpdates()
 {
 	//Assume player is not touching ground until a ground collision is made
@@ -633,6 +883,11 @@ void Player::getCollisionUpdates()
 	for (MovingBlock block : parent->movingBlocks)
 	{
 		calculateCollider(block.x, block.y, block.width, block.height, block.xMoveThisFrame, block.yMoveThisFrame);
+	}
+
+	for (RotatingBlock block : parent->rotatingBlocks)
+	{
+		calculateRotatingCollider(block.p0, block.p1, block.p2, block.p3, block.rotation);
 	}
 
 	calculateCollider(parent->rightEdge, 0, 100, parent->worldSizeY, 0.0, 0.0);
@@ -965,4 +1220,16 @@ void Player::display()
 	{
 		displayFist();
 	}
+
+	App::Point a0 = App::Point{ x + colliderX, y + colliderY + colliderHeight };
+	App::Point a1 = App::Point{ x + colliderX + colliderWidth, y + colliderY + colliderHeight };
+	App::Point a2 = App::Point{ x + colliderX + colliderWidth, y + colliderY };
+	App::Point a3 = App::Point{ x + colliderX, y + colliderY };
+
+	glPointSize(10);
+	glColor3f(1.0, 0.0, 0.0);
+	glBegin(GL_POINTS);
+	glVertex3f(c.x, c.y, 1);
+	glEnd();
+
 }

@@ -11,6 +11,7 @@
 #include <thread> 
 #include <chrono>
 #include <stdlib.h>
+#include <algorithm>
 
 using namespace std;
 using namespace std::chrono;
@@ -58,6 +59,36 @@ class App
 		typedef struct Point {
 			float x;
 			float y;
+
+			Point operator-(const Point& p)
+			{
+				return Point{ x - p.x, y - p.y };
+			}
+
+			Point operator+(const Point& p)
+			{
+				return Point{ x + p.x, y + p.y };
+			}
+
+			float abs()
+			{
+				return sqrt(pow(x, 2) + pow(y, 2));
+			}
+
+			Point operator/(float d)
+			{
+				return Point{ x / d, y / d };
+			}
+
+			float dot(const Point& p)
+			{
+				return (x*p.x + y * p.y);
+			}
+
+			float distance(const Point& p)
+			{
+				return ((Point{ x, y } - p).abs());
+			}
 		};
 };
 

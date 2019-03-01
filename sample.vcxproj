@@ -18,6 +18,7 @@
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MovingBlock.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="RotatingBlock.cpp" />
     <ClCompile Include="StaticBlock.cpp" />
     <ClCompile Include="World.cpp" />
   </ItemGroup>
@@ -29,6 +30,7 @@
     <ClInclude Include="Image_Loading\nvImage.h" />
     <ClInclude Include="movingblock.h" />
     <ClInclude Include="player.h" />
+    <ClInclude Include="rotatingBlock.h" />
     <ClInclude Include="staticBlock.h" />
     <ClInclude Include="world.h" />
   </ItemGroup>
