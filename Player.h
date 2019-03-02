@@ -39,8 +39,10 @@ class Player
 
 		void calculateColliderBox();
 
+		App::Point d;
 		App::Point c;
 		App::Point b;
+		App::Point a;
 
 		void changeToWalkingState();
 		void changeToIdleState();

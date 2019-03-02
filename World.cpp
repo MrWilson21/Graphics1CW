@@ -55,7 +55,7 @@ void World::init()
 	//staticBlocks.push_back(StaticBlock(160, 100, 50, 10, "blocks/0.png"));
 	staticBlocks.push_back(StaticBlock(250, 0, 10, 60, 10, 10, "blocks/0.png"));
 
-	rotatingBlocks.push_back(RotatingBlock(40, 30, 40, 40, 10, 10, 0, "blocks/0.png"));
+	rotatingBlocks.push_back(RotatingBlock(50, 45, 40, 40, 10, 10, 0, "blocks/0.png"));
 
 	for(int i = 0; i < 1; i++)
 	{
@@ -366,8 +366,8 @@ void World::display()
 	for (int i = 0; i < rotatingBlocks.size(); i++)
 	{
 		rotatingBlocks[i].display();
-		rotatingBlocks[i].rotation += App::deltaTime * App::keys[VK_NUMPAD2] * 50;
-		rotatingBlocks[i].rotation -= App::deltaTime * App::keys[VK_NUMPAD1] * 50;
+		rotatingBlocks[i].rotation += App::deltaTime * App::keys[VK_OEM_PLUS] * 50;
+		rotatingBlocks[i].rotation -= App::deltaTime * App::keys[VK_OEM_MINUS] * 50;
 		rotatingBlocks[i].calculatePoints();
 	}
 
