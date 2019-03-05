@@ -623,10 +623,10 @@ void Player::calculateRotatingCollider(App::Point b0, App::Point b1, App::Point 
 {
 	//Test if colliding
 	//Get closest edge from both objects
-	//find intersection point of two closest edges
-	//find closest corner of each object to the intersection point
-	//move corner of player to intersection point or move intersection point of player to corner of collider, whichever is closest
-	//Move intersection point of player 
+	//For each of 4 corners of closest edges find corners that are inside of the others collider
+	//for each corner inside colliders find closest distance to the edge of the collider
+	//For the closest corner find the vector to move the player so that the corner is at the point of the closest edge to that corner
+	//Move the player by that vector amount
 
 	if (rotation / 90 == 1.0 || rotation == 0)
 	{
@@ -857,20 +857,24 @@ void Player::calculateRotatingCollider(App::Point b0, App::Point b1, App::Point 
 		//d = pContact1;
 		//c = bContact1;
 		b = bContact2;
-		a = newPos;
+		a = bContact1;
+		c = pContact1;
+		d = pContact2;
 	}
 	else
 	{
 		//move player corner to intersection point
 		//App::Point newPos = (a3 - closestPlayerCorner) + pointOfIntersect;
 		App::Point newPos = (closestPlayerCorner - pointOfIntersect) + App::Point{ x, y };
-		x = newPos.x;
-		y = newPos.y;
+		//x = newPos.x;
+		//y = newPos.y;
 		//cout << newPos.x << "\t" << newPos.y << "\t" << blockSlope << "\t" << "\n";
 		//cout << pointOfIntersect.x << "\t" << pointOfIntersect.y << "\n";
 		//d = pContact1;
-		c = closestPlayerCorner;
-		b = pointOfIntersect;
+		b = bContact2;
+		a = bContact1;
+		c = pContact1;
+		d = pContact2;
 		//a = newPos;
 		cout << "notBlock\n";
 	}
