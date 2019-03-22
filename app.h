@@ -80,6 +80,11 @@ class App
 				return Point{ x / d, y / d };
 			}
 
+			Point operator*(float d)
+			{
+				return Point{ x * d, y * d };
+			}
+
 			float dot(const Point& p)
 			{
 				return (x*p.x + y * p.y);

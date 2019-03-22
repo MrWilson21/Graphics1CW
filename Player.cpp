@@ -338,7 +338,7 @@ void Player::update()
 	//Check if player is not moving and change to idle
 	//Final check done in case player is walking into wall
 	//give player an idle state so it doesnt look like he is running on the spot into a wall
-	if (velocityX == 0 && velocityY == 0 && !(isAttacking || isDying || isJumping))
+	if (velocityX == 0 && !(isAttacking || isDying || isJumping || !isTouchingGround))
 	{
 		changeToIdleState();
 	}
@@ -623,10 +623,8 @@ void Player::calculateRotatingCollider(App::Point b0, App::Point b1, App::Point 
 {
 	//Test if colliding
 	//Get closest edge from both objects
-	//For each of 4 corners of closest edges find corners that are inside of the others collider
-	//for each corner inside colliders find closest distance to the edge of the collider
-	//For the closest corner find the vector to move the player so that the corner is at the point of the closest edge to that corner
-	//Move the player by that vector amount
+	//Find axis with least travel distance to seperate
+	//Move player by minimum travel distance in direction of minimum axis
 
 	if (rotation / 90 == 1.0 || rotation == 0)
 	{
@@ -714,10 +712,8 @@ void Player::calculateRotatingCollider(App::Point b0, App::Point b1, App::Point 
 	float distToTopPlayer = (a1 - a2).abs() - projections[0];
 	float distToBottomPlayer = projections[3];
 
-	App::Point bContact1;
-	App::Point bContact2;
-	App::Point pContact1;
-	App::Point pContact2;
+	App::Point playerAxis;
+	App::Point blockAxis;
 
 	bool intersectedWithVerticalPlayerEdge = false;
 
@@ -726,27 +722,23 @@ void Player::calculateRotatingCollider(App::Point b0, App::Point b1, App::Point 
 		distToRightBlock < distToTopBlock &&
 		distToRightBlock < distToBottomBlock)
 	{
-		bContact1 = b1;
-		bContact2 = b2;
+		blockAxis = axis1 * distToRightBlock;
 	}
 	else if (distToLeftBlock < distToRightBlock &&
 		distToLeftBlock < distToTopBlock &&
 		distToLeftBlock < distToBottomBlock)
 	{
-		bContact1 = b0;
-		bContact2 = b3;
+		blockAxis = axis1 * -distToLeftBlock;
 	}
 	else if (distToBottomBlock < distToLeftBlock &&
 		distToBottomBlock < distToTopBlock &&
 		distToBottomBlock < distToRightBlock)
 	{
-		bContact1 = b3;
-		bContact2 = b2;
+		blockAxis = axis2 * -distToBottomBlock;
 	}
 	else
 	{
-		bContact1 = b0;
-		bContact2 = b1;
+		blockAxis = axis2 * distToTopBlock;
 	}
 
 	//Get the two corners that surround the point where player intersected 
@@ -754,131 +746,51 @@ void Player::calculateRotatingCollider(App::Point b0, App::Point b1, App::Point 
 		distToRightPlayer < distToTopPlayer &&
 		distToRightPlayer < distToBottomPlayer)
 	{
-		pContact1 = a1;
-		pContact2 = a2;
+		playerAxis = axis3 * distToRightPlayer;
 	}
 	else if (distToLeftPlayer < distToRightPlayer &&
 		distToLeftPlayer < distToTopPlayer &&
 		distToLeftPlayer < distToBottomPlayer)
 	{
-		pContact1 = a0;
-		pContact2 = a3;
+		playerAxis = axis3 * -distToLeftPlayer;
 	}
 	else if (distToBottomPlayer < distToLeftPlayer &&
 		distToBottomPlayer < distToTopPlayer &&
 		distToBottomPlayer < distToRightPlayer)
 	{
-		pContact1 = a3;
-		pContact2 = a2;
-		intersectedWithVerticalPlayerEdge = true;
+		playerAxis = axis4 * -distToBottomPlayer;
+		isTouchingGround = true;
+		timeSinceNotTouchingGround = 0.0;
 	}
 	else
 	{
-		pContact1 = a0;
-		pContact2 = a1;
-		intersectedWithVerticalPlayerEdge = true;
+		playerAxis = axis4 * distToTopPlayer;
 	}
 
-	float yIntersect;
-	float xIntersect;
-	//Gradient of the line going between two block corners
-	float blockSlope = (bContact1 - bContact2).y / (bContact1 - bContact2).x;
+	App::Point moveVector;
+	App::Point velocityVector;
+	App::Point currentVelocity = App::Point{ velocityX, velocityY };
 
-	//If intersected with a horizontal edge then x will be equal to the x of the player edge
-	//Solve for y of intersection point
-	if (intersectedWithVerticalPlayerEdge)
+	if (blockAxis.abs() > playerAxis.abs())
 	{
-		yIntersect = pContact1.y;
-		xIntersect = bContact1.x + (yIntersect - bContact1.y) * blockSlope;
-	}
-	//If intersected with a vertical edge then y will be equal to the y of the player edge
-	//Solve for x of intersection point
-	else
-	{
-		xIntersect = pContact1.x;
-		yIntersect = bContact1.y + ((xIntersect-bContact1.x)*blockSlope);
-	}
-
-	//Get point of intersect between player and block
-	//float xIntersect = bContact1.x + (bContact1.y - y) / (playerSlope - blockSlope);
-	//float yIntersect = y + xIntersect * playerSlope;
-	App::Point pointOfIntersect = App::Point{ xIntersect, yIntersect };
-
-	//Get distances from point of intersection to corners of player and block
-	float distToCornerPlayer1 = pContact1.distance(pointOfIntersect);
-	float distToCornerPlayer2 = pContact2.distance(pointOfIntersect);
-	float distToCornerBlock1 = bContact1.distance(pointOfIntersect);
-	float distToCornerBlock2 = bContact2.distance(pointOfIntersect);
-
-	//cout << distToCornerBlock1 << "\t" << distToCornerBlock2 << "\t" << distToCornerPlayer1 << "\t" << distToCornerPlayer2 << "\n";
-
-	App::Point closestPlayerCorner;
-	App::Point closestBlockCorner;
-	bool blockIsClosest = false;
-	float closest;
-
-	//Find which corner is closest
-	if (distToCornerPlayer1 < distToCornerPlayer2)
-	{
-		closestPlayerCorner = pContact1;
-		closest = distToCornerPlayer1;
+		moveVector = playerAxis * -1;
 	}
 	else
 	{
-		closestPlayerCorner = pContact2;
-		closest = distToCornerPlayer2;
+		moveVector = blockAxis;
 	}
-	if (distToCornerBlock1 < distToCornerBlock2)
-	{
-		closestBlockCorner = bContact1;
-		if (distToCornerBlock1 < closest)
-		{
-			blockIsClosest = true;
-		}
-	}
-	else
-	{
-		closestBlockCorner = bContact2;
-		if (distToCornerBlock1 < closest)
-		{
-			blockIsClosest = true;
-		}
-	}
-	if (blockIsClosest)
-	{
-		//move player intersection point to closest corner of block
-		//App::Point newPos = (a3 - pointOfIntersect) + closestBlockCorner;
-		App::Point newPos = (pointOfIntersect - closestPlayerCorner) + a3;
 
-		//x = newPos.x - colliderX;
-		//y = newPos.y - colliderY;
-		//cout << newPos.x << "\t" << newPos.y << "\t" << blockSlope << "n\n";
-		//cout << pointOfIntersect.x << "\t" << pointOfIntersect.y << "    corner\n";
-		//d = pContact1;
-		//c = bContact1;
-		b = bContact2;
-		a = bContact1;
-		c = pContact1;
-		d = pContact2;
-	}
-	else
+	if (currentVelocity.abs() > 0 && moveVector.abs() > 0)
 	{
-		//move player corner to intersection point
-		//App::Point newPos = (a3 - closestPlayerCorner) + pointOfIntersect;
-		App::Point newPos = (closestPlayerCorner - pointOfIntersect) + App::Point{ x, y };
-		//x = newPos.x;
-		//y = newPos.y;
-		//cout << newPos.x << "\t" << newPos.y << "\t" << blockSlope << "\t" << "\n";
-		//cout << pointOfIntersect.x << "\t" << pointOfIntersect.y << "\n";
-		//d = pContact1;
-		b = bContact2;
-		a = bContact1;
-		c = pContact1;
-		d = pContact2;
-		//a = newPos;
-		cout << "notBlock\n";
+		float angle = acos(moveVector.dot(currentVelocity) / (moveVector.abs() * currentVelocity.abs()));
+		//velocityX = velocityX * -cos(angle);
+		//velocityY = velocityY * sin(acos(angle));
+		cout << velocityX << "\t" << angle <<  "\n";
 	}
-	//cout << x << "\t" << y << "\t" << blockSlope << "\t" << playerSlope << "\n";
+
+	x += moveVector.x;
+	y += moveVector.y;
+
 	glColor3f(1.0, 0.0, 0.0);
 }
 
