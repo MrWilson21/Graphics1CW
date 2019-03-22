@@ -64,5 +64,5 @@ private:
 		//speed that the background scolls on its own (e.g. passing clouds)
 		float moveSpeedX;
 	};
-	BackGround paralaxBackGround[11];
+	BackGround paralaxBackGround[12];
 };

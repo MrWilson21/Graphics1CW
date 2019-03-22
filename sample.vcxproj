@@ -203,6 +203,7 @@
     <Image Include="worldBackGround\hill1.png" />
     <Image Include="worldBackGround\hill2.png" />
     <Image Include="worldBackGround\HugeClouds.png" />
+    <Image Include="worldBackGround\rainbow.png" />
     <Image Include="worldBackGround\static.png" />
     <Image Include="worldBackGround\treesAndBushes.png" />
   </ItemGroup>

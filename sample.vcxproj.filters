@@ -673,6 +673,9 @@
     <Image Include="shaggy\death\3.png">
       <Filter>Resource Files\shaggy\death</Filter>
     </Image>
+    <Image Include="worldBackGround\rainbow.png">
+      <Filter>Resource Files\worldBackGround</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md" />
