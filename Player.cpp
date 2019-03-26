@@ -792,12 +792,10 @@ void Player::calculateRotatingCollider(App::Point b0, App::Point b1, App::Point 
 	//If either velocity or mtv somehow have 0 magnitude then escape response 
 	if (mtVector.abs() <= 0)
 	{
-		cout << "mtv";
 		return;
 	}
 	if (currentVelocity.abs() <= 0)
 	{
-		cout << "currentVelocity";
 		return;
 	}
 
@@ -808,12 +806,11 @@ void Player::calculateRotatingCollider(App::Point b0, App::Point b1, App::Point 
 
 	//Move in opposite direction of current velocity with magnitude of mtv / cos(angle)
 	float moveAngle = velDirection.dot(mtvDirection) / (velDirection.abs() * mtvDirection.abs());
-	//cout << moveAngle <<  "      " << acos(moveAngle) * App::radToDeg <<  "\n";
-	//float fractionOfVelocity = mtVector.abs() / moveAngle;
 	float fractionOfVelocity = mtVector.abs() / currentVelocity.abs();
 
 	//Get vector to move player by
-	App::Point moveVector = velDirection * (currentVelocity.abs() * fractionOfVelocity);
+	//App::Point moveVector = velDirection * (currentVelocity.abs() * fractionOfVelocity);
+	App::Point moveVector = mtVector;
 	App::Point newVelocity;
 	App::Point currentDirection = currentVelocity / currentVelocity.abs();
 
@@ -840,6 +837,11 @@ void Player::calculateRotatingCollider(App::Point b0, App::Point b1, App::Point 
 		{
 			newVelocity = blockSlope * blockSlope.abs();
 		}
+		if (currentVelocity.abs() < 1 && currentVelocity.x * newVelocity.x < 0)
+		{
+			newVelocity = newVelocity * -1;
+		}
+
 
 		if (currentVelocity.abs() > 0 && mtVector.abs() > 0)
 		{
@@ -847,27 +849,25 @@ void Player::calculateRotatingCollider(App::Point b0, App::Point b1, App::Point 
 			App::Point newVelocityMagnitude = App::Point{ 0, 0 };
 			if (abs(velocityX) > 0)
 			{
-				float angle = mtVector.dot(App::Point{ -velocityX,0 }) / (mtVector.abs() * App::Point{ -velocityX,0 }.abs());
+				float angle = mtVector.dot(currentVelocity) / (mtVector.abs() * currentVelocity.abs());
 				if (angle < 0)
 				{
 					angle = 0;
 				}
+				angle = 1 - (acos(angle) * App::radToDeg / 90);
 				newVelocityMagnitude.x = velocityX - velocityX * angle;
 			}
 
 			//Get y component of new velocity magnitude
 			if (abs(velocityY) > 0)
 			{
-				float angle = mtVector.dot(App::Point{ 0, -velocityY }) / (mtVector.abs() * App::Point{ 0,-velocityY }.abs());
-				if (angle < 0)
-				{
-					angle = 0;
-				}
-				newVelocityMagnitude.y = velocityY - velocityY * angle;
+				float angle = mtVector.dot(currentVelocity) / (mtVector.abs() * currentVelocity.abs());
+				angle = abs(angle);
+				newVelocityMagnitude.y = velocityY - ((velocityY - gravity * App::deltaTime) * angle);
+				//cout << angle << "\n";
 			}
 
 			//Combine angle and magnitude of new velocity
-			//float angle = mtVector.dot(currentVelocity) / (mtVector.abs() * currentVelocity.abs());
 			newVelocity = newVelocity / newVelocity.abs();
 			newVelocity = newVelocity * newVelocityMagnitude.abs();
 			velocityX = newVelocity.x;
@@ -880,6 +880,12 @@ void Player::calculateRotatingCollider(App::Point b0, App::Point b1, App::Point 
 
 	x += velocityX * fractionOfVelocity * App::deltaTime;
 	y += velocityY * fractionOfVelocity * App::deltaTime;
+
+	if (newVelocity.abs() < 3)
+	{
+		velocityX = 0.0;
+		velocityY = 0.0;
+	}
 
 	glColor3f(1.0, 0.0, 0.0);
 }

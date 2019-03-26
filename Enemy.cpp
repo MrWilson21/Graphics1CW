@@ -729,6 +729,277 @@ void Enemy::calculateCollider(float blockX, float blockY, float blockWidth, floa
 	}
 }
 
+void Enemy::calculateRotatingCollider(App::Point b0, App::Point b1, App::Point b2, App::Point b3, float rotation, float blockFriction)
+{
+	//Test if colliding
+	//Get closest edge from both objects
+	//Find axis with least travel distance to seperate
+	//Move player by minimum travel distance in direction of minimum axis
+
+	if (rotation / 90 == 1.0 || rotation == 0)
+	{
+		calculateCollider(b3.x, b3.y, b1.x - b3.x, b1.y - b3.y, 0.0, 0.0);
+		return;
+	}
+
+	//b0 and p0 are top left corners going clockwise
+	App::Point a0 = App::Point{ x + colliderX, y + colliderY + colliderHeight };
+	App::Point a1 = App::Point{ x + colliderX + colliderWidth, y + colliderY + colliderHeight };
+	App::Point a2 = App::Point{ x + colliderX + colliderWidth, y + colliderY };
+	App::Point a3 = App::Point{ x + colliderX, y + colliderY };
+
+	App::Point axis1 = (b2 - b3) / (b2 - b3).abs();
+	App::Point axis2 = (b1 - b2) / (b1 - b2).abs();
+	App::Point axis3 = (a2 - a3) / (a2 - a3).abs();
+	App::Point axis4 = (a1 - a2) / (a1 - a2).abs();
+
+	//Test axis 1
+	float projections[4];
+	projections[0] = (a0 - b3).dot(axis1);
+	projections[1] = (a1 - b3).dot(axis1);
+	projections[2] = (a2 - b3).dot(axis1);
+	projections[3] = (a3 - b3).dot(axis1);
+
+	std::sort(projections, projections + 4);
+
+	if (projections[0] > (b2 - b3).abs() || projections[3] < 0)
+	{
+		return;
+	}
+
+	//Calculate distances from each edge
+	float distToRightBlock = (b2 - b3).abs() - projections[0];
+	float distToLeftBlock = projections[3];
+
+	//Test axis 2
+	projections[0] = (a0 - b2).dot(axis2);
+	projections[1] = (a1 - b2).dot(axis2);
+	projections[2] = (a2 - b2).dot(axis2);
+	projections[3] = (a3 - b2).dot(axis2);
+
+	std::sort(projections, projections + 4);
+
+	if (projections[0] > (b1 - b2).abs() || projections[3] < 0)
+	{
+		return;
+	}
+
+	//Calculate distances from each edge
+	float distToTopBlock = (b1 - b2).abs() - projections[0];
+	float distToBottomBlock = projections[3];
+
+	//Test axis 3
+	projections[0] = (b0 - a3).dot(axis3);
+	projections[1] = (b1 - a3).dot(axis3);
+	projections[2] = (b2 - a3).dot(axis3);
+	projections[3] = (b3 - a3).dot(axis3);
+
+	std::sort(projections, projections + 4);
+
+	if (projections[0] > (a2 - a3).abs() || projections[3] < 0)
+	{
+		return;
+	}
+
+	//Calculate distances from each edge
+	float distToRightPlayer = (a2 - a3).abs() - projections[0];
+	float distToLeftPlayer = projections[3];
+
+	//Test axis 4
+	projections[0] = (b0 - a2).dot(axis4);
+	projections[1] = (b1 - a2).dot(axis4);
+	projections[2] = (b2 - a2).dot(axis4);
+	projections[3] = (b3 - a2).dot(axis4);
+
+	std::sort(projections, projections + 4);
+
+	if (projections[0] > (a1 - a2).abs() || projections[3] < 0)
+	{
+		return;
+	}
+
+	//Calculate distances from each edge
+	float distToTopPlayer = (a1 - a2).abs() - projections[0];
+	float distToBottomPlayer = projections[3];
+
+	App::Point playerAxis;
+	App::Point blockAxis;
+	App::Point blockSlope;
+
+	bool playerEdgeIntersect = false;
+	bool verticalIntersect = false;
+
+	//Get the two corners that surround the point where block intersected
+	if (distToRightBlock < distToLeftBlock &&
+		distToRightBlock < distToTopBlock &&
+		distToRightBlock < distToBottomBlock)
+	{
+		blockAxis = axis1 * distToRightBlock;
+		blockSlope = (b1 - b2);
+	}
+	else if (distToLeftBlock < distToRightBlock &&
+		distToLeftBlock < distToTopBlock &&
+		distToLeftBlock < distToBottomBlock)
+	{
+		blockAxis = axis1 * -distToLeftBlock;
+		blockSlope = (b0 - b3);
+	}
+	else if (distToBottomBlock < distToLeftBlock &&
+		distToBottomBlock < distToTopBlock &&
+		distToBottomBlock < distToRightBlock)
+	{
+		blockAxis = axis2 * -distToBottomBlock;
+		blockSlope = (b3 - b2);
+	}
+	else
+	{
+		blockAxis = axis2 * distToTopBlock;
+		blockSlope = (b0 - b1);
+	}
+
+	//Get the two corners that surround the point where player intersected 
+	if (distToRightPlayer < distToLeftPlayer &&
+		distToRightPlayer < distToTopPlayer &&
+		distToRightPlayer < distToBottomPlayer)
+	{
+		playerAxis = axis3 * distToRightPlayer;
+		verticalIntersect = true;
+	}
+	else if (distToLeftPlayer < distToRightPlayer &&
+		distToLeftPlayer < distToTopPlayer &&
+		distToLeftPlayer < distToBottomPlayer)
+	{
+		playerAxis = axis3 * -distToLeftPlayer;
+		verticalIntersect = true;
+	}
+	else if (distToBottomPlayer < distToLeftPlayer &&
+		distToBottomPlayer < distToTopPlayer &&
+		distToBottomPlayer < distToRightPlayer)
+	{
+		playerAxis = axis4 * -distToBottomPlayer;
+		isTouchingGround = true;
+		timeSinceNotTouchingGround = 0.0;
+	}
+	else
+	{
+		playerAxis = axis4 * distToTopPlayer;
+	}
+
+	//Find minimum translation vector (mtv)
+	App::Point mtVector;
+	App::Point currentVelocity = App::Point{ velocityX * (float)App::deltaTime, velocityY * (float)App::deltaTime };
+
+	if (blockAxis.abs() > playerAxis.abs())
+	{
+		mtVector = playerAxis * -1;
+		playerEdgeIntersect = true;
+	}
+	else
+	{
+		mtVector = blockAxis;
+	}
+
+	//If either velocity or mtv somehow have 0 magnitude then escape response 
+	if (mtVector.abs() <= 0)
+	{
+		return;
+	}
+	if (currentVelocity.abs() <= 0)
+	{
+		return;
+	}
+
+	//Get direction of player movement by reversing player velocity
+	App::Point velDirection = currentVelocity / -currentVelocity.abs();
+	//Get mtv direction vector
+	App::Point mtvDirection = mtVector / mtVector.abs();
+
+	//Move in opposite direction of current velocity with magnitude of mtv / cos(angle)
+	float moveAngle = velDirection.dot(mtvDirection) / (velDirection.abs() * mtvDirection.abs());
+	float fractionOfVelocity = mtVector.abs() / currentVelocity.abs();
+
+	//Get vector to move player by
+	//App::Point moveVector = velDirection * (currentVelocity.abs() * fractionOfVelocity);
+	App::Point moveVector = mtVector;
+	App::Point newVelocity;
+	App::Point currentDirection = currentVelocity / currentVelocity.abs();
+
+	if (playerEdgeIntersect)
+	{
+		if (verticalIntersect)
+		{
+			velocityX = 0;
+		}
+		else
+		{
+			velocityY = 0;
+		}
+	}
+	else
+	{
+		float velocityAngle = currentVelocity.dot(blockSlope) / (currentVelocity.abs() * blockSlope.abs());
+		velocityAngle = acos(velocityAngle) * App::radToDeg;
+		if (velocityAngle > 90)
+		{
+			newVelocity = blockSlope * -blockSlope.abs();
+		}
+		else
+		{
+			newVelocity = blockSlope * blockSlope.abs();
+		}
+		if (currentVelocity.abs() < 1 && currentVelocity.x * newVelocity.x < 0)
+		{
+			newVelocity = newVelocity * -1;
+		}
+
+
+		if (currentVelocity.abs() > 0 && mtVector.abs() > 0)
+		{
+			//Get x component of new velocity magnitude
+			App::Point newVelocityMagnitude = App::Point{ 0, 0 };
+			if (abs(velocityX) > 0)
+			{
+				float angle = mtVector.dot(currentVelocity) / (mtVector.abs() * currentVelocity.abs());
+				if (angle < 0)
+				{
+					angle = 0;
+				}
+				angle = 1 - (acos(angle) * App::radToDeg / 90);
+				newVelocityMagnitude.x = velocityX - velocityX * angle;
+			}
+
+			//Get y component of new velocity magnitude
+			if (abs(velocityY) > 0)
+			{
+				float angle = mtVector.dot(currentVelocity) / (mtVector.abs() * currentVelocity.abs());
+				angle = abs(angle);
+				newVelocityMagnitude.y = velocityY - (velocityY - gravity * App::deltaTime) * angle;
+				//cout << angle << "\n";
+			}
+
+			//Combine angle and magnitude of new velocity
+			newVelocity = newVelocity / newVelocity.abs();
+			newVelocity = newVelocity * newVelocityMagnitude.abs();
+			velocityX = newVelocity.x;
+			velocityY = newVelocity.y;
+		}
+	}
+
+	x += moveVector.x;
+	y += moveVector.y;
+
+	x += velocityX * fractionOfVelocity * App::deltaTime;
+	y += velocityY * fractionOfVelocity * App::deltaTime;
+
+	if (newVelocity.abs() < 3)
+	{
+		velocityX = 0.0;
+		velocityY = 0.0;
+	}
+
+	glColor3f(1.0, 0.0, 0.0);
+}
+
 void Enemy::getCollisionUpdates()
 {
 	//Assume enemy is not touching ground until a ground collision is made
@@ -756,6 +1027,11 @@ void Enemy::getCollisionUpdates()
 	for (MovingBlock block : parent->movingBlocks)
 	{
 		calculateCollider(block.x, block.y, block.width, block.height, block.xMoveThisFrame, block.yMoveThisFrame);
+	}
+
+	for (RotatingBlock block : parent->rotatingBlocks)
+	{
+		calculateRotatingCollider(block.p0, block.p1, block.p2, block.p3, block.rotation, block.friction);
 	}
 
 	calculateCollider(parent->rightEdge, 0, 100, parent->worldSizeY, 0.0, 0.0);
