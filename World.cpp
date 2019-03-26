@@ -59,7 +59,7 @@ void World::init()
 	//rotatingBlocks.push_back(RotatingBlock(150, 20, 40, 40, 10, 10, 0, 0.5, "blocks/0.png"));
 	rotatingBlocks.push_back(RotatingBlock(200, 10, 130, 30, 10, 10, 0, 0.5, "blocks/0.png"));
 
-	for(int i = 0; i < 10; i++)
+	for(int i = 0; i < 1; i++)
 	{
 		enemies.push_back(Enemy(300, 30, this, i));
 	}

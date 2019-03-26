@@ -15,16 +15,16 @@ Enemy::Enemy(float startX, float startY, World* p, int ID)
 	maxRunningVelocityX = 50.0;
 	runningAcceleration = 150.0;
 	walkingAcceleration = 100.0;
-	deccelerationFactor = 160.0;
+	deccelerationFactor = 5.0;
 	gravity = 350;
 	airDeccelerationFactor = 0.0;
 
 	jumpUpHeight = 190.0;
-	jumpUpXVelocity = 90.0;
+	jumpUpXVelocity = 120.0;
 	jumpDownHeight = 75.0;
-	jumpDownXVelocity = 90.0;
-	diveHeight = 45.0;
-	diveXVelocity = 110.0;
+	jumpDownXVelocity = 120.0;
+	diveHeight = 65.0;
+	diveXVelocity = 240;
 
 	xReflectFactor = 0;
 	facingLeft = false;
@@ -46,7 +46,7 @@ Enemy::Enemy(float startX, float startY, World* p, int ID)
 	timeToWaitForNextDivingFrame = 0.1;
 
 	timeSinceNotTouchingGround = 0.0;
-	timeUntilChangeToJump = 0.01;
+	timeUntilChangeToJump = 0.1;
 
 	//Display sizes for different player models, sizes based off of sprite image size
 	scaleFactor = 0.2;
@@ -77,6 +77,9 @@ Enemy::Enemy(float startX, float startY, World* p, int ID)
 	fadeOutSpeed = 2.0;
 	timeSinceDying = 0.0;
 	transparency = 1.0;
+
+	isOnRotatingCollider = false;
+	timeSinceLeavingRotatingCollider = 0.0;
 
 	parent = p;
 
@@ -526,9 +529,9 @@ void Enemy::airMovementUpdate()
 {
 	if (velocityX > 0.0)
 	{
-		if (velocityX - airDeccelerationFactor * App::deltaTime > 0.0)
+		if (velocityX - airDeccelerationFactor * App::deltaTime * abs(velocityX) > 0.0)
 		{
-			velocityX -= airDeccelerationFactor * App::deltaTime > 0.0;
+			velocityX -= airDeccelerationFactor * App::deltaTime * abs(velocityX);
 		}
 		else
 		{
@@ -537,9 +540,9 @@ void Enemy::airMovementUpdate()
 	}
 	else
 	{
-		if (velocityX + airDeccelerationFactor * App::deltaTime < 0.0)
+		if (velocityX + airDeccelerationFactor * App::deltaTime * abs(velocityX) < 0.0)
 		{
-			velocityX += airDeccelerationFactor * App::deltaTime > 0.0;
+			velocityX += airDeccelerationFactor * App::deltaTime * abs(velocityX);
 		}
 		else
 		{
@@ -582,7 +585,7 @@ void Enemy::groundMovementUpdate()
 		}
 		else
 		{
-			velocityX += deccelerationFactor * App::deltaTime;
+			velocityX += deccelerationFactor * App::deltaTime * abs(velocityX);
 			if (velocityX > 0.0)
 			{
 				velocityX = 0.0;
@@ -609,7 +612,7 @@ void Enemy::groundMovementUpdate()
 		}
 		else
 		{
-			velocityX -= deccelerationFactor * App::deltaTime;
+			velocityX -= deccelerationFactor * App::deltaTime * abs(velocityX);
 			if (velocityX < 0.0)
 			{
 				velocityX = 0.0;
@@ -955,26 +958,37 @@ void Enemy::calculateRotatingCollider(App::Point b0, App::Point b1, App::Point b
 
 		if (currentVelocity.abs() > 0 && mtVector.abs() > 0)
 		{
+			//currentVelocity.y += gravity * App::deltaTime;
+			float angle = mtVector.dot(currentVelocity) / (mtVector.abs() * currentVelocity.abs());
+			//angle = abs(acos(angle) * App::radToDeg / 90);
+			angle = abs(angle);
+
 			//Get x component of new velocity magnitude
 			App::Point newVelocityMagnitude = App::Point{ 0, 0 };
 			if (abs(velocityX) > 0)
 			{
-				float angle = mtVector.dot(currentVelocity) / (mtVector.abs() * currentVelocity.abs());
-				if (angle < 0)
+				if (isOnRotatingCollider || timeSinceLeavingRotatingCollider < timeUntilChangeToJump)
 				{
-					angle = 0;
+					newVelocityMagnitude.x = abs(velocityX);
 				}
-				angle = 1 - (acos(angle) * App::radToDeg / 90);
-				newVelocityMagnitude.x = velocityX - velocityX * angle;
+				else
+				{
+					newVelocityMagnitude.x = abs(velocityX) - abs(velocityX) * (angle);
+				}
 			}
 
 			//Get y component of new velocity magnitude
 			if (abs(velocityY) > 0)
 			{
-				float angle = mtVector.dot(currentVelocity) / (mtVector.abs() * currentVelocity.abs());
-				angle = abs(angle);
-				newVelocityMagnitude.y = velocityY - (velocityY - gravity * App::deltaTime) * angle;
-				//cout << angle << "\n";
+				if (isOnRotatingCollider || timeSinceLeavingRotatingCollider < timeUntilChangeToJump)
+				{
+					newVelocityMagnitude.y = abs(velocityY);
+				}
+				else
+				{
+					newVelocityMagnitude.y = abs(velocityY) - abs(velocityY) * (angle);
+				}
+				newVelocityMagnitude.y = abs(velocityY) - abs(velocityY) * (angle);
 			}
 
 			//Combine angle and magnitude of new velocity
@@ -991,13 +1005,14 @@ void Enemy::calculateRotatingCollider(App::Point b0, App::Point b1, App::Point b
 	x += velocityX * fractionOfVelocity * App::deltaTime;
 	y += velocityY * fractionOfVelocity * App::deltaTime;
 
-	if (newVelocity.abs() < 3)
+	if (newVelocity.abs() < 0.4)
 	{
 		velocityX = 0.0;
 		velocityY = 0.0;
 	}
 
-	glColor3f(1.0, 0.0, 0.0);
+	isOnRotatingCollider = true;
+	timeSinceLeavingRotatingCollider = 0.0;
 }
 
 void Enemy::getCollisionUpdates()
@@ -1029,9 +1044,14 @@ void Enemy::getCollisionUpdates()
 		calculateCollider(block.x, block.y, block.width, block.height, block.xMoveThisFrame, block.yMoveThisFrame);
 	}
 
+	isOnRotatingCollider = false;
 	for (RotatingBlock block : parent->rotatingBlocks)
 	{
 		calculateRotatingCollider(block.p0, block.p1, block.p2, block.p3, block.rotation, block.friction);
+	}
+	if (!isOnRotatingCollider)
+	{
+		timeSinceLeavingRotatingCollider += App::deltaTime;
 	}
 
 	calculateCollider(parent->rightEdge, 0, 100, parent->worldSizeY, 0.0, 0.0);

@@ -104,6 +104,9 @@ class Player
 		float timeSinceLastHit;
 		float timeBetweenFlashes;
 		float timeSinceFlash;
+		
+		float timeSinceLeavingRotatingCollider;
+		bool isOnRotatingCollider;
 
 		float timeSinceNotTouchingGround;
 		float timeUntilChangeToJump;

@@ -163,6 +163,9 @@ private:
 	float dyingHeight;
 	float dyingWidth;
 
+	bool isOnRotatingCollider;
+	float timeSinceLeavingRotatingCollider;
+
 	float dieFlySpeed;
 	float dieAngle;
 	float timeUntilFadeOut;

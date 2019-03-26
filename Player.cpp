@@ -11,11 +11,11 @@ Player::Player(float startX, float startY, World* p)
 	maxVelocityX = 60.0;
 	maxVeloctyY = 200;
 	walkingAcceleration = 400.0;
-	deccelerationFactor = 200.0;
+	deccelerationFactor = 10.0;
 	jumpSpeed = 200;
 	gravity = 350;
 	airAcceleration = 140.0;
-	airDeccelerationFactor = 70.0;
+	airDeccelerationFactor = 3.0;
 	maxAirVelocityX = 45.0;
 
 	xReflectFactor = 0;
@@ -38,7 +38,7 @@ Player::Player(float startX, float startY, World* p)
 	timeToWaitForNextDyingFrame = 0.4;
 
 	timeSinceNotTouchingGround = 0.0;
-	timeUntilChangeToJump = 0.05;
+	timeUntilChangeToJump = 0.1;
 	jumpLanding = false;
 
 	gemsCollected = 0;
@@ -90,6 +90,9 @@ Player::Player(float startX, float startY, World* p)
 	heartSpacing = 1.5;
 	heartWidth = 15 * heartScale;
 	heartHeight = 13 * heartScale;
+
+	timeSinceLeavingRotatingCollider = 0.0;
+	isOnRotatingCollider = false;
 
 	parent = p;
 
@@ -477,13 +480,13 @@ void Player::groundMove()
 	//If speed is less than total acceleration for a frame then set speed to 0
 	else
 	{
-		if (velocityX > deccelerationFactor  * App::deltaTime)
+		if (velocityX > deccelerationFactor  * App::deltaTime * abs(velocityX))
 		{
-			velocityX -= deccelerationFactor * App::deltaTime;
+			velocityX -= deccelerationFactor * App::deltaTime * abs(velocityX);
 		}
-		else if (velocityX < -deccelerationFactor * App::deltaTime)
+		else if (velocityX < -deccelerationFactor * App::deltaTime * abs(velocityX))
 		{
-			velocityX += deccelerationFactor * App::deltaTime;
+			velocityX += deccelerationFactor * App::deltaTime * abs(velocityX);
 		}
 		else
 		{
@@ -531,13 +534,13 @@ void Player::airMove()
 		//If speed is less than total acceleration for a frame then set speed to 0
 		else
 		{
-			if (velocityX > airDeccelerationFactor  * App::deltaTime)
+			if (velocityX > airDeccelerationFactor  * App::deltaTime * abs(velocityX))
 			{
-				velocityX -= airDeccelerationFactor * App::deltaTime;
+				velocityX -= airDeccelerationFactor * App::deltaTime * abs(velocityX);
 			}
-			else if (velocityX < -airDeccelerationFactor * App::deltaTime)
+			else if (velocityX < -airDeccelerationFactor * App::deltaTime * abs(velocityX))
 			{
-				velocityX += airDeccelerationFactor * App::deltaTime;
+				velocityX += airDeccelerationFactor * App::deltaTime * abs(velocityX);
 			}
 			else
 			{
@@ -845,26 +848,37 @@ void Player::calculateRotatingCollider(App::Point b0, App::Point b1, App::Point 
 
 		if (currentVelocity.abs() > 0 && mtVector.abs() > 0)
 		{
+			//currentVelocity.y += gravity * App::deltaTime;
+			float angle = mtVector.dot(currentVelocity) / (mtVector.abs() * currentVelocity.abs());
+			//angle = abs(acos(angle) * App::radToDeg / 90);
+			angle = abs(angle);
+
 			//Get x component of new velocity magnitude
 			App::Point newVelocityMagnitude = App::Point{ 0, 0 };
 			if (abs(velocityX) > 0)
 			{
-				float angle = mtVector.dot(currentVelocity) / (mtVector.abs() * currentVelocity.abs());
-				if (angle < 0)
+				if (isOnRotatingCollider || timeSinceLeavingRotatingCollider < timeUntilChangeToJump)
 				{
-					angle = 0;
+					newVelocityMagnitude.x = abs(velocityX);
 				}
-				angle = 1 - (acos(angle) * App::radToDeg / 90);
-				newVelocityMagnitude.x = velocityX - velocityX * angle;
+				else
+				{
+					newVelocityMagnitude.x = abs(velocityX) - abs(velocityX) * (angle);
+				}	
 			}
 
 			//Get y component of new velocity magnitude
 			if (abs(velocityY) > 0)
 			{
-				float angle = mtVector.dot(currentVelocity) / (mtVector.abs() * currentVelocity.abs());
-				angle = abs(angle);
-				newVelocityMagnitude.y = velocityY - ((velocityY - gravity * App::deltaTime) * angle);
-				//cout << angle << "\n";
+				if (isOnRotatingCollider || timeSinceLeavingRotatingCollider < timeUntilChangeToJump)
+				{
+					newVelocityMagnitude.y = abs(velocityY);
+				}
+				else
+				{
+					newVelocityMagnitude.y = abs(velocityY) - abs(velocityY) * (angle);
+				}
+				newVelocityMagnitude.y = abs(velocityY) - abs(velocityY) * (angle);
 			}
 
 			//Combine angle and magnitude of new velocity
@@ -880,14 +894,15 @@ void Player::calculateRotatingCollider(App::Point b0, App::Point b1, App::Point 
 
 	x += velocityX * fractionOfVelocity * App::deltaTime;
 	y += velocityY * fractionOfVelocity * App::deltaTime;
-
-	if (newVelocity.abs() < 3)
+	
+	if (newVelocity.abs() < 1)
 	{
 		velocityX = 0.0;
 		velocityY = 0.0;
 	}
 
-	glColor3f(1.0, 0.0, 0.0);
+	isOnRotatingCollider = true;
+	timeSinceLeavingRotatingCollider = 0.0;
 }
 
 void Player::getCollisionUpdates()
@@ -906,9 +921,14 @@ void Player::getCollisionUpdates()
 		calculateCollider(block.x, block.y, block.width, block.height, block.xMoveThisFrame, block.yMoveThisFrame);
 	}
 
+	isOnRotatingCollider = false;
 	for (RotatingBlock block : parent->rotatingBlocks)
 	{
 		calculateRotatingCollider(block.p0, block.p1, block.p2, block.p3, block.rotation, block.friction);
+	}
+	if (!isOnRotatingCollider)
+	{
+		timeSinceLeavingRotatingCollider += App::deltaTime;
 	}
 
 	calculateCollider(parent->rightEdge, 0, 100, parent->worldSizeY, 0.0, 0.0);
