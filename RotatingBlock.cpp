@@ -1,6 +1,6 @@
 #include "rotatingBlock.h"
 
-RotatingBlock::RotatingBlock(float x, float y, float width, float height, float spriteWidth, float spriteHeight, float rotation, string sprite)
+RotatingBlock::RotatingBlock(float x, float y, float width, float height, float spriteWidth, float spriteHeight, float rotation, float friction, string sprite)
 {
 	this->x = x;
 	this->y = y;
@@ -9,6 +9,7 @@ RotatingBlock::RotatingBlock(float x, float y, float width, float height, float 
 	this->spriteWidth = width / spriteWidth;
 	this->spriteHeight = height / spriteHeight;
 	this->rotation = rotation;
+	this->friction = friction;
 
 	p0 = App::Point{ 0.0, 0.0 };
 	p1 = App::Point{ 0.0, 0.0 };

@@ -9,6 +9,8 @@ public:
 	float width;
 	float height;
 
+	float friction;
+
 	//p0 is top left corner going clockwise
 	App::Point p0;
 	App::Point p1;
@@ -19,7 +21,7 @@ public:
 
 	GLuint texture;
 
-	RotatingBlock(float x1, float y1, float width, float height, float spriteWidth, float spriteHeight, float rotation, string sprite);
+	RotatingBlock(float x1, float y1, float width, float height, float spriteWidth, float spriteHeight, float rotation, float friction, string sprite);
 	void display();
 	void calculatePoints();
 

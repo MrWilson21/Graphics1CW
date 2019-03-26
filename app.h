@@ -21,6 +21,7 @@ class App
 	public:
 		static bool keys[256];
 		static const double degToRad;
+		static const double radToDeg;
 		static bool shouldDrawBoundingBoxes;
 
 		static double deltaTime;

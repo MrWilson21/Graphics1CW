@@ -35,14 +35,9 @@ class Player
 		void airMove();
 		void getCollisionUpdates();
 		void calculateCollider(float blockX, float blockY, float blockWidth, float blockHeight, float xMove, float yMove);
-		void calculateRotatingCollider(App::Point b0, App::Point b1, App::Point b2, App::Point b3, float rotation);
+		void calculateRotatingCollider(App::Point b0, App::Point b1, App::Point b2, App::Point b3, float rotation, float friction);
 
 		void calculateColliderBox();
-
-		App::Point d;
-		App::Point c;
-		App::Point b;
-		App::Point a;
 
 		void changeToWalkingState();
 		void changeToIdleState();

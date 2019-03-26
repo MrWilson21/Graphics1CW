@@ -55,8 +55,8 @@ void World::init()
 	//staticBlocks.push_back(StaticBlock(160, 100, 50, 10, "blocks/0.png"));
 	staticBlocks.push_back(StaticBlock(250, 0, 10, 60, 10, 10, "blocks/0.png"));
 
-	rotatingBlocks.push_back(RotatingBlock(50, 45, 40, 40, 10, 10, 0, "blocks/0.png"));
-	rotatingBlocks.push_back(RotatingBlock(150, 20, 40, 40, 10, 10, 0, "blocks/0.png"));
+	rotatingBlocks.push_back(RotatingBlock(50, 45, 40, 40, 10, 10, 0, 0.5, "blocks/0.png"));
+	rotatingBlocks.push_back(RotatingBlock(150, 20, 40, 40, 10, 10, 0, 0.5, "blocks/0.png"));
 
 	for(int i = 0; i < 1; i++)
 	{

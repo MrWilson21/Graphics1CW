@@ -10,7 +10,7 @@ Player::Player(float startX, float startY, World* p)
 
 	maxVelocityX = 60.0;
 	maxVeloctyY = 200;
-	walkingAcceleration = 300.0;
+	walkingAcceleration = 400.0;
 	deccelerationFactor = 200.0;
 	jumpSpeed = 200;
 	gravity = 350;
@@ -38,7 +38,7 @@ Player::Player(float startX, float startY, World* p)
 	timeToWaitForNextDyingFrame = 0.4;
 
 	timeSinceNotTouchingGround = 0.0;
-	timeUntilChangeToJump = 0.01;
+	timeUntilChangeToJump = 0.05;
 	jumpLanding = false;
 
 	gemsCollected = 0;
@@ -619,7 +619,7 @@ void Player::calculateCollider(float blockX, float blockY, float blockWidth, flo
 	}
 }
 
-void Player::calculateRotatingCollider(App::Point b0, App::Point b1, App::Point b2, App::Point b3, float rotation)
+void Player::calculateRotatingCollider(App::Point b0, App::Point b1, App::Point b2, App::Point b3, float rotation, float blockFriction)
 {
 	//Test if colliding
 	//Get closest edge from both objects
@@ -714,8 +714,10 @@ void Player::calculateRotatingCollider(App::Point b0, App::Point b1, App::Point 
 
 	App::Point playerAxis;
 	App::Point blockAxis;
+	App::Point blockSlope;
 
-	bool intersectedWithVerticalPlayerEdge = false;
+	bool playerEdgeIntersect = false;
+	bool verticalIntersect = false;
 
 	//Get the two corners that surround the point where block intersected
 	if (distToRightBlock < distToLeftBlock &&
@@ -723,22 +725,26 @@ void Player::calculateRotatingCollider(App::Point b0, App::Point b1, App::Point 
 		distToRightBlock < distToBottomBlock)
 	{
 		blockAxis = axis1 * distToRightBlock;
+		blockSlope = (b1 - b2);
 	}
 	else if (distToLeftBlock < distToRightBlock &&
 		distToLeftBlock < distToTopBlock &&
 		distToLeftBlock < distToBottomBlock)
 	{
 		blockAxis = axis1 * -distToLeftBlock;
+		blockSlope = (b0 - b3);
 	}
 	else if (distToBottomBlock < distToLeftBlock &&
 		distToBottomBlock < distToTopBlock &&
 		distToBottomBlock < distToRightBlock)
 	{
 		blockAxis = axis2 * -distToBottomBlock;
+		blockSlope = (b3 - b2);
 	}
 	else
 	{
 		blockAxis = axis2 * distToTopBlock;
+		blockSlope = (b0 - b1);
 	}
 
 	//Get the two corners that surround the point where player intersected 
@@ -747,12 +753,14 @@ void Player::calculateRotatingCollider(App::Point b0, App::Point b1, App::Point 
 		distToRightPlayer < distToBottomPlayer)
 	{
 		playerAxis = axis3 * distToRightPlayer;
+		verticalIntersect = true;
 	}
 	else if (distToLeftPlayer < distToRightPlayer &&
 		distToLeftPlayer < distToTopPlayer &&
 		distToLeftPlayer < distToBottomPlayer)
 	{
 		playerAxis = axis3 * -distToLeftPlayer;
+		verticalIntersect = true;
 	}
 	else if (distToBottomPlayer < distToLeftPlayer &&
 		distToBottomPlayer < distToTopPlayer &&
@@ -767,29 +775,111 @@ void Player::calculateRotatingCollider(App::Point b0, App::Point b1, App::Point 
 		playerAxis = axis4 * distToTopPlayer;
 	}
 
-	App::Point moveVector;
-	App::Point velocityVector;
-	App::Point currentVelocity = App::Point{ velocityX, velocityY };
+	//Find minimum translation vector (mtv)
+	App::Point mtVector;
+	App::Point currentVelocity = App::Point{ velocityX * (float)App::deltaTime, velocityY * (float)App::deltaTime};
 
 	if (blockAxis.abs() > playerAxis.abs())
 	{
-		moveVector = playerAxis * -1;
+		mtVector = playerAxis * -1;
+		playerEdgeIntersect = true;
 	}
 	else
 	{
-		moveVector = blockAxis;
+		mtVector = blockAxis;
 	}
 
-	if (currentVelocity.abs() > 0 && moveVector.abs() > 0)
+	//If either velocity or mtv somehow have 0 magnitude then escape response 
+	if (mtVector.abs() <= 0)
 	{
-		float angle = acos(moveVector.dot(currentVelocity) / (moveVector.abs() * currentVelocity.abs()));
-		//velocityX = velocityX * -cos(angle);
-		//velocityY = velocityY * sin(acos(angle));
-		cout << velocityX << "\t" << angle <<  "\n";
+		cout << "mtv";
+		return;
+	}
+	if (currentVelocity.abs() <= 0)
+	{
+		cout << "currentVelocity";
+		return;
+	}
+
+	//Get direction of player movement by reversing player velocity
+	App::Point velDirection = currentVelocity / -currentVelocity.abs();
+	//Get mtv direction vector
+	App::Point mtvDirection = mtVector / mtVector.abs();
+
+	//Move in opposite direction of current velocity with magnitude of mtv / cos(angle)
+	float moveAngle = velDirection.dot(mtvDirection) / (velDirection.abs() * mtvDirection.abs());
+	//cout << moveAngle <<  "      " << acos(moveAngle) * App::radToDeg <<  "\n";
+	//float fractionOfVelocity = mtVector.abs() / moveAngle;
+	float fractionOfVelocity = mtVector.abs() / currentVelocity.abs();
+
+	//Get vector to move player by
+	App::Point moveVector = velDirection * (currentVelocity.abs() * fractionOfVelocity);
+	App::Point newVelocity;
+	App::Point currentDirection = currentVelocity / currentVelocity.abs();
+
+	if (playerEdgeIntersect)
+	{
+		if (verticalIntersect)
+		{
+			velocityX = 0;
+		}
+		else
+		{
+			velocityY = 0;
+		}
+	}
+	else
+	{
+		float velocityAngle = currentVelocity.dot(blockSlope) / (currentVelocity.abs() * blockSlope.abs());
+		velocityAngle = acos(velocityAngle) * App::radToDeg;
+		if (velocityAngle > 90)
+		{
+			newVelocity = blockSlope * -blockSlope.abs();
+		}
+		else
+		{
+			newVelocity = blockSlope * blockSlope.abs();
+		}
+
+		if (currentVelocity.abs() > 0 && mtVector.abs() > 0)
+		{
+			//Get x component of new velocity magnitude
+			App::Point newVelocityMagnitude = App::Point{ 0, 0 };
+			if (abs(velocityX) > 0)
+			{
+				float angle = mtVector.dot(App::Point{ -velocityX,0 }) / (mtVector.abs() * App::Point{ -velocityX,0 }.abs());
+				if (angle < 0)
+				{
+					angle = 0;
+				}
+				newVelocityMagnitude.x = velocityX - velocityX * angle;
+			}
+
+			//Get y component of new velocity magnitude
+			if (abs(velocityY) > 0)
+			{
+				float angle = mtVector.dot(App::Point{ 0, -velocityY }) / (mtVector.abs() * App::Point{ 0,-velocityY }.abs());
+				if (angle < 0)
+				{
+					angle = 0;
+				}
+				newVelocityMagnitude.y = velocityY - velocityY * angle;
+			}
+
+			//Combine angle and magnitude of new velocity
+			//float angle = mtVector.dot(currentVelocity) / (mtVector.abs() * currentVelocity.abs());
+			newVelocity = newVelocity / newVelocity.abs();
+			newVelocity = newVelocity * newVelocityMagnitude.abs();
+			velocityX = newVelocity.x;
+			velocityY = newVelocity.y;
+		}
 	}
 
 	x += moveVector.x;
 	y += moveVector.y;
+
+	x += velocityX * fractionOfVelocity * App::deltaTime;
+	y += velocityY * fractionOfVelocity * App::deltaTime;
 
 	glColor3f(1.0, 0.0, 0.0);
 }
@@ -812,7 +902,7 @@ void Player::getCollisionUpdates()
 
 	for (RotatingBlock block : parent->rotatingBlocks)
 	{
-		calculateRotatingCollider(block.p0, block.p1, block.p2, block.p3, block.rotation);
+		calculateRotatingCollider(block.p0, block.p1, block.p2, block.p3, block.rotation, block.friction);
 	}
 
 	calculateCollider(parent->rightEdge, 0, 100, parent->worldSizeY, 0.0, 0.0);
@@ -1145,33 +1235,4 @@ void Player::display()
 	{
 		displayFist();
 	}
-
-	App::Point a0 = App::Point{ x + colliderX, y + colliderY + colliderHeight };
-	App::Point a1 = App::Point{ x + colliderX + colliderWidth, y + colliderY + colliderHeight };
-	App::Point a2 = App::Point{ x + colliderX + colliderWidth, y + colliderY };
-	App::Point a3 = App::Point{ x + colliderX, y + colliderY };
-
-	glPointSize(10);
-	
-	glColor3f(1.0, 0.0, 0.0);
-	glBegin(GL_POINTS);
-	glVertex3f(c.x, c.y, 1);
-	glEnd();
-	glPointSize(10);
-	
-	glColor3f(1.0, 1.0, 0.0);
-	glBegin(GL_POINTS);
-	glVertex3f(b.x, b.y, 1);
-	glEnd();
-	
-	glColor3f(0.0, 0.0, 1.0);
-	glBegin(GL_POINTS);
-	glVertex3f(a.x, a.y, 1);
-	glEnd();
-	
-	glColor3f(0.0, 1.0, 1.0);
-	glBegin(GL_POINTS);
-	glVertex3f(d.x, d.y, 1);
-	glEnd();
-
 }

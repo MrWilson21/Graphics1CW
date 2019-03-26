@@ -2,6 +2,7 @@
 
 bool App::keys[256];
 const double App::degToRad = 3.14159265359 / 180.0;
+const double App::radToDeg = 180 / 3.14159265359;
 double App::deltaTime = 0.0;
 bool App::shouldDrawBoundingBoxes = false;
 bool App::leftPressed = false;
