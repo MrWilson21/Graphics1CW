@@ -134,11 +134,11 @@ void World::initBackGround()
 
 	paralaxBackGround[5].isStatic = false;
 	paralaxBackGround[5].texture = App::loadPNG("worldBackGround/rainbow.png", false, false);
-	paralaxBackGround[5].scrollSpeedX = 1;
-	paralaxBackGround[5].scrollSpeedY = 0.15;
+	paralaxBackGround[5].scrollSpeedX = 0.14;
+	paralaxBackGround[5].scrollSpeedY = 0.1;
 	paralaxBackGround[5].aspectRatio = 1220.0 / 693.0;
 	paralaxBackGround[5].moveSpeedX = 0;
-	paralaxBackGround[5].scale = 70;
+	paralaxBackGround[5].scale = 200;
 
 	paralaxBackGround[6].isStatic = false;
 	paralaxBackGround[6].texture = App::loadPNG("worldBackGround/hill2.png", true, false);
