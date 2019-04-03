@@ -97,6 +97,12 @@
     <Filter Include="Resource Files\shaggy\death">
       <UniqueIdentifier>{c85c13b5-438d-4c4e-9f69-b44cc55114b6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\particals">
+      <UniqueIdentifier>{32d537d8-62fc-49f2-9bd9-d736845d67f1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\particals\gemCollect">
+      <UniqueIdentifier>{f7837e02-38f0-4aef-9067-ac193979a8f1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Player.cpp">
@@ -129,6 +135,9 @@
     <ClCompile Include="RotatingBlock.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Partical.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Image_Loading\nvImage.h">
@@ -159,6 +168,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="rotatingBlock.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="partical.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -676,6 +688,36 @@
     <Image Include="worldBackGround\rainbow.png">
       <Filter>Resource Files\worldBackGround</Filter>
     </Image>
+    <Image Include="particals\gemCollect\0.png">
+      <Filter>Resource Files\particals\gemCollect</Filter>
+    </Image>
+    <Image Include="particals\gemCollect\1.png">
+      <Filter>Resource Files\particals\gemCollect</Filter>
+    </Image>
+    <Image Include="particals\gemCollect\2.png">
+      <Filter>Resource Files\particals\gemCollect</Filter>
+    </Image>
+    <Image Include="particals\gemCollect\3.png">
+      <Filter>Resource Files\particals\gemCollect</Filter>
+    </Image>
+    <Image Include="particals\gemCollect\4.png">
+      <Filter>Resource Files\particals\gemCollect</Filter>
+    </Image>
+    <Image Include="particals\gemCollect\5.png">
+      <Filter>Resource Files\particals\gemCollect</Filter>
+    </Image>
+    <Image Include="blocks\dirtBlock.png">
+      <Filter>Resource Files\blocks</Filter>
+    </Image>
+    <Image Include="blocks\grassBlock.png">
+      <Filter>Resource Files\blocks</Filter>
+    </Image>
+    <Image Include="blocks\rampLeft.png">
+      <Filter>Resource Files\blocks</Filter>
+    </Image>
+    <Image Include="blocks\rampRight.png">
+      <Filter>Resource Files\blocks</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md" />
@@ -691,5 +733,8 @@
     <None Include="zlib1.dll">
       <Filter>Resource Files\dllFiles</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="TODO.txt" />
   </ItemGroup>
 </Project>

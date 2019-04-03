@@ -17,6 +17,7 @@
     <ClCompile Include="gem.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MovingBlock.cpp" />
+    <ClCompile Include="Partical.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="RotatingBlock.cpp" />
     <ClCompile Include="StaticBlock.cpp" />
@@ -29,6 +30,7 @@
     <ClInclude Include="gem.h" />
     <ClInclude Include="Image_Loading\nvImage.h" />
     <ClInclude Include="movingblock.h" />
+    <ClInclude Include="partical.h" />
     <ClInclude Include="player.h" />
     <ClInclude Include="rotatingBlock.h" />
     <ClInclude Include="staticBlock.h" />
@@ -36,6 +38,10 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="blocks\0.png" />
+    <Image Include="blocks\dirtBlock.png" />
+    <Image Include="blocks\grassBlock.png" />
+    <Image Include="blocks\rampLeft.png" />
+    <Image Include="blocks\rampRight.png" />
     <Image Include="fist\fist.png" />
     <Image Include="fist\gems\black.png" />
     <Image Include="fist\gems\blue\0.png" />
@@ -127,6 +133,12 @@
     <Image Include="menu\buttons\1.png" />
     <Image Include="menu\loading.png" />
     <Image Include="menu\title.png" />
+    <Image Include="particals\gemCollect\0.png" />
+    <Image Include="particals\gemCollect\1.png" />
+    <Image Include="particals\gemCollect\2.png" />
+    <Image Include="particals\gemCollect\3.png" />
+    <Image Include="particals\gemCollect\4.png" />
+    <Image Include="particals\gemCollect\5.png" />
     <Image Include="shaggy\attack\noPower\0.png" />
     <Image Include="shaggy\attack\noPower\1.png" />
     <Image Include="shaggy\attack\noPower\2.png" />
@@ -213,6 +225,9 @@
     <None Include="nvImage.dll" />
     <None Include="README.md" />
     <None Include="zlib1.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="TODO.txt" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{797EB91C-0B55-4A4C-A841-E660F49877DD}</ProjectGuid>

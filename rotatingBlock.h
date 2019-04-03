@@ -21,7 +21,7 @@ public:
 
 	GLuint texture;
 
-	RotatingBlock(float x1, float y1, float width, float height, float spriteWidth, float spriteHeight, float rotation, float friction, string sprite);
+	RotatingBlock(float x1, float y1, float width, float height, float spriteWidth, float spriteHeight, float rotation, string sprite = "blocks/1.png");
 	void display();
 	void calculatePoints();
 

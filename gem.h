@@ -33,6 +33,7 @@ private:
 	float speed;
 	float velocityY;
 	bool movingDown;
+	float maxVel;
 
 	float scale;
 	float UIScale;

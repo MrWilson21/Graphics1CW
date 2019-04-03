@@ -11,7 +11,7 @@ float minAspectRatio = 1.5;
 float maxAspectRatio = 2.5;
 int minScreenWidth = 853;
 int minScreenHeight = 480;
-float scale = 1.5;
+float scale = 5;
 HWND hWnd = NULL;
 bool done = false;								// Bool Variable To Exit Loop
 
@@ -345,6 +345,7 @@ void displayWorld()
 void pressPlay()
 {
 	App::isFadingOut = true;
+	App::isFadingIn = false;
 	App::playButtonPressed = true;
 }
 

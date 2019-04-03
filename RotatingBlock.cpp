@@ -1,6 +1,6 @@
 #include "rotatingBlock.h"
 
-RotatingBlock::RotatingBlock(float x, float y, float width, float height, float spriteWidth, float spriteHeight, float rotation, float friction, string sprite)
+RotatingBlock::RotatingBlock(float x, float y, float width, float height, float spriteWidth, float spriteHeight, float rotation, string sprite)
 {
 	this->x = x;
 	this->y = y;
@@ -9,7 +9,6 @@ RotatingBlock::RotatingBlock(float x, float y, float width, float height, float 
 	this->spriteWidth = width / spriteWidth;
 	this->spriteHeight = height / spriteHeight;
 	this->rotation = rotation;
-	this->friction = friction;
 
 	p0 = App::Point{ 0.0, 0.0 };
 	p1 = App::Point{ 0.0, 0.0 };
@@ -52,24 +51,4 @@ void RotatingBlock::display()
 	glDisable(GL_TEXTURE_2D);
 	App::displayBoundingBox(-width/2, -height/2, width/2, height/2);
 	glPopMatrix();
-
-	/*
-	glPointSize(10);
-	glColor3f(1.0, 0.0, 0.0);
-	glBegin(GL_POINTS);
-	glVertex3f(p0.x, p0.y, 0);
-	glEnd();
-	glColor3f(0.0, 1.0, 0.0);
-	glBegin(GL_POINTS);
-	glVertex3f(p1.x, p1.y, 0);
-	glEnd();
-	glColor3f(0.0, 0.0, 1.0);
-	glBegin(GL_POINTS);
-	glVertex3f(p2.x, p2.y, 0);
-	glEnd();
-	glBegin(GL_POINTS);
-	glColor3f(1.0, 1.0, 0.0);
-	glVertex3f(p3.x, p3.y, 0);
-	glEnd();
-	glColor3f(1.0, 1.0, 1.0);*/
 }

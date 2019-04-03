@@ -10,11 +10,11 @@ Enemy::Enemy(float startX, float startY, World* p, int ID)
 	x = startX;
 	y = startY;
 
-	maxVelocityX = 30.0;
+	maxVelocityX = 40.0;
 	maxVeloctyY = 200.0;
-	maxRunningVelocityX = 50.0;
-	runningAcceleration = 150.0;
-	walkingAcceleration = 100.0;
+	maxRunningVelocityX = 80.0;
+	runningAcceleration = 700.0;
+	walkingAcceleration = 500.0;
 	deccelerationFactor = 5.0;
 	gravity = 350;
 	airDeccelerationFactor = 0.0;
@@ -24,7 +24,7 @@ Enemy::Enemy(float startX, float startY, World* p, int ID)
 	jumpDownHeight = 75.0;
 	jumpDownXVelocity = 120.0;
 	diveHeight = 65.0;
-	diveXVelocity = 240;
+	diveXVelocity = 320;
 
 	xReflectFactor = 0;
 	facingLeft = false;
@@ -63,8 +63,8 @@ Enemy::Enemy(float startX, float startY, World* p, int ID)
 	dyingWidth = 40 * scaleFactor;
 	dyingHeight = 42 * scaleFactor;
 
-	delayBeforeAttacking = 0.7;
-	delayBetweenDives = 3.5;
+	delayBeforeAttacking = 0.5;
+	delayBetweenDives = 3.0;
 	delayBetweenJumps = 1.2;
 	timeSinceStartingAttack = 0.0;
 	timeSinceAttacking = 0.0;
@@ -437,7 +437,7 @@ void Enemy::update()
 
 		if (isWalkingOfLeftEdge && isWalking)
 		{
-			if (velocityX < 0.0 && !isInAir)
+			if (velocityX < 0.0 && !isInAir && timeSinceLeavingRotatingCollider > 0.5)
 			{
 				velocityX = 0.0;
 				turnRight();
@@ -445,7 +445,7 @@ void Enemy::update()
 		}
 		else if (isWalkingOfRightEdge && isWalking)
 		{
-			if (velocityX > 0.0 && !isInAir)
+			if (velocityX > 0.0 && !isInAir && timeSinceLeavingRotatingCollider > 0.5)
 			{
 				velocityX = 0.0;
 				turnLeft();
@@ -673,10 +673,6 @@ void Enemy::calculateCollider(float blockX, float blockY, float blockWidth, floa
 			{
 				turnRight();
 			}
-			if (isRunning)
-			{
-				changeToIdleState();
-			}
 		}
 		else if (distToLeft < distToRight &&
 			distToLeft < distToTop &&
@@ -691,10 +687,6 @@ void Enemy::calculateCollider(float blockX, float blockY, float blockWidth, floa
 			if (isWalking)
 			{
 				turnLeft();
-			}
-			else if (isRunning)
-			{
-				changeToIdleState();
 			}
 		}
 		else if (distToBottom < distToLeft &&
@@ -732,7 +724,7 @@ void Enemy::calculateCollider(float blockX, float blockY, float blockWidth, floa
 	}
 }
 
-void Enemy::calculateRotatingCollider(App::Point b0, App::Point b1, App::Point b2, App::Point b3, float rotation, float blockFriction)
+void Enemy::calculateRotatingCollider(App::Point b0, App::Point b1, App::Point b2, App::Point b3, float rotation)
 {
 	//Test if colliding
 	//Get closest edge from both objects
@@ -880,8 +872,6 @@ void Enemy::calculateRotatingCollider(App::Point b0, App::Point b1, App::Point b
 		distToBottomPlayer < distToRightPlayer)
 	{
 		playerAxis = axis4 * -distToBottomPlayer;
-		isTouchingGround = true;
-		timeSinceNotTouchingGround = 0.0;
 	}
 	else
 	{
@@ -910,6 +900,16 @@ void Enemy::calculateRotatingCollider(App::Point b0, App::Point b1, App::Point b
 	if (currentVelocity.abs() <= 0)
 	{
 		return;
+	}
+
+	//Detect if player is grounded or hitting wall or ceiling 
+	if ((acos(mtVector.dot(App::Point{ 0,1 }) / (mtVector.abs() * App::Point{ 0,1 }.abs())) * App::radToDeg < 45))
+	{
+		isTouchingGround = true;
+		timeSinceNotTouchingGround = 0.0;
+
+		isWalkingOfLeftEdge = false;
+		isWalkingOfRightEdge = false;
 	}
 
 	//Get direction of player movement by reversing player velocity
@@ -950,7 +950,7 @@ void Enemy::calculateRotatingCollider(App::Point b0, App::Point b1, App::Point b
 		{
 			newVelocity = blockSlope * blockSlope.abs();
 		}
-		if (currentVelocity.abs() < 1 && currentVelocity.x * newVelocity.x < 0)
+		if (currentVelocity.abs() < 0.5 && currentVelocity.x * newVelocity.x < 0)
 		{
 			newVelocity = newVelocity * -1;
 		}
@@ -1036,7 +1036,10 @@ void Enemy::getCollisionUpdates()
 
 	for (StaticBlock block : parent->staticBlocks)
 	{
-		calculateCollider(block.x, block.y, block.width, block.height, 0.0, 0.0);
+		if (block.collider)
+		{
+			calculateCollider(block.x, block.y, block.width, block.height, 0.0, 0.0);
+		}
 	}
 
 	for (MovingBlock block : parent->movingBlocks)
@@ -1047,7 +1050,7 @@ void Enemy::getCollisionUpdates()
 	isOnRotatingCollider = false;
 	for (RotatingBlock block : parent->rotatingBlocks)
 	{
-		calculateRotatingCollider(block.p0, block.p1, block.p2, block.p3, block.rotation, block.friction);
+		calculateRotatingCollider(block.p0, block.p1, block.p2, block.p3, block.rotation);
 	}
 	if (!isOnRotatingCollider)
 	{

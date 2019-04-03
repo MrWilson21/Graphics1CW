@@ -36,7 +36,7 @@ private:
 	void airMovementUpdate();
 	void getCollisionUpdates();
 	void calculateCollider(float blockX, float blockY, float blockWidth, float blockHeight, float xMove, float yMove);
-	void calculateRotatingCollider(App::Point b0, App::Point b1, App::Point b2, App::Point b3, float rotation, float blockFriction);
+	void calculateRotatingCollider(App::Point b0, App::Point b1, App::Point b2, App::Point b3, float rotation);
 	void detectPlayer();
 	void attack();
 	void changeToDieState();

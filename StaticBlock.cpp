@@ -1,6 +1,6 @@
 #include "staticBlock.h"
 
-StaticBlock::StaticBlock(float x, float y, float width, float height, float spriteWidth, float spriteHeight, string sprite)
+StaticBlock::StaticBlock(float x, float y, float width, float height, float spriteWidth, float spriteHeight, string sprite, bool collider, bool repeatX, bool repeatY)
 {
 	this->x = x;
 	this->y = y;
@@ -9,8 +9,10 @@ StaticBlock::StaticBlock(float x, float y, float width, float height, float spri
 	this->spriteWidth = width / spriteWidth;
 	this->spriteHeight = height / spriteHeight;
 
+	this->collider = collider;
+
 	char *cstr = &sprite[0u];
-	texture = App::loadPNG(cstr, true, true);
+	texture = App::loadPNG(cstr, repeatX, repeatY);
 }
 
 void StaticBlock::display()

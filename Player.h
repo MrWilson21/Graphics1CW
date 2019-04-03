@@ -24,6 +24,8 @@ class Player
 		void displayHearts(int heartNo, int spriteToRender, float screenWidth, float screenHeight);
 		void loadSprites();
 
+		void createPartical(float x1, float y1, float width, float height, float scale, string sprite);
+
 		int gemsCollected;
 		int health;
 
@@ -35,7 +37,7 @@ class Player
 		void airMove();
 		void getCollisionUpdates();
 		void calculateCollider(float blockX, float blockY, float blockWidth, float blockHeight, float xMove, float yMove);
-		void calculateRotatingCollider(App::Point b0, App::Point b1, App::Point b2, App::Point b3, float rotation, float friction);
+		void calculateRotatingCollider(App::Point b0, App::Point b1, App::Point b2, App::Point b3, float rotation);
 
 		void calculateColliderBox();
 

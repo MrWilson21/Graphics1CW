@@ -8,15 +8,15 @@ Player::Player(float startX, float startY, World* p)
 	x = startX;
 	y = startY;
 
-	maxVelocityX = 60.0;
-	maxVeloctyY = 200;
-	walkingAcceleration = 400.0;
-	deccelerationFactor = 10.0;
-	jumpSpeed = 200;
+	maxVelocityX = 80.0;
+	maxVeloctyY = 210;
+	walkingAcceleration = 600.0;
+	deccelerationFactor = 15.0;
+	jumpSpeed = 210;
 	gravity = 350;
-	airAcceleration = 140.0;
+	airAcceleration = 160.0;
 	airDeccelerationFactor = 3.0;
-	maxAirVelocityX = 45.0;
+	maxAirVelocityX = 70.0;
 
 	xReflectFactor = 0;
 	facingLeft = false;
@@ -38,7 +38,7 @@ Player::Player(float startX, float startY, World* p)
 	timeToWaitForNextDyingFrame = 0.4;
 
 	timeSinceNotTouchingGround = 0.0;
-	timeUntilChangeToJump = 0.1;
+	timeUntilChangeToJump = 0.25;
 	jumpLanding = false;
 
 	gemsCollected = 0;
@@ -341,8 +341,9 @@ void Player::update()
 	//Check if player is not moving and change to idle
 	//Final check done in case player is walking into wall
 	//give player an idle state so it doesnt look like he is running on the spot into a wall
-	if (velocityX == 0 && !(isAttacking || isDying || isJumping || !isTouchingGround))
+	if (abs(velocityX) <= 0.1 && !(isAttacking || isDying || isJumping || !isTouchingGround))
 	{
+		velocityX = 0;
 		changeToIdleState();
 	}
 
@@ -383,7 +384,7 @@ void Player::groundMovementUpdate()
 {
 	groundMove();
 
-	if (App::keys[VK_UP] && !(isAttacking || isDying))
+	if (App::keys[0x57] && !(isAttacking || isDying))
 	{
 		velocityY = jumpSpeed;
 		changeToJumpingState();
@@ -460,7 +461,7 @@ void Player::airMovementUpdate()
 
 void Player::groundMove()
 {
-	if (App::keys[VK_LEFT] && !(isAttacking || isDying))
+	if (App::keys[0x41] && !(isAttacking || isDying))
 	{
 		velocityX -= walkingAcceleration * App::deltaTime;
 		if (velocityX < -maxVelocityX)
@@ -468,7 +469,7 @@ void Player::groundMove()
 			velocityX = -maxVelocityX;
 		}
 	}
-	else if (App::keys[VK_RIGHT] && !(isAttacking || isDying))
+	else if (App::keys[0x44] && !(isAttacking || isDying))
 	{
 		velocityX += walkingAcceleration * App::deltaTime;
 		if (velocityX > maxVelocityX)
@@ -497,55 +498,37 @@ void Player::groundMove()
 
 void Player::airMove()
 {
-	if (abs(velocityX) > maxAirVelocityX)
+	if (App::keys[0x41] && !(isAttacking || isDying))
 	{
-		if (velocityX > airDeccelerationFactor  * App::deltaTime)
+		velocityX -= airAcceleration * App::deltaTime;
+		if (velocityX < -maxAirVelocityX)
 		{
-			velocityX -= airDeccelerationFactor * App::deltaTime;
+			velocityX = -maxAirVelocityX;
 		}
-		else if (velocityX < -airDeccelerationFactor * App::deltaTime)
+	}
+	else if (App::keys[0x44] && !(isAttacking || isDying))
+	{
+		velocityX += airAcceleration * App::deltaTime;
+		if (velocityX > maxAirVelocityX)
 		{
-			velocityX += airDeccelerationFactor * App::deltaTime;
+			velocityX = maxAirVelocityX;
+		}
+	}
+	//If movement keys are not pressed then begin to deccelerate
+	//If speed is less than total acceleration for a frame then set speed to 0
+	else
+	{
+		if (velocityX > airDeccelerationFactor  * App::deltaTime * abs(velocityX))
+		{
+			velocityX -= airDeccelerationFactor * App::deltaTime * abs(velocityX);
+		}
+		else if (velocityX < -airDeccelerationFactor * App::deltaTime * abs(velocityX))
+		{
+			velocityX += airDeccelerationFactor * App::deltaTime * abs(velocityX);
 		}
 		else
 		{
 			velocityX = 0;
-		}
-	}
-	else
-	{
-		if (App::keys[VK_LEFT] && !(isAttacking || isDying))
-		{
-			velocityX -= airAcceleration * App::deltaTime;
-			if (velocityX < -maxAirVelocityX)
-			{
-				velocityX = -maxAirVelocityX;
-			}
-		}
-		else if (App::keys[VK_RIGHT] && !(isAttacking || isDying))
-		{
-			velocityX += airAcceleration * App::deltaTime;
-			if (velocityX > maxAirVelocityX)
-			{
-				velocityX = maxAirVelocityX;
-			}
-		}
-		//If movement keys are not pressed then begin to deccelerate
-		//If speed is less than total acceleration for a frame then set speed to 0
-		else
-		{
-			if (velocityX > airDeccelerationFactor  * App::deltaTime * abs(velocityX))
-			{
-				velocityX -= airDeccelerationFactor * App::deltaTime * abs(velocityX);
-			}
-			else if (velocityX < -airDeccelerationFactor * App::deltaTime * abs(velocityX))
-			{
-				velocityX += airDeccelerationFactor * App::deltaTime * abs(velocityX);
-			}
-			else
-			{
-				velocityX = 0;
-			}
 		}
 	}
 }
@@ -622,7 +605,7 @@ void Player::calculateCollider(float blockX, float blockY, float blockWidth, flo
 	}
 }
 
-void Player::calculateRotatingCollider(App::Point b0, App::Point b1, App::Point b2, App::Point b3, float rotation, float blockFriction)
+void Player::calculateRotatingCollider(App::Point b0, App::Point b1, App::Point b2, App::Point b3, float rotation)
 {
 	//Test if colliding
 	//Get closest edge from both objects
@@ -713,7 +696,7 @@ void Player::calculateRotatingCollider(App::Point b0, App::Point b1, App::Point 
 
 	//Calculate distances from each edge
 	float distToTopPlayer = (a1 - a2).abs() - projections[0];
-	float distToBottomPlayer = projections[3];
+	float distToBottomPlayer = projections[3] - 0.1;
 
 	App::Point playerAxis;
 	App::Point blockAxis;
@@ -770,8 +753,6 @@ void Player::calculateRotatingCollider(App::Point b0, App::Point b1, App::Point 
 		distToBottomPlayer < distToRightPlayer)
 	{
 		playerAxis = axis4 * -distToBottomPlayer;
-		isTouchingGround = true;
-		timeSinceNotTouchingGround = 0.0;
 	}
 	else
 	{
@@ -800,6 +781,13 @@ void Player::calculateRotatingCollider(App::Point b0, App::Point b1, App::Point 
 	if (currentVelocity.abs() <= 0)
 	{
 		return;
+	}
+
+	//Detect if player is grounded or hitting wall or ceiling
+	if ((acos(mtVector.dot(App::Point{ 0,1 }) / (mtVector.abs() * App::Point{ 0,1 }.abs())) * App::radToDeg < 45))
+	{
+		isTouchingGround = true;
+		timeSinceNotTouchingGround = 0.0;
 	}
 
 	//Get direction of player movement by reversing player velocity
@@ -840,7 +828,7 @@ void Player::calculateRotatingCollider(App::Point b0, App::Point b1, App::Point 
 		{
 			newVelocity = blockSlope * blockSlope.abs();
 		}
-		if (currentVelocity.abs() < 1 && currentVelocity.x * newVelocity.x < 0)
+		if (currentVelocity.abs() < 0.5 && currentVelocity.x * newVelocity.x < 0)
 		{
 			newVelocity = newVelocity * -1;
 		}
@@ -913,7 +901,10 @@ void Player::getCollisionUpdates()
 
 	for (StaticBlock block : parent->staticBlocks)
 	{
-		calculateCollider(block.x, block.y, block.width, block.height, 0.0, 0.0);
+		if (block.collider)
+		{
+			calculateCollider(block.x, block.y, block.width, block.height, 0.0, 0.0);
+		}
 	}
 
 	for (MovingBlock block : parent->movingBlocks)
@@ -924,7 +915,7 @@ void Player::getCollisionUpdates()
 	isOnRotatingCollider = false;
 	for (RotatingBlock block : parent->rotatingBlocks)
 	{
-		calculateRotatingCollider(block.p0, block.p1, block.p2, block.p3, block.rotation, block.friction);
+		calculateRotatingCollider(block.p0, block.p1, block.p2, block.p3, block.rotation);
 	}
 	if (!isOnRotatingCollider)
 	{
@@ -1083,6 +1074,11 @@ void Player::resetStates()
 	isIdle = false;
 	isAttacking = false;
 	isDying = false;
+}
+
+void Player::createPartical(float x1, float y1, float pWidth, float pHeight, float scale, string sprite)
+{
+	parent->createPartical(x1, y1, pWidth, pHeight, scale, sprite);
 }
 
 void Player::displayWalking()

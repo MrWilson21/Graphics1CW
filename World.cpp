@@ -13,19 +13,20 @@ void World::reset()
 	enemies.clear();
 	gems.clear();
 	rotatingBlocks.clear();
+	particals.clear();
 }
 
 void World::init()
 {
 	worldStartX = 0.0;
 	worldStartY = 0.0;
-	worldSizeX = 500.0;
-	worldSizeY = 500.0;
+	worldSizeX = 1500.0;
+	worldSizeY = 1000.0;
 
 	leftEdge = 10;
 	rightEdge = worldSizeX - 10;
 	topEdge = worldSizeY - 10;
-	bottomEdge = 20;
+	bottomEdge = 30;
 
 	cameraX;
 	cameraY;
@@ -39,49 +40,103 @@ void World::init()
 
 	paralaxBackGround[12];
 
-	player = new Player(30, 90, this);
+	//Starting area
+	player = new Player(740, 100, this);
+	staticBlocks.push_back(StaticBlock(720, 90, 60, 10, 10, 10, "blocks/0.png"));
+
+	//First gem
+	staticBlocks.push_back(StaticBlock(720, 160, 60, 10, 10, 10, "blocks/0.png"));
+	gems.push_back(Gem(747.5, 170, 0, "green"));
+
+	//Second gem
+	gems.push_back(Gem(747.5, 32, 1, "red"));
+
+	//Elevators
+	std::vector<App::Point> p;
+	p.push_back(App::Point{ 780, 90 });
+	p.push_back(App::Point{ 870, 120 });
+	p.push_back(App::Point{ 870, 300 });
+	p.push_back(App::Point{ 870, 120 });
+	movingBlocks.push_back(MovingBlock(p, 50, 30, 10, 10, 10, "blocks/0.png"));
+	staticBlocks.push_back(StaticBlock(810, 300, 60, 10, 10, 10, "blocks/0.png"));
+	staticBlocks.push_back(StaticBlock(900, 300, 60, 10, 10, 10, "blocks/0.png"));
+
+	p.clear();
+	p.push_back(App::Point{ 690, 90 });
+	p.push_back(App::Point{ 600, 120 });
+	p.push_back(App::Point{ 600, 300 });
+	p.push_back(App::Point{ 600, 120 });
+	movingBlocks.push_back(MovingBlock(p, 50, 30, 10, 10, 10, "blocks/0.png"));
+	staticBlocks.push_back(StaticBlock(540, 300, 60, 10, 10, 10, "blocks/0.png"));
+	staticBlocks.push_back(StaticBlock(630, 300, 60, 10, 10, 10, "blocks/0.png"));
+
+	rotatingBlocks.push_back(RotatingBlock(1200, 50, 100, 10, 10, 10, 35, "blocks/0.png"));
+
+	//Hills
+	hillSteep(464, 16, 1);
+	hillSteep(785, 16, 1);
+
+	//Ramp platforms
+	rampPlatformLeft(945, 60, 1.25);
+	rampPlatformRight(1030, 160, 1.25);
+	rampPlatformLeft(945, 260, 1.25);
+
+	//Ground
+	staticBlocks.push_back(StaticBlock(0, 16, worldSizeX, 16, 16, 16, "blocks/grassBlock.png"));
+	staticBlocks.push_back(StaticBlock(0, 0, worldSizeX, 16.2, 16, 16, "blocks/dirtBlock.png"));
 
 	player->loadSprites();
-
 	initBackGround();
 	
 	//Initial position of camera
 	cameraX = player->x + player->colliderWidth / 2;
 	cameraY = player->y + player->colliderHeight / 2;
 
-	//staticBlocks.push_back(StaticBlock(30, 45, 150, 20, "blocks/0.png"));
-	//staticBlocks.push_back(StaticBlock(30, 65, 100, 10, 10, 10, "blocks/0.png"));
-	//staticBlocks.push_back(StaticBlock(130, 0, 10, 40, 10, 10, "blocks/0.png"));
-	//staticBlocks.push_back(StaticBlock(160, 100, 50, 10, "blocks/0.png"));
-	//staticBlocks.push_back(StaticBlock(250, 0, 10, 60, 10, 10, "blocks/0.png"));
-
-	//rotatingBlocks.push_back(RotatingBlock(50, 45, 40, 40, 10, 10, 0, 0.5, "blocks/0.png"));
-	//rotatingBlocks.push_back(RotatingBlock(150, 20, 40, 40, 10, 10, 0, 0.5, "blocks/0.png"));
-	rotatingBlocks.push_back(RotatingBlock(200, 10, 130, 30, 10, 10, 0, 0.5, "blocks/0.png"));
-
 	for(int i = 0; i < 1; i++)
 	{
-		enemies.push_back(Enemy(300, 30, this, i));
+		enemies.push_back(Enemy(300, 30, this, enemies.size()));
 	}
 	
 	for (int i = 0; i < enemies.size(); i++)
 	{
 		enemies[i].loadSprites();
 	}
+	gems.push_back(Gem(100, 15, 2,"yellow"));
+	gems.push_back(Gem(120, 15, 3, "purple"));
+	gems.push_back(Gem(140, 15, 4, "blue"));
+	gems.push_back(Gem(160, 15, 5, "orange"));
+}
 
-	gems.push_back(Gem(80, 80, 0, "green"));
-	gems.push_back(Gem(80, 80, 1, "red"));
-	gems.push_back(Gem(80, 80, 2,"yellow"));
-	gems.push_back(Gem(80, 80, 3, "purple"));
-	gems.push_back(Gem(80, 80, 4, "blue"));
-	gems.push_back(Gem(80, 80, 5, "orange"));
+//Width 256, height 96
+void World::hillSteep(float x, float y, float scale)
+{
+	staticBlocks.push_back(StaticBlock(x, y, 96 * scale, 64 * scale, 96 * scale, 64 * scale, "blocks/rampRight.png", false, false, false));
+	rotatingBlocks.push_back(RotatingBlock(49.17 * scale + x, 34.41 * scale + y, 109.603 * scale, 10 * scale, 1, 1, 26.5));
+	staticBlocks.push_back(StaticBlock(96.09 * scale + x, 47.22 * scale + y, 62.65 * scale, 16 * scale, 16, 16));
+	staticBlocks.push_back(StaticBlock(95.7 * scale + x, 48 * scale + y, 64.8 * scale, 16 * scale, 16 * scale, 16 * scale, "blocks/grassBlock.png", false));
+	staticBlocks.push_back(StaticBlock(95.7 * scale + x, y, 64.8 * scale, 48.2 * scale, 16 * scale, 16 * scale, "blocks/dirtBlock.png", false));
+	staticBlocks.push_back(StaticBlock(160 * scale + x, y, 96 * scale, 64 * scale, 96 * scale, 64 * scale, "blocks/rampLeft.png", false, false, false));
+	rotatingBlocks.push_back(RotatingBlock(205.67 * scale + x, 34.41 * scale + y, 109.603 * scale, 10 * scale, 1, 1, -26.5));
+}
 
-	std::vector<App::Point> p;
-	p.push_back(App::Point{ 30,10 });
-	p.push_back(App::Point{ 100,10 });
-	p.push_back(App::Point{ 100,100 });
-	p.push_back(App::Point{ 50,30 });
-	//movingBlocks.push_back(MovingBlock(p, 350, 30, 20, 10, 10, "blocks/0.png"));
+//Width 156.09, height 65.39
+void World::rampPlatformRight(float x, float y, float scale)
+{
+	staticBlocks.push_back(StaticBlock		(x					, y					, 40 * scale		, 10 * scale	, 10 * scale , 10 * scale		, "blocks/0.png"));
+	enemies.push_back(Enemy(x + 15 * scale, y + 10 * scale, this, enemies.size()));
+	rotatingBlocks.push_back(RotatingBlock	(78.04 * scale + x	, 32.73 * scale + y	, 100 * scale		, 10 * scale	, 10 * scale , 10 * scale, 35	, "blocks/0.png"));
+	staticBlocks.push_back(StaticBlock		(116.09 * scale + x	, 55.39 * scale + y	, 40 * scale		, 10 * scale	, 10 * scale , 10 * scale		, "blocks/0.png"));
+	enemies.push_back(Enemy(x + 131 * scale, y + 66 * scale, this, enemies.size()));
+}
+
+//Width 156.09, height 65.39
+void World::rampPlatformLeft(float x, float y, float scale)
+{
+	staticBlocks.push_back(StaticBlock(x, 55.39 * scale + y, 40 * scale, 10 * scale, 10 * scale, 10 * scale, "blocks/0.png"));
+	enemies.push_back(Enemy(x + 15 * scale, y + 66 * scale, this, enemies.size()));
+	rotatingBlocks.push_back(RotatingBlock(78.04 * scale + x, 32.73 * scale + y, 100 * scale, 10 * scale, 10 * scale, 10 * scale, -35, "blocks/0.png"));
+	staticBlocks.push_back(StaticBlock(116.09 * scale + x, y, 40 * scale, 10 * scale, 10 * scale, 10 * scale, "blocks/0.png"));
+	enemies.push_back(Enemy(x + 131 * scale, y + 10 * scale, this, enemies.size()));
 }
 
 void World::signalGameEnd()
@@ -89,16 +144,22 @@ void World::signalGameEnd()
 	gameEnding = true;
 }
 
+void World::createPartical(float x1, float y1, float width, float height, float scale, string sprite)
+{
+	particals.push_back(Partical(x1 - width * scale/2, y1 - height * scale/2, width, height, scale, sprite, this));
+}
+
 //Define background parameters and textures here and intitialise them
 void World::initBackGround()
 {
+	float worldBackground = 1.5;
 	paralaxBackGround[0].isStatic = true;
 	paralaxBackGround[0].texture = App::loadPNG("worldBackGround/static.png", true, false);
 	paralaxBackGround[0].scrollSpeedX = 0;
 	paralaxBackGround[0].scrollSpeedY = 0;
 	paralaxBackGround[0].aspectRatio = 0;
 	paralaxBackGround[0].moveSpeedX = 0;
-	paralaxBackGround[0].scale = 0;
+	paralaxBackGround[0].scale = 1;
 
 	paralaxBackGround[1].isStatic = false;
 	paralaxBackGround[1].texture = App::loadPNG("worldBackGround/hugeClouds.png", true, false);
@@ -106,7 +167,7 @@ void World::initBackGround()
 	paralaxBackGround[1].scrollSpeedY = 0.15;
 	paralaxBackGround[1].aspectRatio = 2048.0 / 1546.0;
 	paralaxBackGround[1].moveSpeedX = 0.1;
-	paralaxBackGround[1].scale = 100;
+	paralaxBackGround[1].scale = 100 * worldBackground;
 
 	paralaxBackGround[2].isStatic = false;
 	paralaxBackGround[2].texture = App::loadPNG("worldBackGround/distantClouds.png", true, false);
@@ -114,7 +175,7 @@ void World::initBackGround()
 	paralaxBackGround[2].scrollSpeedY = 0.15;
 	paralaxBackGround[2].aspectRatio = 2048.0 / 1546.0;
 	paralaxBackGround[2].moveSpeedX = 0;
-	paralaxBackGround[2].scale = 100;
+	paralaxBackGround[2].scale = 100 * worldBackground;
 
 	paralaxBackGround[3].isStatic = false;
 	paralaxBackGround[3].texture = App::loadPNG("worldBackGround/distantClouds1.png", true, false);
@@ -122,7 +183,7 @@ void World::initBackGround()
 	paralaxBackGround[3].scrollSpeedY = 0.2;
 	paralaxBackGround[3].aspectRatio = 2048.0 / 1546.0;
 	paralaxBackGround[3].moveSpeedX = 0;
-	paralaxBackGround[3].scale = 100;
+	paralaxBackGround[3].scale = 100 * worldBackground;
 
 	paralaxBackGround[4].isStatic = false;
 	paralaxBackGround[4].texture = App::loadPNG("worldBackGround/clouds.png", true, false);
@@ -130,7 +191,7 @@ void World::initBackGround()
 	paralaxBackGround[4].scrollSpeedY = 0.25;
 	paralaxBackGround[4].aspectRatio = 2048.0 / 1546.0;
 	paralaxBackGround[4].moveSpeedX = 0;
-	paralaxBackGround[4].scale = 100;
+	paralaxBackGround[4].scale = 100 * worldBackground;
 
 	paralaxBackGround[5].isStatic = false;
 	paralaxBackGround[5].texture = App::loadPNG("worldBackGround/rainbow.png", false, false);
@@ -138,7 +199,7 @@ void World::initBackGround()
 	paralaxBackGround[5].scrollSpeedY = 0.1;
 	paralaxBackGround[5].aspectRatio = 1220.0 / 693.0;
 	paralaxBackGround[5].moveSpeedX = 0;
-	paralaxBackGround[5].scale = 200;
+	paralaxBackGround[5].scale = 200 * worldBackground;
 
 	paralaxBackGround[6].isStatic = false;
 	paralaxBackGround[6].texture = App::loadPNG("worldBackGround/hill2.png", true, false);
@@ -146,7 +207,7 @@ void World::initBackGround()
 	paralaxBackGround[6].scrollSpeedY = 0.27;
 	paralaxBackGround[6].aspectRatio = 2048.0 / 1546.0;
 	paralaxBackGround[6].moveSpeedX = 0;
-	paralaxBackGround[6].scale = 100;
+	paralaxBackGround[6].scale = 100 * worldBackground;
 
 	paralaxBackGround[7].isStatic = false;
 	paralaxBackGround[7].texture = App::loadPNG("worldBackGround/hill1.png", true, false);
@@ -154,7 +215,7 @@ void World::initBackGround()
 	paralaxBackGround[7].scrollSpeedY = 0.35;
 	paralaxBackGround[7].aspectRatio = 2048.0 / 1546.0;
 	paralaxBackGround[7].moveSpeedX = 0;
-	paralaxBackGround[7].scale = 100;
+	paralaxBackGround[7].scale = 100 * worldBackground;
 
 	paralaxBackGround[8].isStatic = false;
 	paralaxBackGround[8].texture = App::loadPNG("worldBackGround/bushes.png", true, false);
@@ -162,7 +223,7 @@ void World::initBackGround()
 	paralaxBackGround[8].scrollSpeedY = 0.6;
 	paralaxBackGround[8].aspectRatio = 2048.0 / 1546.0;
 	paralaxBackGround[8].moveSpeedX = 0;
-	paralaxBackGround[8].scale = 100;
+	paralaxBackGround[8].scale = 100 * worldBackground;
 
 	paralaxBackGround[9].isStatic = false;
 	paralaxBackGround[9].texture = App::loadPNG("worldBackGround/distantTrees.png", true, false);
@@ -170,7 +231,7 @@ void World::initBackGround()
 	paralaxBackGround[9].scrollSpeedY = 0.7;
 	paralaxBackGround[9].aspectRatio = 2048.0 / 1546.0;
 	paralaxBackGround[9].moveSpeedX = 0;
-	paralaxBackGround[9].scale = 100;
+	paralaxBackGround[9].scale = 100 * worldBackground;
 
 	paralaxBackGround[10].isStatic = false;
 	paralaxBackGround[10].texture = App::loadPNG("worldBackGround/treesAndBushes.png", true, false);
@@ -178,7 +239,7 @@ void World::initBackGround()
 	paralaxBackGround[10].scrollSpeedY = 0.8;
 	paralaxBackGround[10].aspectRatio = 2048.0 / 1546.0;
 	paralaxBackGround[10].moveSpeedX = 0;
-	paralaxBackGround[10].scale = 100;
+	paralaxBackGround[10].scale = 100 * worldBackground;
 
 	paralaxBackGround[11].isStatic = false;
 	paralaxBackGround[11].texture = App::loadPNG("worldBackGround/ground.png", true, false);
@@ -186,7 +247,7 @@ void World::initBackGround()
 	paralaxBackGround[11].scrollSpeedY = 1;
 	paralaxBackGround[11].aspectRatio = 2048.0/1546.0;
 	paralaxBackGround[11].moveSpeedX = 0;
-	paralaxBackGround[11].scale = 100;
+	paralaxBackGround[11].scale = 100 * worldBackground;
 }
 
 void World::moveCamera(float screenWidth, float screenHeight)
@@ -327,6 +388,11 @@ void World::update()
 		gems[i].update(player);
 	}
 
+	for (int i = 0; i < particals.size(); i++)
+	{
+		particals[i].update();
+	}
+
 	if (gameEnding)
 	{
 		timeSinceGameEnd += App::deltaTime;
@@ -363,22 +429,37 @@ void World::displayWorldBoundaries()
 
 void World::display()
 {
+	//cout << "FRAME\n";
 	for (int i = 0; i < staticBlocks.size(); i++)
 	{
+		/*staticBlocks[i].x += App::deltaTime * -1 * App::keys[VK_LEFT];
+		staticBlocks[i].x += App::deltaTime * 1 * App::keys[VK_RIGHT];
+		staticBlocks[i].y += App::deltaTime * 1 * App::keys[VK_UP];
+		staticBlocks[i].y += App::deltaTime * -1 * App::keys[VK_DOWN];
+		staticBlocks[i].width += App::deltaTime * -1 * App::keys[VK_OEM_MINUS];
+		staticBlocks[i].width += App::deltaTime * 1 * App::keys[VK_OEM_PLUS];
+		cout << staticBlocks[i].x << "\t\t" << staticBlocks[i].y << "\t\t" << staticBlocks[i].width << "\n";*/
 		staticBlocks[i].display();
 	}
+	//cout << "--------\n";
+
+	for (int i = 0; i < rotatingBlocks.size(); i++)
+	{
+		rotatingBlocks[i].x += App::deltaTime * -1 * App::keys[VK_LEFT];
+		rotatingBlocks[i].x += App::deltaTime * 1 * App::keys[VK_RIGHT];
+		rotatingBlocks[i].y += App::deltaTime * 1 * App::keys[VK_UP];
+		rotatingBlocks[i].y += App::deltaTime * -1 * App::keys[VK_DOWN];
+		rotatingBlocks[i].width += App::deltaTime * -1 * App::keys[VK_OEM_MINUS];
+		rotatingBlocks[i].width += App::deltaTime * 1 * App::keys[VK_OEM_PLUS];
+		rotatingBlocks[i].calculatePoints();
+		cout << rotatingBlocks[i].x << "\t\t" << rotatingBlocks[i].y << "\t\t" << rotatingBlocks[i].width << "\n"; 
+		rotatingBlocks[i].display();
+	}
+	//cout << "--------\n";
 
 	for (int i = 0; i < movingBlocks.size(); i++)
 	{
 		movingBlocks[i].display();
-	}
-
-	for (int i = 0; i < rotatingBlocks.size(); i++)
-	{
-		rotatingBlocks[i].display();
-		rotatingBlocks[i].rotation += App::deltaTime * App::keys[VK_OEM_PLUS] * 50;
-		rotatingBlocks[i].rotation -= App::deltaTime * App::keys[VK_OEM_MINUS] * 50;
-		rotatingBlocks[i].calculatePoints();
 	}
 
 	for (int i = 0; i < enemies.size(); i++)
@@ -392,6 +473,11 @@ void World::display()
 		{
 			gems[i].display();
 		}
+	}
+
+	for (int i = 0; i < particals.size(); i++)
+	{
+		particals[i].display();
 	}
 
 	player->display();

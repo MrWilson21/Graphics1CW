@@ -6,6 +6,7 @@
 #include "enemy.h"
 #include "gem.h"
 #include "rotatingBlock.h"
+#include "partical.h"
 
 class World
 {
@@ -20,14 +21,15 @@ public:
 	void displayPlayerCameraBox(float screenWidth, float screenHeight);
 	void displayWorldBoundaries();
 	void signalGameEnd();
+	void createPartical(float x1, float y1, float width, float height, float scale, string sprite);
 
 	Player* player;
 	vector<StaticBlock> staticBlocks;	
 	vector<MovingBlock> movingBlocks;
 	vector<RotatingBlock> rotatingBlocks;
 	vector<Enemy> enemies;
-
 	vector<Gem> gems;
+	vector<Partical> particals;
 	
 	float worldStartX;
 	float worldStartY;
@@ -43,6 +45,10 @@ public:
 
 private:
 	void initBackGround();
+
+	void hillSteep(float x, float y, float scale);
+	void rampPlatformLeft(float x, float y, float scale);
+	void rampPlatformRight(float x, float y, float scale);
 
 	float cameraX;
 	float cameraY;

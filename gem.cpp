@@ -20,9 +20,10 @@ Gem::Gem(float x, float y, int orderNumber, string sprite)
 	maxSprites = 8;
 
 	movingDown = false;
-	hoverHeight = y + 4;
-	speed = 75.0;
+	hoverHeight = y + 3;
+	speed = 120.0;
 	velocityY = 0.0;
+	maxVel = 20;
 
 	offSetFromLeft = 5;
 	offsetFromTop = 5;
@@ -47,6 +48,7 @@ void Gem::collideWithPlayer(Player* p)
 		y + height > p->y + p->colliderY)
 	{
 		collected = true;
+		p->createPartical(x + width/2, y + height/2, 166, 165, 0.2, "gemCollect");
 		p->gemsCollected += 1;
 	}
 }
@@ -64,6 +66,10 @@ void Gem::update(Player* p)
 			else
 			{
 				velocityY -= speed * App::deltaTime;
+				if (velocityY < -maxVel)
+				{
+					velocityY = -maxVel;
+				}
 			}
 		}
 		else 
@@ -75,6 +81,10 @@ void Gem::update(Player* p)
 			else
 			{
 				velocityY += speed * App::deltaTime;
+				if (velocityY > maxVel)
+				{
+					velocityY = maxVel;
+				}
 			}
 		}
 

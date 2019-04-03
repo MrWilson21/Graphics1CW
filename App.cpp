@@ -59,7 +59,7 @@ GLuint App::loadPNG(char* name, bool repeatX, bool repeatY)
 	}
 
 	else
-		MessageBox(NULL, "Failed to load texture", "End of the world", MB_OK | MB_ICONINFORMATION);
+		MessageBox(NULL, name, "Failed to load texture", MB_OK | MB_ICONINFORMATION);
 
 	return myTextureID;
 }
