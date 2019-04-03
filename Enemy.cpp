@@ -633,7 +633,7 @@ void Enemy::groundMovementUpdate()
 	y += yMoveThisFrame;
 }
 
-void Enemy::calculateCollider(float blockX, float blockY, float blockWidth, float blockHeight, float xMove, float yMove)
+void Enemy::calculateCollider(float blockX, float blockY, float blockWidth, float blockHeight, float xMove, float yMove, bool isEnemy)
 {
 	//yMove and xMove a extra parameters given for moving block collisions
 	//yMove gives the block collider a top edge from its previous frame
@@ -719,6 +719,11 @@ void Enemy::calculateCollider(float blockX, float blockY, float blockWidth, floa
 			if (x + colliderX + colliderWidth / 2 <= blockX + blockWidth - xMove)
 			{
 				isWalkingOfRightEdge = false;
+			}
+			if (isEnemy)
+			{
+				isWalkingOfRightEdge = false;
+				isWalkingOfLeftEdge = false;
 			}
 		}
 	}
@@ -1023,13 +1028,13 @@ void Enemy::getCollisionUpdates()
 	isWalkingOfRightEdge = true;
 	isWalkingOfLeftEdge = true;
 
-	if ((!isAttacking))
+	if (/*(!isAttacking)*/ true)
 	{
 		for (Enemy e : parent->enemies)
 		{
 			if (this->ID != e.ID && !e.isDying)
 			{
-				calculateCollider(e.colliderX + e.x, e.colliderY + e.y, e.colliderWidth, e.colliderHeight, 0.0, 0.0);
+				calculateCollider(e.colliderX + e.x, e.colliderY + e.y, e.colliderWidth, e.colliderHeight, 0.0, 0.0, true);
 			}
 		}
 	}

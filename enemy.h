@@ -35,7 +35,7 @@ private:
 	void groundMovementUpdate();
 	void airMovementUpdate();
 	void getCollisionUpdates();
-	void calculateCollider(float blockX, float blockY, float blockWidth, float blockHeight, float xMove, float yMove);
+	void calculateCollider(float blockX, float blockY, float blockWidth, float blockHeight, float xMove, float yMove, bool isEnemy = false);
 	void calculateRotatingCollider(App::Point b0, App::Point b1, App::Point b2, App::Point b3, float rotation);
 	void detectPlayer();
 	void attack();

@@ -49,6 +49,7 @@ private:
 	void hillSteep(float x, float y, float scale);
 	void rampPlatformLeft(float x, float y, float scale);
 	void rampPlatformRight(float x, float y, float scale);
+	void shuffleBlocks(float x, float y, float x2, float y2, int noOfBlocks, float speed);
 
 	float cameraX;
 	float cameraY;

@@ -14,7 +14,7 @@ Player::Player(float startX, float startY, World* p)
 	deccelerationFactor = 15.0;
 	jumpSpeed = 210;
 	gravity = 350;
-	airAcceleration = 160.0;
+	airAcceleration = 250.0;
 	airDeccelerationFactor = 3.0;
 	maxAirVelocityX = 70.0;
 
@@ -38,7 +38,7 @@ Player::Player(float startX, float startY, World* p)
 	timeToWaitForNextDyingFrame = 0.4;
 
 	timeSinceNotTouchingGround = 0.0;
-	timeUntilChangeToJump = 0.25;
+	timeUntilChangeToJump = 0.1;
 	jumpLanding = false;
 
 	gemsCollected = 0;
@@ -79,7 +79,7 @@ Player::Player(float startX, float startY, World* p)
 	delayBetweenAttacks = 0.1;
 	
 	isInvinsible = false;
-	timeBetweenHits = 1.5;
+	timeBetweenHits = 0.75;
 	timeSinceLastHit = 0.0;
 	timeBetweenFlashes = 0.12;
 	timeSinceFlash = 0.0;

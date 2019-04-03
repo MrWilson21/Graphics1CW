@@ -38,10 +38,14 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="blocks\0.png" />
+    <Image Include="blocks\1.png" />
     <Image Include="blocks\dirtBlock.png" />
     <Image Include="blocks\grassBlock.png" />
     <Image Include="blocks\rampLeft.png" />
     <Image Include="blocks\rampRight.png" />
+    <Image Include="blocks\wall.png" />
+    <Image Include="blocks\wallFill.png" />
+    <Image Include="blocks\wallLeft.png" />
     <Image Include="fist\fist.png" />
     <Image Include="fist\gems\black.png" />
     <Image Include="fist\gems\blue\0.png" />

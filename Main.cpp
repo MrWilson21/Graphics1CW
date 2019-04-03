@@ -11,7 +11,8 @@ float minAspectRatio = 1.5;
 float maxAspectRatio = 2.5;
 int minScreenWidth = 853;
 int minScreenHeight = 480;
-float scale = 5;
+float scale = 2;
+float timeScale = 1;
 HWND hWnd = NULL;
 bool done = false;								// Bool Variable To Exit Loop
 
@@ -418,21 +419,21 @@ int WINAPI WinMain(	HINSTANCE	hInstance,			// Instance
 			display();					// Draw The Scene
 			SwapBuffers(hDC);				// Swap Buffers (Double Buffering)
 
-			App::deltaTime = double(duration_cast<duration<double>>(steady_clock::now() - totalFrameTime).count());
+			App::deltaTime = double(duration_cast<duration<double>>(steady_clock::now() - totalFrameTime).count()) * timeScale;
 
 			//Limit fps to prevent cpu being hogged for unneccesarily large fps
-			if (1.0 / App::deltaTime > maxFps)
+			if (timeScale / App::deltaTime > maxFps)
 			{
-				double timeToWait = (1.0 / maxFps) - App::deltaTime;
+				double timeToWait = (1.0 / maxFps) - App::deltaTime * 1.0/timeScale;
 				while (timeToWait > 0.0)
 				{
 					std::this_thread::sleep_for(std::chrono::nanoseconds{ 0 });
 					App::deltaTime = double(duration_cast<duration<double>>(steady_clock::now() - totalFrameTime).count());
-					timeToWait = (1.0 / maxFps) - App::deltaTime;
+					timeToWait = (1.0 / maxFps) - App::deltaTime * 1.0 / timeScale;
 				}
 			}
 
-			App::deltaTime = double(duration_cast<duration<double>>(steady_clock::now() - totalFrameTime).count());
+			App::deltaTime = double(duration_cast<duration<double>>(steady_clock::now() - totalFrameTime).count()) * timeScale;
 			totalFrameTime = steady_clock::now();
 
 			//Force delta time to be less than max frame time

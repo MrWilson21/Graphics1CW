@@ -18,12 +18,12 @@ void World::reset()
 
 void World::init()
 {
-	worldStartX = 0.0;
+	worldStartX = -232;
 	worldStartY = 0.0;
-	worldSizeX = 1500.0;
+	worldSizeX = 1673.0;
 	worldSizeY = 1000.0;
 
-	leftEdge = 10;
+	leftEdge = worldStartX + 10;
 	rightEdge = worldSizeX - 10;
 	topEdge = worldSizeY - 10;
 	bottomEdge = 30;
@@ -46,10 +46,10 @@ void World::init()
 
 	//First gem
 	staticBlocks.push_back(StaticBlock(720, 160, 60, 10, 10, 10, "blocks/0.png"));
-	gems.push_back(Gem(747.5, 170, 0, "green"));
+	gems.push_back(Gem(747.5, 172, 0, "green"));
 
 	//Second gem
-	gems.push_back(Gem(747.5, 32, 1, "red"));
+	gems.push_back(Gem(747.5, 34, 1, "red"));
 
 	//Elevators
 	std::vector<App::Point> p;
@@ -70,7 +70,16 @@ void World::init()
 	staticBlocks.push_back(StaticBlock(540, 300, 60, 10, 10, 10, "blocks/0.png"));
 	staticBlocks.push_back(StaticBlock(630, 300, 60, 10, 10, 10, "blocks/0.png"));
 
-	rotatingBlocks.push_back(RotatingBlock(1200, 50, 100, 10, 10, 10, 35, "blocks/0.png"));
+	staticBlocks.push_back(StaticBlock(540, 300, 60, 10, 10, 10, "blocks/0.png"));
+	staticBlocks.push_back(StaticBlock(450, 300, 60, 10, 10, 10, "blocks/0.png"));
+	staticBlocks.push_back(StaticBlock(330, 300, 60, 10, 10, 10, "blocks/0.png"));
+	staticBlocks.push_back(StaticBlock(180, 300, 60, 10, 10, 10, "blocks/0.png"));
+
+	//Fourth gem
+	gems.push_back(Gem(208.5, 312, 3, "purple"));
+	staticBlocks.push_back(StaticBlock(100, 300, 60, 10, 10, 10, "blocks/0.png"));
+	enemies.push_back(Enemy(120, 310, this, enemies.size()));
+	enemies.push_back(Enemy(140, 310, this, enemies.size()));
 
 	//Hills
 	hillSteep(464, 16, 1);
@@ -78,12 +87,62 @@ void World::init()
 
 	//Ramp platforms
 	rampPlatformLeft(945, 60, 1.25);
-	rampPlatformRight(1030, 160, 1.25);
-	rampPlatformLeft(945, 260, 1.25);
+	rampPlatformRight(1075, 140, 1.25);
+	rampPlatformLeft(1040, 260, 1.25);
+
+	//Fifth gem
+	gems.push_back(Gem(1060, 345, 4, "blue"));
+
+	//Pit of enemies
+	float scale = 1;
+	float x = 150;
+	float y = 16;
+	staticBlocks.push_back(StaticBlock(96.09 * scale + x, 47.22 * scale + y, 62.65 * scale, 16 * scale, 16, 16));
+	staticBlocks.push_back(StaticBlock(95.7 * scale + x, 48 * scale + y, 64.8 * scale, 16 * scale, 16 * scale, 16 * scale, "blocks/grassBlock.png", false));
+	staticBlocks.push_back(StaticBlock(95.7 * scale + x, y, 64.8 * scale, 48.2 * scale, 16 * scale, 16 * scale, "blocks/dirtBlock.png", false));
+	staticBlocks.push_back(StaticBlock(160 * scale + x, y, 96 * scale, 64 * scale, 96 * scale, 64 * scale, "blocks/rampLeft.png", false, false, false));
+	rotatingBlocks.push_back(RotatingBlock(205.67 * scale + x, 34.41 * scale + y, 109.603 * scale, 10 * scale, 1, 1, -26.5));
+	staticBlocks.push_back(StaticBlock(236, 32, 10, 47.1, 10, 10, "blocks/0.png"));
+
+	p.clear();
+	p.push_back(App::Point{ -142, 45 });
+	p.push_back(App::Point{ 206, 45 });
+	movingBlocks.push_back(MovingBlock(p, 70, 30, 10, 10, 10, "blocks/0.png"));
+
+	staticBlocks.push_back(StaticBlock(-152, 32, 10, 48, 10, 10, "blocks/0.png"));
+	staticBlocks.push_back(StaticBlock(-200, 64, 48, 16, 16, 16, "blocks/grassBlock.png"));
+	staticBlocks.push_back(StaticBlock(-200, 16, 48, 48.2, 16, 16, "blocks/dirtBlock.png"));
+
+	//Third gem
+	gems.push_back(Gem(-177.5, 82, 2, "yellow"));
+
+	for (int i = 0; i < 18; i++)
+	{
+		enemies.push_back(Enemy(-142 + i * 20, 30, this, enemies.size()));
+	}
+
+	x = 1250;
+	//Right side hill
+	staticBlocks.push_back(StaticBlock(x, y, 96 * scale, 64 * scale, 96 * scale, 64 * scale, "blocks/rampRight.png", false, false, false));
+	rotatingBlocks.push_back(RotatingBlock(49.17 * scale + x, 34.41 * scale + y, 109.603 * scale, 10 * scale, 1, 1, 26.5));
+	staticBlocks.push_back(StaticBlock(96.09 * scale + x, 47.22 * scale + y, 62.65 * scale, 16 * scale, 16, 16));
+	staticBlocks.push_back(StaticBlock(95.7 * scale + x, 48 * scale + y, 64.8 * scale, 16 * scale, 16 * scale, 16 * scale, "blocks/grassBlock.png", false));
+	staticBlocks.push_back(StaticBlock(95.7 * scale + x, y, 64.8 * scale, 48.2 * scale, 16 * scale, 16 * scale, "blocks/dirtBlock.png", false));
+
+	//Shuffle blocks
+	shuffleBlocks(worldStartX + worldSizeX - 62, 120, worldStartX + worldSizeX - 10, 50, 6, 10);
+	//Sixth gem
+	gems.push_back(Gem(worldStartX + worldSizeX - 44, 382, 5, "orange"));
+
+	//Walls
+	staticBlocks.push_back(StaticBlock(worldStartX + 16, 0, 16, worldSizeY, 16, 16, "blocks/wall.png", true , false, true));
+	staticBlocks.push_back(StaticBlock(worldStartX, 0, 16.2, worldSizeY, 16, 16, "blocks/wallFill.png"));
+	staticBlocks.push_back(StaticBlock(worldStartX + worldSizeX - 32, 0, 16, worldSizeY, 16, 16, "blocks/wallLeft.png", true, false, true));
+	staticBlocks.push_back(StaticBlock(worldStartX + worldSizeX - 16.2, 0, 16.2, worldSizeY, 16, 16, "blocks/wallFill.png"));
 
 	//Ground
-	staticBlocks.push_back(StaticBlock(0, 16, worldSizeX, 16, 16, 16, "blocks/grassBlock.png"));
-	staticBlocks.push_back(StaticBlock(0, 0, worldSizeX, 16.2, 16, 16, "blocks/dirtBlock.png"));
+	staticBlocks.push_back(StaticBlock(worldStartX, 16, worldSizeX, 16, 16, 16, "blocks/grassBlock.png"));
+	staticBlocks.push_back(StaticBlock(worldStartX, 0, worldSizeX, 16.2, 16, 16, "blocks/dirtBlock.png"));
 
 	player->loadSprites();
 	initBackGround();
@@ -91,23 +150,14 @@ void World::init()
 	//Initial position of camera
 	cameraX = player->x + player->colliderWidth / 2;
 	cameraY = player->y + player->colliderHeight / 2;
-
-	for(int i = 0; i < 1; i++)
-	{
-		enemies.push_back(Enemy(300, 30, this, enemies.size()));
-	}
 	
 	for (int i = 0; i < enemies.size(); i++)
 	{
 		enemies[i].loadSprites();
 	}
-	gems.push_back(Gem(100, 15, 2,"yellow"));
-	gems.push_back(Gem(120, 15, 3, "purple"));
-	gems.push_back(Gem(140, 15, 4, "blue"));
-	gems.push_back(Gem(160, 15, 5, "orange"));
 }
 
-//Width 256, height 96
+//Width 256, height 62.65
 void World::hillSteep(float x, float y, float scale)
 {
 	staticBlocks.push_back(StaticBlock(x, y, 96 * scale, 64 * scale, 96 * scale, 64 * scale, "blocks/rampRight.png", false, false, false));
@@ -127,6 +177,21 @@ void World::rampPlatformRight(float x, float y, float scale)
 	rotatingBlocks.push_back(RotatingBlock	(78.04 * scale + x	, 32.73 * scale + y	, 100 * scale		, 10 * scale	, 10 * scale , 10 * scale, 35	, "blocks/0.png"));
 	staticBlocks.push_back(StaticBlock		(116.09 * scale + x	, 55.39 * scale + y	, 40 * scale		, 10 * scale	, 10 * scale , 10 * scale		, "blocks/0.png"));
 	enemies.push_back(Enemy(x + 131 * scale, y + 66 * scale, this, enemies.size()));
+}
+
+void World::shuffleBlocks(float x, float y, float x2, float y2, int noOfBlocks, float speed)
+{
+	float distanceX = (x2 - x) / noOfBlocks;
+	float distanceY = y2;
+
+	for (int i = 0; i < noOfBlocks; i++)
+	{
+		std::vector<App::Point> p;
+		p.push_back(App::Point{ x + (noOfBlocks-i-1)*distanceX, y + i*distanceY });
+		p.push_back(App::Point{ x2, y + i*distanceY });
+		p.push_back(App::Point{ x, y + i*distanceY });
+		movingBlocks.push_back(MovingBlock(p, speed, 30, 10, 10, 10, "blocks/0.png"));
+	}
 }
 
 //Width 156.09, height 65.39
@@ -429,20 +494,6 @@ void World::displayWorldBoundaries()
 
 void World::display()
 {
-	//cout << "FRAME\n";
-	for (int i = 0; i < staticBlocks.size(); i++)
-	{
-		/*staticBlocks[i].x += App::deltaTime * -1 * App::keys[VK_LEFT];
-		staticBlocks[i].x += App::deltaTime * 1 * App::keys[VK_RIGHT];
-		staticBlocks[i].y += App::deltaTime * 1 * App::keys[VK_UP];
-		staticBlocks[i].y += App::deltaTime * -1 * App::keys[VK_DOWN];
-		staticBlocks[i].width += App::deltaTime * -1 * App::keys[VK_OEM_MINUS];
-		staticBlocks[i].width += App::deltaTime * 1 * App::keys[VK_OEM_PLUS];
-		cout << staticBlocks[i].x << "\t\t" << staticBlocks[i].y << "\t\t" << staticBlocks[i].width << "\n";*/
-		staticBlocks[i].display();
-	}
-	//cout << "--------\n";
-
 	for (int i = 0; i < rotatingBlocks.size(); i++)
 	{
 		rotatingBlocks[i].x += App::deltaTime * -1 * App::keys[VK_LEFT];
@@ -451,15 +502,17 @@ void World::display()
 		rotatingBlocks[i].y += App::deltaTime * -1 * App::keys[VK_DOWN];
 		rotatingBlocks[i].width += App::deltaTime * -1 * App::keys[VK_OEM_MINUS];
 		rotatingBlocks[i].width += App::deltaTime * 1 * App::keys[VK_OEM_PLUS];
-		rotatingBlocks[i].calculatePoints();
-		cout << rotatingBlocks[i].x << "\t\t" << rotatingBlocks[i].y << "\t\t" << rotatingBlocks[i].width << "\n"; 
 		rotatingBlocks[i].display();
 	}
-	//cout << "--------\n";
 
 	for (int i = 0; i < movingBlocks.size(); i++)
 	{
 		movingBlocks[i].display();
+	}
+
+	for (int i = 0; i < staticBlocks.size(); i++)
+	{
+		staticBlocks[i].display();
 	}
 
 	for (int i = 0; i < enemies.size(); i++)
