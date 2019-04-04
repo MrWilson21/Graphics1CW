@@ -138,9 +138,6 @@
     <ClCompile Include="Partical.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="FreeType.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Image_Loading\nvImage.h">
@@ -174,9 +171,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="partical.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="FreeType.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\freetype\cache\ftccache.h">
@@ -991,7 +985,6 @@
     <None Include="zlib1.dll">
       <Filter>Resource Files\dllFiles</Filter>
     </None>
-    <None Include="FreeType-6.dll" />
     <None Include="lib\freetype-6.def">
       <Filter>Source Files</Filter>
     </None>
