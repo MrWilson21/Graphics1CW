@@ -42,10 +42,10 @@ void World::init()
 
 	//Starting area
 	player = new Player(740, 100, this);
-	staticBlocks.push_back(StaticBlock(720, 90, 60, 10, 10, 10, "blocks/0.png"));
+	staticBlocks.push_back(StaticBlock(720, 90, 60, 10, 10, 10, "blocks/wood.png"));
 
 	//First gem
-	staticBlocks.push_back(StaticBlock(720, 160, 60, 10, 10, 10, "blocks/0.png"));
+	staticBlocks.push_back(StaticBlock(720, 160, 60, 10, 10, 10, "blocks/stone.png"));
 	gems.push_back(Gem(747.5, 172, 0, "green"));
 
 	//Second gem
@@ -57,27 +57,31 @@ void World::init()
 	p.push_back(App::Point{ 870, 120 });
 	p.push_back(App::Point{ 870, 300 });
 	p.push_back(App::Point{ 870, 120 });
-	movingBlocks.push_back(MovingBlock(p, 50, 30, 10, 10, 10, "blocks/0.png"));
-	staticBlocks.push_back(StaticBlock(810, 300, 60, 10, 10, 10, "blocks/0.png"));
-	staticBlocks.push_back(StaticBlock(900, 300, 60, 10, 10, 10, "blocks/0.png"));
+	movingBlocks.push_back(MovingBlock(p, 50, 30, 6.875, 30, 6.875, "blocks/movingPlatform.png"));
+	staticBlocks.push_back(StaticBlock(810, 300, 60, 10, 10, 10, "blocks/wood.png"));
+	enemies.push_back(Enemy(825, 310, this, enemies.size()));
+	enemies.push_back(Enemy(835, 310, this, enemies.size()));
+	staticBlocks.push_back(StaticBlock(900, 300, 60, 10, 10, 10, "blocks/wood.png"));
+	enemies.push_back(Enemy(915, 310, this, enemies.size()));
+	enemies.push_back(Enemy(930, 310, this, enemies.size()));
 
 	p.clear();
 	p.push_back(App::Point{ 690, 90 });
 	p.push_back(App::Point{ 600, 120 });
 	p.push_back(App::Point{ 600, 300 });
 	p.push_back(App::Point{ 600, 120 });
-	movingBlocks.push_back(MovingBlock(p, 50, 30, 10, 10, 10, "blocks/0.png"));
-	staticBlocks.push_back(StaticBlock(540, 300, 60, 10, 10, 10, "blocks/0.png"));
-	staticBlocks.push_back(StaticBlock(630, 300, 60, 10, 10, 10, "blocks/0.png"));
+	movingBlocks.push_back(MovingBlock(p, 50, 30, 6.875, 30, 6.875, "blocks/movingPlatform.png"));
+	staticBlocks.push_back(StaticBlock(540, 300, 60, 10, 10, 10, "blocks/wood.png"));
+	staticBlocks.push_back(StaticBlock(630, 300, 60, 10, 10, 10, "blocks/wood.png"));
 
-	staticBlocks.push_back(StaticBlock(540, 300, 60, 10, 10, 10, "blocks/0.png"));
-	staticBlocks.push_back(StaticBlock(450, 300, 60, 10, 10, 10, "blocks/0.png"));
-	staticBlocks.push_back(StaticBlock(330, 300, 60, 10, 10, 10, "blocks/0.png"));
-	staticBlocks.push_back(StaticBlock(180, 300, 60, 10, 10, 10, "blocks/0.png"));
+	staticBlocks.push_back(StaticBlock(540, 300, 60, 10, 10, 10, "blocks/wood.png"));
+	staticBlocks.push_back(StaticBlock(450, 300, 60, 10, 10, 10, "blocks/wood.png"));
+	staticBlocks.push_back(StaticBlock(330, 300, 60, 10, 10, 10, "blocks/wood.png"));
+	staticBlocks.push_back(StaticBlock(180, 300, 60, 10, 10, 10, "blocks/wood.png"));
 
 	//Fourth gem
 	gems.push_back(Gem(208.5, 312, 3, "purple"));
-	staticBlocks.push_back(StaticBlock(100, 300, 60, 10, 10, 10, "blocks/0.png"));
+	staticBlocks.push_back(StaticBlock(100, 300, 60, 10, 10, 10, "blocks/wood.png"));
 	enemies.push_back(Enemy(120, 310, this, enemies.size()));
 	enemies.push_back(Enemy(140, 310, this, enemies.size()));
 
@@ -102,16 +106,19 @@ void World::init()
 	staticBlocks.push_back(StaticBlock(95.7 * scale + x, y, 64.8 * scale, 48.2 * scale, 16 * scale, 16 * scale, "blocks/dirtBlock.png", false));
 	staticBlocks.push_back(StaticBlock(160 * scale + x, y, 96 * scale, 64 * scale, 96 * scale, 64 * scale, "blocks/rampLeft.png", false, false, false));
 	rotatingBlocks.push_back(RotatingBlock(205.67 * scale + x, 34.41 * scale + y, 109.603 * scale, 10 * scale, 1, 1, -26.5));
-	staticBlocks.push_back(StaticBlock(236, 32, 10, 47.1, 10, 10, "blocks/0.png"));
+	staticBlocks.push_back(StaticBlock(230, 32, 16, 47.1, 16, 16));
+	staticBlocks.push_back(StaticBlock(230, 32, 16, 32, 16, 16, "blocks/pillarLeft.png", false, false));
+	staticBlocks.push_back(StaticBlock(230, 64, 16, 16, 16, 16, "blocks/pillarTopLeft.png", false, false, false));
 
 	p.clear();
-	p.push_back(App::Point{ -142, 45 });
-	p.push_back(App::Point{ 206, 45 });
-	movingBlocks.push_back(MovingBlock(p, 70, 30, 10, 10, 10, "blocks/0.png"));
+	p.push_back(App::Point{ -136, 45 });
+	p.push_back(App::Point{ 200, 45 });
+	movingBlocks.push_back(MovingBlock(p, 70, 30, 6.875, 30, 6.875, "blocks/movingPlatform.png"));
 
-	staticBlocks.push_back(StaticBlock(-152, 32, 10, 48, 10, 10, "blocks/0.png"));
 	staticBlocks.push_back(StaticBlock(-200, 64, 48, 16, 16, 16, "blocks/grassBlock.png"));
-	staticBlocks.push_back(StaticBlock(-200, 16, 48, 48.2, 16, 16, "blocks/dirtBlock.png"));
+	staticBlocks.push_back(StaticBlock(-200, 16, 48, 48, 16, 16, "blocks/dirtBlock.png"));
+	staticBlocks.push_back(StaticBlock(-152, 32, 16, 32, 16, 16, "blocks/pillarRight.png", true, false));
+	staticBlocks.push_back(StaticBlock(-152, 64, 16, 16, 16, 16, "blocks/pillarTopRight.png", true, false, false));
 
 	//Third gem
 	gems.push_back(Gem(-177.5, 82, 2, "yellow"));
@@ -172,10 +179,10 @@ void World::hillSteep(float x, float y, float scale)
 //Width 156.09, height 65.39
 void World::rampPlatformRight(float x, float y, float scale)
 {
-	staticBlocks.push_back(StaticBlock		(x					, y					, 40 * scale		, 10 * scale	, 10 * scale , 10 * scale		, "blocks/0.png"));
+	staticBlocks.push_back(StaticBlock		(x					, y					, 40 * scale		, 10 * scale	, 10 * scale , 10 * scale		, "blocks/stone.png"));
 	enemies.push_back(Enemy(x + 15 * scale, y + 10 * scale, this, enemies.size()));
-	rotatingBlocks.push_back(RotatingBlock	(78.04 * scale + x	, 32.73 * scale + y	, 100 * scale		, 10 * scale	, 10 * scale , 10 * scale, 35	, "blocks/0.png"));
-	staticBlocks.push_back(StaticBlock		(116.09 * scale + x	, 55.39 * scale + y	, 40 * scale		, 10 * scale	, 10 * scale , 10 * scale		, "blocks/0.png"));
+	rotatingBlocks.push_back(RotatingBlock	(78.04 * scale + x	, 32.73 * scale + y	, 100 * scale		, 10 * scale	, 10 * scale , 10 * scale, 35	, "blocks/stone.png"));
+	staticBlocks.push_back(StaticBlock		(116.09 * scale + x	, 55.39 * scale + y	, 40 * scale		, 10 * scale	, 10 * scale , 10 * scale		, "blocks/stone.png"));
 	enemies.push_back(Enemy(x + 131 * scale, y + 66 * scale, this, enemies.size()));
 }
 
@@ -197,10 +204,10 @@ void World::shuffleBlocks(float x, float y, float x2, float y2, int noOfBlocks, 
 //Width 156.09, height 65.39
 void World::rampPlatformLeft(float x, float y, float scale)
 {
-	staticBlocks.push_back(StaticBlock(x, 55.39 * scale + y, 40 * scale, 10 * scale, 10 * scale, 10 * scale, "blocks/0.png"));
+	staticBlocks.push_back(StaticBlock(x, 55.39 * scale + y, 40 * scale, 10 * scale, 10 * scale, 10 * scale, "blocks/stone.png"));
 	enemies.push_back(Enemy(x + 15 * scale, y + 66 * scale, this, enemies.size()));
-	rotatingBlocks.push_back(RotatingBlock(78.04 * scale + x, 32.73 * scale + y, 100 * scale, 10 * scale, 10 * scale, 10 * scale, -35, "blocks/0.png"));
-	staticBlocks.push_back(StaticBlock(116.09 * scale + x, y, 40 * scale, 10 * scale, 10 * scale, 10 * scale, "blocks/0.png"));
+	rotatingBlocks.push_back(RotatingBlock(78.04 * scale + x, 32.73 * scale + y, 100 * scale, 10 * scale, 10 * scale, 10 * scale, -35, "blocks/stone.png"));
+	staticBlocks.push_back(StaticBlock(116.09 * scale + x, y, 40 * scale, 10 * scale, 10 * scale, 10 * scale, "blocks/stone.png"));
 	enemies.push_back(Enemy(x + 131 * scale, y + 10 * scale, this, enemies.size()));
 }
 

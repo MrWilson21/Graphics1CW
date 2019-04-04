@@ -1,5 +1,3 @@
 Partical effects
 Fonts
 Level design
-multiple worlds
-enemy idle glitch

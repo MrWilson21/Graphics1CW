@@ -10,21 +10,21 @@ Enemy::Enemy(float startX, float startY, World* p, int ID)
 	x = startX;
 	y = startY;
 
-	maxVelocityX = 40.0;
+	maxVelocityX = 35.0;
 	maxVeloctyY = 200.0;
-	maxRunningVelocityX = 80.0;
+	maxRunningVelocityX = 65.0;
 	runningAcceleration = 700.0;
 	walkingAcceleration = 500.0;
 	deccelerationFactor = 5.0;
 	gravity = 350;
 	airDeccelerationFactor = 0.0;
 
-	jumpUpHeight = 190.0;
-	jumpUpXVelocity = 120.0;
-	jumpDownHeight = 75.0;
-	jumpDownXVelocity = 120.0;
-	diveHeight = 65.0;
-	diveXVelocity = 320;
+	jumpUpHeight = 225.0;
+	jumpUpXVelocity = 125.0;
+	jumpDownHeight = 85.0;
+	jumpDownXVelocity = 140.0;
+	diveHeight = 70.0;
+	diveXVelocity = 390;
 
 	xReflectFactor = 0;
 	facingLeft = false;
@@ -97,23 +97,23 @@ Enemy::Enemy(float startX, float startY, World* p, int ID)
 //Height and width change size of box
 void Enemy::calculateColliderBox()
 {
-	chaseColliderWidth = 150;
-	chaseColliderHeight = 100;
-	diveColliderWidth = 45;
-	diveColliderHeight = 12;
-	jumpUpColliderWidth = 45;
-	jumpUpColliderHeight = 20;
-	jumpDownColliderWidth = 45;
-	jumpDownColliderHeight = 35;
+	chaseColliderWidth = 140;
+	chaseColliderHeight = 130;
+	diveColliderWidth = 70;
+	diveColliderHeight = 10;
+	jumpUpColliderWidth = 65;
+	jumpUpColliderHeight = 35;
+	jumpDownColliderWidth = 65;
+	jumpDownColliderHeight = 30;
 
-	chaseXOffset = -15;
-	chaseYOffset = -5;
-	diveXOffset = 30;
+	chaseXOffset = -35;
+	chaseYOffset = 0;
+	diveXOffset = 23;
 	diveYOffset = 0;
 	jumpUpXOffset = 20;
-	jumpUpYOffset = 25;
+	jumpUpYOffset = 30;
 	jumpDownXOffset = 20;
-	jumpDownYOffset = -20;
+	jumpDownYOffset = -35;
 
 	colliderX = 0;
 	colliderY = 0;

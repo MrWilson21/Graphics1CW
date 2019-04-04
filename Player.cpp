@@ -57,23 +57,23 @@ Player::Player(float startX, float startY, World* p)
 	dyingWidth = 27 * scaleFactor;
 	dyingHeight = 68 * scaleFactor;
 
-	fistScale = 0.15;
+	fistScale = 0.2;
 	fistWidth = 936 * fistScale * scaleFactor;
 	fistHeight = 672 * fistScale * scaleFactor;
 	fistColliderWidth = 10;
 	fistColliderHeight = fistHeight;
 	fistVelocityX = 250.0;
 	fistActive = false;
-	fistDistanceToMove = 50.0;
+	fistDistanceToMove = 65.0;
 	fistDistanceBeforeFadingOut = 30.0;
-	fistXOffset = 5;
+	fistXOffset = 8;
 	fistColliderActive = false;
 	gemsNeededToAttack = 6;
 	timeToWaitForNextAttackingFrame = 0.05;
 	fistFadingIn = false;
 	fistFadingOut = false;
 	fistFadeInSpeed = 3.5;
-	fistFadeOutSpeed = 1.0;
+	fistFadeOutSpeed = 1.2;
 
 	timeSinceAttack = 0.0;
 	delayBetweenAttacks = 0.1;
@@ -183,7 +183,7 @@ void Player::incrementSpriteCounter()
 			if (currentSprite == maxSprites)
 			{
 				timeSinceAttack = 0.0;
-				changeToIdleState();
+				changeToWalkingState();
 			}
 		}
 		timeSinceFrameChange += App::deltaTime;
@@ -384,7 +384,7 @@ void Player::groundMovementUpdate()
 {
 	groundMove();
 
-	if (App::keys[0x57] && !(isAttacking || isDying))
+	if (App::keys[0x57] && !(isAttacking || isDying || timeSinceAttack < timeUntilChangeToJump))
 	{
 		velocityY = jumpSpeed;
 		changeToJumpingState();
