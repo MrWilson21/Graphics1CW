@@ -30,6 +30,8 @@ Button quitToDesktopButton = Button();
 GLuint loadingTexture;
 GLuint menuTexture;
 
+font_data gameFont;
+
 //OPENGL FUNCTION PROTOTYPES
 void display();				//called in winmain to draw everything to the screen
 void reshape(int width, int height);				//called when the window is resized
@@ -76,6 +78,8 @@ void display()
 	glVertex2f(0, 0);
 	glEnd();
 	glColor4f(1.0, 1.0, 1.0, 1.0);
+
+	print(gameFont, screenWidth / 2.0f, screenHeight / 2.0f, "fifty two - %7.2f", 100);
 	
 	glFlush();
 }
@@ -118,6 +122,8 @@ void init()
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	loadingTexture = App::loadPNG("menu/loading.png");
 	menuTexture = App::loadPNG("menu/title.png");
+
+	gameFont.init("gameFonts.TTF", 22);
 	
 	playButton.initialise(0.5, 0.5, 300, 87, 0.2, "", &pressPlay);
 	resumeButton.initialise(0.5, 0.65, 300, 87, 0.2, "", &resume);

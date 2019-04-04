@@ -12,9 +12,11 @@
 #include <chrono>
 #include <stdlib.h>
 #include <algorithm>
+#include "freetype2.h"
 
 using namespace std;
 using namespace std::chrono;
+using namespace freetype;
 
 class App
 {

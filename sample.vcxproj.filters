@@ -138,6 +138,9 @@
     <ClCompile Include="Partical.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="FreeType.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Image_Loading\nvImage.h">
@@ -390,6 +393,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\ft2build.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="freetype2.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -991,8 +997,12 @@
     <None Include="lib\libfreetype-bcc.def">
       <Filter>Source Files</Filter>
     </None>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="TODO.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="gameFonts.ttf" />
   </ItemGroup>
 </Project>
