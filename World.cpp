@@ -23,6 +23,8 @@ void World::init()
 	worldSizeX = 1673.0;
 	worldSizeY = 1000.0;
 
+	score = 0;
+
 	leftEdge = worldStartX + 10;
 	rightEdge = worldSizeX - 10;
 	topEdge = worldSizeY - 10;
@@ -211,9 +213,10 @@ void World::rampPlatformLeft(float x, float y, float scale)
 	enemies.push_back(Enemy(x + 131 * scale, y + 10 * scale, this, enemies.size()));
 }
 
-void World::signalGameEnd()
+void World::signalGameEnd(bool won)
 {
 	gameEnding = true;
+	this->won = won;
 }
 
 void World::createPartical(float x1, float y1, float width, float height, float scale, string sprite)
@@ -442,7 +445,7 @@ void World::update()
 {
 	if (enemies.size() == 0)
 	{
-		signalGameEnd();
+		signalGameEnd(true);
 	}
 
 	for (int i=0; i < movingBlocks.size(); i++)

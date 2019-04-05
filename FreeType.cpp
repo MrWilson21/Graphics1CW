@@ -128,7 +128,7 @@ void make_dlist ( FT_Face face, char ch, GLuint list_base, GLuint * tex_base ) {
 
 	//increment the raster position as if we were a bitmap font.
 	//(only needed if you want to calculate text length)
-	//glBitmap(0,0,0,0,face->glyph->advance.x >> 6,0,NULL);
+	glBitmap(0,0,0,0,face->glyph->advance.x >> 6,0,NULL);
 
 	//Finnish the display list
 	glEndList();
@@ -212,7 +212,7 @@ inline void pop_projection_matrix() {
 
 ///Much like Nehe's glPrint function, but modified to work
 ///with freetype fonts.
-void print(const font_data &ft_font, float x, float y, const char *fmt, ...)  {
+float print(const font_data &ft_font, float x, float y, const char *fmt, ...)  {
 	
 	// We want a coordinate system where things coresponding to window pixels.
 	pushScreenCoordinateMatrix();					
@@ -276,6 +276,7 @@ void print(const font_data &ft_font, float x, float y, const char *fmt, ...)  {
 	//down by h. This is because when each character is
 	//draw it modifies the current matrix so that the next character
 	//will be drawn immediatly after it.  
+	float totalLen = 0;
 	for(int i=0;i<static_cast<int>(lines.size());i++) {
 		
 
@@ -288,11 +289,11 @@ void print(const font_data &ft_font, float x, float y, const char *fmt, ...)  {
 	//  know the length of the text that you are creating.
 	//  If you decide to use it make sure to also uncomment the glBitmap command
 	//  in make_dlist().
-	//	glRasterPos2f(0,0);
+		glRasterPos2f(0,0);
 		glCallLists(lines[i].length(), GL_UNSIGNED_BYTE, lines[i].c_str());
-	//	float rpos[4];
-	//	glGetFloatv(GL_CURRENT_RASTER_POSITION ,rpos);
-	//	float len=x-rpos[0];
+		float rpos[4];
+		glGetFloatv(GL_CURRENT_RASTER_POSITION ,rpos);
+		totalLen+=x-rpos[0];
 
 		glPopMatrix();
 
@@ -304,6 +305,8 @@ void print(const font_data &ft_font, float x, float y, const char *fmt, ...)  {
 	glPopAttrib();		
 
 	pop_projection_matrix();
+
+	return totalLen;
 }
 
 }

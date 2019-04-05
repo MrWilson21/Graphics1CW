@@ -12,6 +12,7 @@
 #include <chrono>
 #include <stdlib.h>
 #include <algorithm>
+#include "GL/glew.h"
 #include "freetype2.h"
 
 using namespace std;
@@ -58,6 +59,17 @@ class App
 		static bool isFadingIn;
 		static bool isFadingOut;
 		static float fadeSpeed;
+
+		static font_data bigGameFont;
+		static font_data gameFont;
+		static float timeSinceResize;
+		static int bigFontSize;
+		static int fontSize;
+
+		static float screenWidth;
+		static float screenHeight;
+		static int screenWidthPixels;
+		static int screenHeightPixels;
 
 		typedef struct Point {
 			float x;

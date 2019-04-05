@@ -29,8 +29,9 @@ Button quitToDesktopButton = Button();
 
 GLuint loadingTexture;
 GLuint menuTexture;
+GLuint winTexture;
+GLuint loseTexture;
 
-font_data gameFont;
 
 //OPENGL FUNCTION PROTOTYPES
 void display();				//called in winmain to draw everything to the screen
@@ -78,8 +79,6 @@ void display()
 	glVertex2f(0, 0);
 	glEnd();
 	glColor4f(1.0, 1.0, 1.0, 1.0);
-
-	print(gameFont, screenWidth / 2.0f, screenHeight / 2.0f, "fifty two - %7.2f", 100);
 	
 	glFlush();
 }
@@ -105,6 +104,11 @@ void reshape(int width, int height)		// Resize the OpenGL window
 	}
 
 	aspectRatio = screenWidth / screenHeight;
+
+
+	App::gameFont.init("gameFont.TTF", screenWidthPixels * App::fontSize / screenWidth);
+	App::bigGameFont.init("gameFont.TTF", screenWidthPixels * App::bigFontSize / screenWidth);
+	App::timeSinceResize = 0.0;
 	
 	glViewport(0,0,width, height);						// Reset the current viewport
 
@@ -115,6 +119,11 @@ void reshape(int width, int height)		// Resize the OpenGL window
 
 	glMatrixMode(GL_MODELVIEW);							// Select the modelview matrix stack
 	glLoadIdentity();									// Reset the top of the modelview matrix to an identity matrix
+
+	App::screenWidth = screenWidth;
+	App::screenHeight = screenHeight;
+	App::screenWidthPixels = width;
+	App::screenHeightPixels = height;
 }
 void init()
 {
@@ -122,13 +131,16 @@ void init()
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	loadingTexture = App::loadPNG("menu/loading.png");
 	menuTexture = App::loadPNG("menu/title.png");
+	winTexture = App::loadPNG("menu/win.png");
+	loseTexture = App::loadPNG("menu/lose.png");
 
-	gameFont.init("gameFonts.TTF", 22);
+	App::gameFont.init("gameFont.TTF", screenWidthPixels * App::fontSize / screenWidth);
+	App::bigGameFont.init("gameFont.TTF", screenWidthPixels * App::bigFontSize / screenWidth);
 	
-	playButton.initialise(0.5, 0.5, 300, 87, 0.2, "", &pressPlay);
-	resumeButton.initialise(0.5, 0.65, 300, 87, 0.2, "", &resume);
-	quitToMenuButton.initialise(0.5, 0.5, 300, 87, 0.2, "", &quitToMenu);
-	quitToDesktopButton.initialise(0.5, 0.35, 300, 87, 0.2, "", &quitToDesktop);
+	playButton.initialise(0.5, 0.5, 300, 87, 0.2, "PLAY", &pressPlay);
+	resumeButton.initialise(0.5, 0.65, 300, 87, 0.2, "RESUME", &resume);
+	quitToMenuButton.initialise(0.5, 0.5, 300, 87, 0.2, "QUIT TO MENU", &quitToMenu);
+	quitToDesktopButton.initialise(0.5, 0.35, 300, 87, 0.2, "QUIT TO DESKTOP", &quitToDesktop);
 	
 	App::changeToMenuScreen();
 	
@@ -145,6 +157,7 @@ void initWorld()
 
 void update()
 {
+	App::timeSinceResize += App::deltaTime;
 	//Check play button if menu is showing and if not already fading out
 	//If faded out then change to loading screen
 	if (App::isOnMenu)
@@ -286,7 +299,41 @@ void displayLoading()
 }
 
 void displayGameOver()
-{
+{	
+	float s = 0.2;
+	float w = 786 * s;
+	float h = 134 * s;
+	GLuint t = loseTexture;
+	if (world.won)
+	{
+		t = winTexture;
+		w = 737 * s;
+		h = 100 * s;
+	}
+
+	glPushMatrix();
+	glEnable(GL_TEXTURE_2D);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+	glBindTexture(GL_TEXTURE_2D, t);
+	glBegin(GL_POLYGON);
+	glTexCoord2f(0, 1); glVertex2f(screenWidth / 2 - w / 2, screenHeight - h*1 - 5);
+	glTexCoord2f(1, 1); glVertex2f(screenWidth / 2 + w / 2, screenHeight - h*1 - 5);
+	glTexCoord2f(1, 0); glVertex2f(screenWidth / 2 + w / 2, screenHeight - h*2 - 5);
+	glTexCoord2f(0, 0); glVertex2f(screenWidth / 2 - w / 2, screenHeight - h*2 - 5);
+	glEnd();
+	glDisable(GL_TEXTURE_2D);
+	glPopMatrix();
+
+	glPushMatrix();
+	int charWidth = App::screenWidthPixels * App::fontSize / screenWidth;
+	int noOfChars = 18;
+	float paddingX = (-noOfChars * charWidth) / 2;
+	cout << paddingX << "\n";
+
+	glTranslatef((App::screenWidthPixels / App::screenWidth) * (screenWidth / 2) + paddingX, (App::screenHeightPixels / App::screenHeight) * (screenHeight * 0.63), 0.0);
+	print(App::bigGameFont, 0, 0, "SCORE: %05d", world.score);
+	glPopMatrix();
+	
 	quitToMenuButton.display(screenWidth, screenHeight);
 	quitToDesktopButton.display(screenWidth, screenHeight);
 }
@@ -315,6 +362,16 @@ void displayWorld()
 	//Display player hearts
 	int pHealth = world.player->health;
 	int heartCount = 0;
+
+	glPushMatrix();
+	int charWidth = App::screenWidthPixels * App::fontSize / screenWidth;
+	int noOfChars = 18;
+	float paddingX = (-noOfChars * charWidth) / 2;
+	cout << paddingX << "\n";
+
+	glTranslatef((App::screenWidthPixels / App::screenWidth) * (screenWidth / 2) + paddingX, (App::screenHeightPixels / App::screenHeight) * (screenHeight * 0.93), 0.0);
+	print(App::bigGameFont, 0, 0, "SCORE: %05d", world.score);
+	glPopMatrix();
 
 	while (pHealth > 0)
 	{

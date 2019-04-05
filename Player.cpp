@@ -38,7 +38,7 @@ Player::Player(float startX, float startY, World* p)
 	timeToWaitForNextDyingFrame = 0.4;
 
 	timeSinceNotTouchingGround = 0.0;
-	timeUntilChangeToJump = 0.1;
+	timeUntilChangeToJump = 0.2;
 	jumpLanding = false;
 
 	gemsCollected = 0;
@@ -198,7 +198,7 @@ void Player::incrementSpriteCounter()
 			}
 			else
 			{
-				parent->signalGameEnd();
+				parent->signalGameEnd(false);
 			}
 			timeSinceFrameChange = 0.0;
 		}
@@ -307,6 +307,11 @@ void Player::updateFist()
 			fistTransparency = 0.0;
 		}
 	}
+}
+
+void Player::addScore(int score)
+{
+	parent->score += 250;
 }
 
 void Player::update()

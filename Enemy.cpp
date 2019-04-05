@@ -419,6 +419,14 @@ void Enemy::update()
 			timeSinceLandingAttack += App::deltaTime;
 			if (timeSinceLandingAttack > delayAfterLandingAttack)
 			{
+				if (parent->player->x > x)
+				{
+					turnRight();
+				}
+				else
+				{
+					turnLeft();
+				}
 				changeToWalkingState();
 			}
 		}
@@ -1091,6 +1099,7 @@ void Enemy::die(float angle, bool facingLeft)
 	changeToDieState();
 	dieAngle = angle;
 	this->facingLeft = facingLeft;
+	parent->score += 100;
 }
 
 bool Enemy::operator==(const Enemy & e)

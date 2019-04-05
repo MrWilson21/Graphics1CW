@@ -20,7 +20,7 @@ public:
 	void displayBackground(float screenWidth, float screenHeight);
 	void displayPlayerCameraBox(float screenWidth, float screenHeight);
 	void displayWorldBoundaries();
-	void signalGameEnd();
+	void signalGameEnd(bool won);
 	void createPartical(float x1, float y1, float width, float height, float scale, string sprite);
 
 	Player* player;
@@ -41,7 +41,10 @@ public:
 	float topEdge;
 	float bottomEdge;
 
+	int score;
+
 	bool gameEnded;
+	bool won;
 
 private:
 	void initBackGround();

@@ -31,79 +31,6 @@
     <ClInclude Include="freetype2.h" />
     <ClInclude Include="gem.h" />
     <ClInclude Include="Image_Loading\nvImage.h" />
-    <ClInclude Include="include\freetype\cache\ftccache.h" />
-    <ClInclude Include="include\freetype\cache\ftccmap.h" />
-    <ClInclude Include="include\freetype\cache\ftcglyph.h" />
-    <ClInclude Include="include\freetype\cache\ftcimage.h" />
-    <ClInclude Include="include\freetype\cache\ftcmanag.h" />
-    <ClInclude Include="include\freetype\cache\ftcsbits.h" />
-    <ClInclude Include="include\freetype\cache\ftlru.h" />
-    <ClInclude Include="include\freetype\config\ftconfig.h" />
-    <ClInclude Include="include\freetype\config\ftheader.h" />
-    <ClInclude Include="include\freetype\config\ftmodule.h" />
-    <ClInclude Include="include\freetype\config\ftoption.h" />
-    <ClInclude Include="include\freetype\config\ftstdlib.h" />
-    <ClInclude Include="include\freetype\freetype.h" />
-    <ClInclude Include="include\freetype\ftbbox.h" />
-    <ClInclude Include="include\freetype\ftbdf.h" />
-    <ClInclude Include="include\freetype\ftcache.h" />
-    <ClInclude Include="include\freetype\ftchapters.h" />
-    <ClInclude Include="include\freetype\fterrdef.h" />
-    <ClInclude Include="include\freetype\fterrors.h" />
-    <ClInclude Include="include\freetype\ftglyph.h" />
-    <ClInclude Include="include\freetype\ftgzip.h" />
-    <ClInclude Include="include\freetype\ftimage.h" />
-    <ClInclude Include="include\freetype\ftincrem.h" />
-    <ClInclude Include="include\freetype\ftlist.h" />
-    <ClInclude Include="include\freetype\ftmac.h" />
-    <ClInclude Include="include\freetype\ftmm.h" />
-    <ClInclude Include="include\freetype\ftmoderr.h" />
-    <ClInclude Include="include\freetype\ftmodule.h" />
-    <ClInclude Include="include\freetype\ftoutln.h" />
-    <ClInclude Include="include\freetype\ftpfr.h" />
-    <ClInclude Include="include\freetype\ftrender.h" />
-    <ClInclude Include="include\freetype\ftsizes.h" />
-    <ClInclude Include="include\freetype\ftsnames.h" />
-    <ClInclude Include="include\freetype\ftstroker.h" />
-    <ClInclude Include="include\freetype\ftsynth.h" />
-    <ClInclude Include="include\freetype\ftsysio.h" />
-    <ClInclude Include="include\freetype\ftsysmem.h" />
-    <ClInclude Include="include\freetype\ftsystem.h" />
-    <ClInclude Include="include\freetype\fttrigon.h" />
-    <ClInclude Include="include\freetype\fttypes.h" />
-    <ClInclude Include="include\freetype\ftwinfnt.h" />
-    <ClInclude Include="include\freetype\ftxf86.h" />
-    <ClInclude Include="include\freetype\internal\autohint.h" />
-    <ClInclude Include="include\freetype\internal\bdftypes.h" />
-    <ClInclude Include="include\freetype\internal\cfftypes.h" />
-    <ClInclude Include="include\freetype\internal\fnttypes.h" />
-    <ClInclude Include="include\freetype\internal\ftcalc.h" />
-    <ClInclude Include="include\freetype\internal\ftcore.h" />
-    <ClInclude Include="include\freetype\internal\ftdebug.h" />
-    <ClInclude Include="include\freetype\internal\ftdriver.h" />
-    <ClInclude Include="include\freetype\internal\ftexcept.h" />
-    <ClInclude Include="include\freetype\internal\ftgloadr.h" />
-    <ClInclude Include="include\freetype\internal\fthash.h" />
-    <ClInclude Include="include\freetype\internal\ftmemory.h" />
-    <ClInclude Include="include\freetype\internal\ftobject.h" />
-    <ClInclude Include="include\freetype\internal\ftobjs.h" />
-    <ClInclude Include="include\freetype\internal\ftstream.h" />
-    <ClInclude Include="include\freetype\internal\fttrace.h" />
-    <ClInclude Include="include\freetype\internal\internal.h" />
-    <ClInclude Include="include\freetype\internal\pcftypes.h" />
-    <ClInclude Include="include\freetype\internal\pfr.h" />
-    <ClInclude Include="include\freetype\internal\psaux.h" />
-    <ClInclude Include="include\freetype\internal\pshints.h" />
-    <ClInclude Include="include\freetype\internal\psnames.h" />
-    <ClInclude Include="include\freetype\internal\sfnt.h" />
-    <ClInclude Include="include\freetype\internal\t1types.h" />
-    <ClInclude Include="include\freetype\internal\t42types.h" />
-    <ClInclude Include="include\freetype\internal\tttypes.h" />
-    <ClInclude Include="include\freetype\t1tables.h" />
-    <ClInclude Include="include\freetype\ttnameid.h" />
-    <ClInclude Include="include\freetype\tttables.h" />
-    <ClInclude Include="include\freetype\tttags.h" />
-    <ClInclude Include="include\ft2build.h" />
     <ClInclude Include="movingblock.h" />
     <ClInclude Include="partical.h" />
     <ClInclude Include="player.h" />
@@ -218,7 +145,9 @@
     <Image Include="menu\buttons\0.png" />
     <Image Include="menu\buttons\1.png" />
     <Image Include="menu\loading.png" />
+    <Image Include="menu\lose.png" />
     <Image Include="menu\title.png" />
+    <Image Include="menu\win.png" />
     <Image Include="particals\gemCollect\0.png" />
     <Image Include="particals\gemCollect\1.png" />
     <Image Include="particals\gemCollect\2.png" />
@@ -319,7 +248,7 @@
     <Text Include="TODO.txt" />
   </ItemGroup>
   <ItemGroup>
-    <Font Include="gameFonts.ttf" />
+    <Font Include="gameFont.ttf" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{797EB91C-0B55-4A4C-A841-E660F49877DD}</ProjectGuid>
@@ -409,17 +338,17 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
     <Import Project="packages\freetype.redist.2.8.0.1\build\native\freetype.redist.targets" Condition="Exists('packages\freetype.redist.2.8.0.1\build\native\freetype.redist.targets')" />
-    <Import Project="packages\freetype.2.8.0.1\build\native\freetype.targets" Condition="Exists('packages\freetype.2.8.0.1\build\native\freetype.targets')" />
     <Import Project="packages\glew.redist.1.9.0.1\build\native\glew.redist.targets" Condition="Exists('packages\glew.redist.1.9.0.1\build\native\glew.redist.targets')" />
     <Import Project="packages\glew.1.9.0.1\build\native\glew.targets" Condition="Exists('packages\glew.1.9.0.1\build\native\glew.targets')" />
+    <Import Project="packages\freetype.2.8.0.1\build\native\freetype.targets" Condition="Exists('packages\freetype.2.8.0.1\build\native\freetype.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('packages\freetype.redist.2.8.0.1\build\native\freetype.redist.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\freetype.redist.2.8.0.1\build\native\freetype.redist.targets'))" />
-    <Error Condition="!Exists('packages\freetype.2.8.0.1\build\native\freetype.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\freetype.2.8.0.1\build\native\freetype.targets'))" />
     <Error Condition="!Exists('packages\glew.redist.1.9.0.1\build\native\glew.redist.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\glew.redist.1.9.0.1\build\native\glew.redist.targets'))" />
     <Error Condition="!Exists('packages\glew.1.9.0.1\build\native\glew.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\glew.1.9.0.1\build\native\glew.targets'))" />
+    <Error Condition="!Exists('packages\freetype.2.8.0.1\build\native\freetype.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\freetype.2.8.0.1\build\native\freetype.targets'))" />
   </Target>
 </Project>

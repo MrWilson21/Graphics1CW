@@ -50,6 +50,7 @@ void Gem::collideWithPlayer(Player* p)
 		collected = true;
 		p->createPartical(x + width/2, y + height/2, 166, 165, 0.2, "gemCollect");
 		p->gemsCollected += 1;
+		p->addScore(250);
 	}
 }
 

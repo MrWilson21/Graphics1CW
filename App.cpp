@@ -23,6 +23,18 @@ bool App::isGameOverScreen = false;
 float App::fadeTransparency = 1.0;
 float App::fadeSpeed = 3.0;
 
+float App::timeSinceResize = 0.0;
+int App::fontSize = 4.3;
+int App::bigFontSize = 10;
+
+font_data App::gameFont;
+font_data App::bigGameFont;
+
+float App::screenWidth;
+float App::screenHeight;
+int App::screenWidthPixels;
+int App::screenHeightPixels;
+
 GLuint App::loadPNG(char* name, bool repeatX, bool repeatY)
 {
 	// Texture loading object

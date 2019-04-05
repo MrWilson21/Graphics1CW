@@ -10,9 +10,9 @@
 
 //OpenGL Headers 
 #include <windows.h>		//(the GL headers need it)
-//#include <GL/gl.h>
-//#include <GL/glu.h>
 #include "GL/glew.h"
+#include <GL/gl.h>
+#include <GL/glu.h>
 
 //Some STL headers
 #include <vector>
@@ -22,7 +22,10 @@
 //chances that someone else using our code will corretly
 //catch any exceptions that we throw.
 #include <stdexcept>
+#include <stdlib.h>
+#include <iostream>
 
+using namespace std;
 
 //MSVC will spit out all sorts of useless warnings if
 //you create vectors of strings, this pragma gets rid of them.
@@ -58,7 +61,7 @@ struct font_data {
 //The flagship function of the library - this thing will print
 //out text at window coordinates x,y, using the font ft_font.
 //The current modelview matrix will also be applied to the text. 
-void print(const font_data &ft_font, float x, float y, const char *fmt, ...) ;
+float print(const font_data &ft_font, float x, float y, const char *fmt, ...) ;
 
 }
 

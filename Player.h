@@ -25,6 +25,7 @@ class Player
 		void loadSprites();
 
 		void createPartical(float x1, float y1, float width, float height, float scale, string sprite);
+		void addScore(int score);
 
 		int gemsCollected;
 		int health;

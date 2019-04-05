@@ -63,5 +63,18 @@ void Button::display(float screenWidth, float screenHeight)
 	glDisable(GL_TEXTURE_2D);
 	App::displayBoundingBox(0.0, 0.0, width, height);
 	glPopMatrix();
+
+	glPushMatrix();
+	int charWidth = App::screenWidthPixels * App::fontSize / screenWidth - 3;
+	int noOfChars = text.length();
+	float paddingX = ((App::screenWidthPixels / App::screenWidth) * width - noOfChars * charWidth) / 2;
+	if (paddingX < 0)
+	{
+		paddingX = 0;
+	}
+	float paddingY = ((App::screenHeightPixels / App::screenHeight) * height - charWidth) / 2;
+	glTranslatef((App::screenWidthPixels / App::screenWidth) * (screenWidth * x - width / 2.0) + paddingX, (App::screenHeightPixels / App::screenHeight) * (screenHeight * y - height / 2.0) + paddingY, 0.0);
+	print(App::gameFont, 0, 0, &text[0u]);
+	glPopMatrix();
 }
 
