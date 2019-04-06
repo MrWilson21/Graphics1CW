@@ -38,7 +38,7 @@ Player::Player(float startX, float startY, World* p)
 	timeToWaitForNextDyingFrame = 0.4;
 
 	timeSinceNotTouchingGround = 0.0;
-	timeUntilChangeToJump = 0.2;
+	timeUntilChangeToJump = 0.4;
 	jumpLanding = false;
 
 	gemsCollected = 0;

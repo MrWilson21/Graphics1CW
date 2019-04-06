@@ -328,7 +328,6 @@ void displayGameOver()
 	int charWidth = App::screenWidthPixels * App::fontSize / screenWidth;
 	int noOfChars = 18;
 	float paddingX = (-noOfChars * charWidth) / 2;
-	cout << paddingX << "\n";
 
 	glTranslatef((App::screenWidthPixels / App::screenWidth) * (screenWidth / 2) + paddingX, (App::screenHeightPixels / App::screenHeight) * (screenHeight * 0.63), 0.0);
 	print(App::bigGameFont, 0, 0, "SCORE: %05d", world.score);
@@ -367,7 +366,6 @@ void displayWorld()
 	int charWidth = App::screenWidthPixels * App::fontSize / screenWidth;
 	int noOfChars = 18;
 	float paddingX = (-noOfChars * charWidth) / 2;
-	cout << paddingX << "\n";
 
 	glTranslatef((App::screenWidthPixels / App::screenWidth) * (screenWidth / 2) + paddingX, (App::screenHeightPixels / App::screenHeight) * (screenHeight * 0.93), 0.0);
 	print(App::bigGameFont, 0, 0, "SCORE: %05d", world.score);
