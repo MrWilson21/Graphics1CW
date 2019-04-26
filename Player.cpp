@@ -795,13 +795,9 @@ void Player::calculateRotatingCollider(App::Point b0, App::Point b1, App::Point 
 		timeSinceNotTouchingGround = 0.0;
 	}
 
-	//Get direction of player movement by reversing player velocity
-	App::Point velDirection = currentVelocity / -currentVelocity.abs();
 	//Get mtv direction vector
 	App::Point mtvDirection = mtVector / mtVector.abs();
 
-	//Move in opposite direction of current velocity with magnitude of mtv / cos(angle)
-	float moveAngle = velDirection.dot(mtvDirection) / (velDirection.abs() * mtvDirection.abs());
 	float fractionOfVelocity = mtVector.abs() / currentVelocity.abs();
 
 	//Get vector to move player by
