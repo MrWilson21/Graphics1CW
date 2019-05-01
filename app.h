@@ -3,6 +3,7 @@
 #include <windows.h>		// Header file for Windows
 #include "Image_Loading/nvImage.h"
 #include <iostream>
+#include <fstream>
 #include <gl\gl.h>			// Header file for the OpenGL32 Library
 #include <gl\glu.h>			// Header file for the GLu32 Library
 #include <time.h>
@@ -36,7 +37,7 @@ class App
 		static void changeToWorldScreen();
 		static void changeToLoadingScreen();
 		static void resetScreenState();
-		static void changeToGameOverScreen();
+		static void changeToGameOverScreen(int score);
 		static void fadeIn();
 		static void fadeOut();
 
@@ -70,6 +71,8 @@ class App
 		static float screenHeight;
 		static int screenWidthPixels;
 		static int screenHeightPixels;
+
+		static int highscore;
 
 		typedef struct Point {
 			float x;

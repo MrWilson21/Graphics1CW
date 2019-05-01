@@ -138,9 +138,9 @@ void init()
 	App::bigGameFont.init("gameFont.TTF", screenWidthPixels * App::bigFontSize / screenWidth);
 	
 	playButton.initialise(0.5, 0.5, 300, 87, 0.2, "PLAY", &pressPlay);
-	resumeButton.initialise(0.5, 0.65, 300, 87, 0.2, "RESUME", &resume);
-	quitToMenuButton.initialise(0.5, 0.5, 300, 87, 0.2, "QUIT TO MENU", &quitToMenu);
-	quitToDesktopButton.initialise(0.5, 0.35, 300, 87, 0.2, "QUIT TO DESKTOP", &quitToDesktop);
+	resumeButton.initialise(0.5, 0.55, 300, 87, 0.2, "RESUME", &resume);
+	quitToMenuButton.initialise(0.5, 0.4, 300, 87, 0.2, "QUIT TO MENU", &quitToMenu);
+	quitToDesktopButton.initialise(0.5, 0.25, 300, 87, 0.2, "QUIT TO DESKTOP", &quitToDesktop);
 	
 	App::changeToMenuScreen();
 	
@@ -203,7 +203,7 @@ void update()
 			}
 			if (world.gameEnded)
 			{
-				App::changeToGameOverScreen();
+				App::changeToGameOverScreen(world.score);
 			}
 			else if (App::isPaused)
 			{
@@ -331,6 +331,10 @@ void displayGameOver()
 
 	glTranslatef((App::screenWidthPixels / App::screenWidth) * (screenWidth / 2) + paddingX, (App::screenHeightPixels / App::screenHeight) * (screenHeight * 0.63), 0.0);
 	print(App::bigGameFont, 0, 0, "SCORE: %05d", world.score);
+	glPopMatrix();
+	glPushMatrix();
+	glTranslatef((App::screenWidthPixels / App::screenWidth) * (screenWidth / 2) + paddingX*1.3, (App::screenHeightPixels / App::screenHeight) * (screenHeight * 0.53), 0.0);
+	print(App::bigGameFont, 0, 0, "HIGHSCORE: %05d", App::highscore);
 	glPopMatrix();
 	
 	quitToMenuButton.display(screenWidth, screenHeight);

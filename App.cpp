@@ -35,6 +35,8 @@ float App::screenHeight;
 int App::screenWidthPixels;
 int App::screenHeightPixels;
 
+int App::highscore = 0;
+
 GLuint App::loadPNG(char* name, bool repeatX, bool repeatY)
 {
 	// Texture loading object
@@ -127,11 +129,22 @@ void App::resetScreenState()
 	App::fadeTransparency = 0.0;
 }
 
-void App::changeToGameOverScreen()
+void App::changeToGameOverScreen(int score)
 {
 	App::resetScreenState();
 	App::quitToMenuPressed = false;
 	App::isGameOverScreen = true;
+	ifstream is("highscore", ifstream::binary);
+	is >> highscore;
+	is.close();
+	if (highscore < score)
+	{
+		ofstream os("highscore", iostream::binary);
+		os << score;
+		highscore = score;
+		os.close();
+	}
+	cout << highscore;
 }
 
 void App::changeToMenuScreen()
